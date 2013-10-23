@@ -18,8 +18,19 @@ namespace MainServer
     {
         //Tymczasowe deklaracje
         private Komunikat temp = new Komunikat();
-        private List<Pokoj> pokoje =  new List<Pokoj>();
-        private List<Akcja> akcje = new List<Akcja>();
+        static private List<Pokoj> pokoje =  new List<Pokoj>();
+        static private List<Akcja> akcje = new List<Akcja>();
+        static UkladyKart ukl = new UkladyKart();
+        
+        [WebMethod]
+        public int gen()
+        {         
+            ukl.generujKarty();
+
+
+            return ukl.czyPokerKrolewski(); 
+        }
+
 
         [WebMethod]
         public string HelloWorld()

@@ -11,5 +11,6 @@ namespace MainServer
         public enum kolorKarty :int { trefl, kier, karo, pik };
         public figuraKarty figura;
         public kolorKarty kolor;
+
     }
 }

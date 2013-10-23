@@ -73,6 +73,7 @@
       <DependentUpon>Rozgrywki.asmx</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="UkladyKart.cs" />
     <Compile Include="Uzytkownik.cs" />
     <Compile Include="Glowny.asmx.cs">
       <DependentUpon>Glowny.asmx</DependentUpon>

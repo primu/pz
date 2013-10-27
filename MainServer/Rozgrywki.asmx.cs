@@ -28,7 +28,7 @@ namespace MainServer
             ukl.generujKarty();
 
 
-            return ukl.czyPokerKrolewski(); 
+            return ukl.czyPara(); 
         }
 
 

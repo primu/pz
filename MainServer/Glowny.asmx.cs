@@ -27,8 +27,6 @@ namespace MainServer
 
         static private StatycznaBaza baza = new StatycznaBaza();
 
-        //Key k;
-
         [WebMethod]
         public string HelloWorld()
         {
@@ -97,6 +95,9 @@ namespace MainServer
         [WebMethod]
         public Komunikat ZmienHaslo(string token, string haslo)
         {
+            int ktory = klucze.FindIndex(delegate(Key u) { return u.token == token; });
+
+
             return temp;
         }
 

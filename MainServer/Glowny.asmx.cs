@@ -19,11 +19,10 @@ namespace MainServer
         //Tymczasowe deklaracje;
         static private Komunikat temp = new Komunikat();
         static private List<Wiadomosc> wiadomosci = new List<Wiadomosc>();
-        static private List<Uzytkownik> uzytkownicy = new List<Uzytkownik>();
+        static private List<Uzytkownik> uzytkownicy = new List<Uzytkownik>(); //zalogowani uzytkownicy
 
         static private List<Key> klucze = new List<Key>();
 
-        static private int ILOSC = 0;
 
         static private StatycznaBaza baza = new StatycznaBaza();
 
@@ -39,7 +38,7 @@ namespace MainServer
         {
             if (baza.zarejestrowani.FindIndex(delegate(baza_user u) { return u.nazwa == nazwa; }) < 0)
             {
-                baza.AddUser(++ILOSC, nazwa, haslo, email);
+                baza.AddUser(baza.zarejestrowani.Count+1, nazwa, haslo, email);
 
                 temp.kodKomunikatu = 201;
                 temp.trescKomunikatu = "Użytkownik " + nazwa + " został poprawnie zarejestrowany.\nAby zagrać zaloguj się.";
@@ -96,8 +95,53 @@ namespace MainServer
         public Komunikat ZmienHaslo(string token, string haslo)
         {
             int ktory = klucze.FindIndex(delegate(Key u) { return u.token == token; });
+            if (ktory < 0)
+            {//nieprawidlowy token
+                temp.kodKomunikatu = 666;
+                temp.trescKomunikatu = "Nie powiodło się!!! Nieprawidłowy token!!!";
+            }
+            else
+            {//prawidlowy token -> user zalogowany
+                try
+                {
+                    baza_user user = baza.zarejestrowani.Find(delegate(baza_user u)
+                    {
+                        return u.idUzytkownika == klucze[ktory].identyfikatorUzytkownika;
+                    });
+                    
+                    baza.zarejestrowani.Remove(user);
+                    user.haslo = haslo;
+                    baza.zarejestrowani.Add(user);
 
+                    temp.kodKomunikatu = 200;
+                    temp.trescKomunikatu = "Hasło zostało zmienione!";
+                }
+                catch (Exception e)
+                {
+                    temp.kodKomunikatu = 666;
+                    temp.trescKomunikatu = "Nie powiodło się!!! "+e;
+                }
+            }
+            return temp;
+        }
 
+        [WebMethod]
+        public Komunikat Wyloguj(string token)
+        {
+            int ktory = klucze.FindIndex(delegate(Key u) { return u.token == token; });
+
+            if (ktory < 0)
+            {//niezalogowany
+                temp.kodKomunikatu = 666;
+                temp.trescKomunikatu = "Uzytkownik nie jest zalogowany!!!";
+            }
+            else
+            {//zalogowany
+                uzytkownicy.RemoveAt(ktory);
+                klucze.RemoveAt(ktory);
+                temp.kodKomunikatu = 200;
+                temp.trescKomunikatu = "Nastąpiło wylogowanie!!!";
+            }
             return temp;
         }
 

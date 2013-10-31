@@ -35,18 +35,25 @@ namespace MainServer
         //Logowanie
         [WebMethod]
         public Komunikat Zarejestruj(string nazwa, string haslo, string email)
-        {
+        {//rejestracja uzytkownika
             if (baza.zarejestrowani.FindIndex(delegate(baza_user u) { return u.nazwa == nazwa; }) < 0)
-            {
-                baza.AddUser(baza.zarejestrowani.Count+1, nazwa, haslo, email);
-
-                temp.kodKomunikatu = 201;
-                temp.trescKomunikatu = "Użytkownik " + nazwa + " został poprawnie zarejestrowany.\nAby zagrać zaloguj się.";
+            {//niezarejestrowana nazwa uzytkownika
+                if (baza.zarejestrowani.FindIndex(delegate(baza_user u) { return u.email == email; }) < 0)
+                {//niezarejestrowany email
+                    baza.AddUser(baza.zarejestrowani.Count + 1, nazwa, haslo, email);
+                    temp.kodKomunikatu = 201;
+                    temp.trescKomunikatu = "Użytkownik " + nazwa + " został poprawnie zarejestrowany.\nAby zagrać zaloguj się.";
+                }
+                else
+                {//zajety email
+                    temp.kodKomunikatu = 409;
+                    temp.trescKomunikatu = "Wykryto konflikt!!! Na email " + email + " jest już zarejestrowany gracz!!!";
+                }
             }
             else
-            {
+            {//zajeta nazwa uzytkownika
                 temp.kodKomunikatu = 409;
-                temp.trescKomunikatu = "Wykryto konflikt!!! Użytkownik " + nazwa + " już istnieje!!!";
+                temp.trescKomunikatu = "Wykryto konflikt!!! Login " + nazwa + " jest zajęty!!!";
             }
             return temp;
         }
@@ -92,6 +99,26 @@ namespace MainServer
         }
 
         [WebMethod]
+        public Komunikat Wyloguj(string token)
+        {
+            int ktory = klucze.FindIndex(delegate(Key u) { return u.token == token; });
+
+            if (ktory < 0)
+            {//niezalogowany
+                temp.kodKomunikatu = 666;
+                temp.trescKomunikatu = "Uzytkownik nie jest zalogowany!!!";
+            }
+            else
+            {//zalogowany
+                uzytkownicy.RemoveAt(ktory);
+                klucze.RemoveAt(ktory);
+                temp.kodKomunikatu = 200;
+                temp.trescKomunikatu = "Nastąpiło wylogowanie!!!";
+            }
+            return temp;
+        }
+
+        [WebMethod]
         public Komunikat ZmienHaslo(string token, string haslo)
         {
             int ktory = klucze.FindIndex(delegate(Key u) { return u.token == token; });
@@ -116,7 +143,7 @@ namespace MainServer
                     temp.kodKomunikatu = 200;
                     temp.trescKomunikatu = "Hasło zostało zmienione!";
                 }
-                catch (Exception e)
+                catch (Exception e) //teoretycznie niepotrzebne
                 {
                     temp.kodKomunikatu = 666;
                     temp.trescKomunikatu = "Nie powiodło się!!! "+e;
@@ -126,22 +153,65 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat Wyloguj(string token)
+        public Komunikat ResetujHaslo(string email)
         {
-            int ktory = klucze.FindIndex(delegate(Key u) { return u.token == token; });
+            int ktory = baza.zarejestrowani.FindIndex(delegate(baza_user u){return u.email == email;});
 
             if (ktory < 0)
-            {//niezalogowany
-                temp.kodKomunikatu = 666;
-                temp.trescKomunikatu = "Uzytkownik nie jest zalogowany!!!";
+            {//brak ze=arejestrowanego uzytkownika na podany email
+                temp.kodKomunikatu = 404;
+                temp.trescKomunikatu = "Wykryto konflikt!!! Brak email'a " + email + " w bazie!!!";
             }
             else
-            {//zalogowany
-                uzytkownicy.RemoveAt(ktory);
-                klucze.RemoveAt(ktory);
-                temp.kodKomunikatu = 200;
-                temp.trescKomunikatu = "Nastąpiło wylogowanie!!!";
+            {//email wystepuje w bazie
+                string noweHaslo = new Key(0).token;
+
+                baza_user user = baza.zarejestrowani.Find(delegate(baza_user u) { return u.email == email; });
+                baza.zarejestrowani.Remove(user);
+                user.haslo = noweHaslo;
+
+                // WYSŁANIE EMAIL'EM NOWEGO HASŁA
+                //System.Web.Mail.
+                //System.Net.Mail.
+
+                temp.kodKomunikatu = 404;
+                temp.trescKomunikatu = "Wykryto konflikt!!! Brak emailu " + email + " w bazie!!!";
             }
+
+            return temp;
+        }
+
+        [WebMethod]
+        public Komunikat UsunKonto(string token)
+        {//trzeba byc zalogowanym, aby usunac konto
+            int ktory = klucze.FindIndex(delegate(Key u) { return u.token == token; });
+            if (ktory < 0)
+            {//nieprawidlowy token
+                temp.kodKomunikatu = 666;
+                temp.trescKomunikatu = "Nie powiodło się!!! Nieprawidłowy token!!!";
+            }
+            else
+            {//prawidlowy token -> user zalogowany
+                try
+                {
+                    baza_user user = baza.zarejestrowani.Find(delegate(baza_user u)
+                    {
+                        return u.idUzytkownika == klucze[ktory].identyfikatorUzytkownika;
+                    });
+
+                    baza.zarejestrowani.Remove(user);
+
+                    temp.kodKomunikatu = 200;
+                    temp.trescKomunikatu = "Konto zostało usuniętę!!!";
+                }
+                catch (Exception e)
+                {
+                    temp.kodKomunikatu = 666;
+                    temp.trescKomunikatu = "Fatalny błąd!!! Użytkownika nie ma w bazie!!!\nBłąd: " + e;
+                }
+            }
+
+
             return temp;
         }
 

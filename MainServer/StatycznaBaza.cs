@@ -30,7 +30,10 @@ namespace MainServer
             this.zarejestrowani.Add(temp);
         }
 
-
+        public StatycznaBaza()
+        {
+            AddUser(1, "user1", "user1", "user1@mail.pl");
+        }
 
     }
 }

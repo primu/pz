@@ -21,15 +21,14 @@ namespace MainServer
         static private List<Pokoj> pokoje =  new List<Pokoj>();
         static private List<Akcja> akcje = new List<Akcja>();
         static UkladyKart ukl = new UkladyKart();
-
-        private Glowny WS = new Glowny();
-       
+        
         [WebMethod]
         public int gen()
         {         
             ukl.generujKarty();
 
-            return ukl.czyPokerKrolewski(); 
+
+            return ukl.czyPara(); 
         }
 
 

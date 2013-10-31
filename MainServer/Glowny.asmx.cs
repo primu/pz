@@ -67,12 +67,12 @@ namespace MainServer
         
         private Komunikat DodajUzytkownika(string nazwa, string email, string haslo)
         {
-            temp = new Komunikat();
-            if (!Regex.IsMatch(email, @"/^(?!(?:(?:\x22?\x5C[\x00-\x7E]\x22?)|(?:\x22?[^\x5C\x22]\x22?)){255,})(?!(?:(?:\x22?\x5C[\x00-\x7E]\x22?)|(?:\x22?[^\x5C\x22]\x22?)){65,}@)(?:(?:[\x21\x23-\x27\x2A\x2B\x2D\x2F-\x39\x3D\x3F\x5E-\x7E]+)|(?:\x22(?:[\x01-\x08\x0B\x0C\x0E-\x1F\x21\x23-\x5B\x5D-\x7F]|(?:\x5C[\x00-\x7F]))*\x22))(?:\.(?:(?:[\x21\x23-\x27\x2A\x2B\x2D\x2F-\x39\x3D\x3F\x5E-\x7E]+)|(?:\x22(?:[\x01-\x08\x0B\x0C\x0E-\x1F\x21\x23-\x5B\x5D-\x7F]|(?:\x5C[\x00-\x7F]))*\x22)))*@(?:(?:(?!.*[^.]{64,})(?:(?:(?:xn--)?[a-z0-9]+(?:-[a-z0-9]+)*\.){1,126}){1,}(?:(?:[a-z][a-z0-9]*)|(?:(?:xn--)[a-z0-9]+))(?:-[a-z0-9]+)*)|(?:\[(?:(?:IPv6:(?:(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){7})|(?:(?!(?:.*[a-f0-9][:\]]){7,})(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,5})?::(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,5})?)))|(?:(?:IPv6:(?:(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){5}:)|(?:(?!(?:.*[a-f0-9]:){5,})(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,3})?::(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,3}:)?)))?(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))(?:\.(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))){3}))\]))$/iD"))
+            Komunikat kom = new Komunikat();
+            if (!CzyPoprawnyEmail(email))
             {
-                temp.trescKomunikatu = "NIEPOPRAWNY FORMAT";
-                temp.kodKomunikatu = 110;
-                return temp;
+                kom.trescKomunikatu = "NIEPOPRAWNY FORMAT";
+                kom.kodKomunikatu = 110;
+                return kom;
             }
             using(SqlConnection Polaczenie = new SqlConnection(CiagPolaczenia))
             {
@@ -83,7 +83,7 @@ namespace MainServer
 
                 DataRow newRow = dataSet.Tables["Uzytkownik"].NewRow();
                 newRow["Nazwa"] = nazwa;
-                newRow["Email"] = email;
+                newRow["Email"] = email.ToLower();
                 newRow["Haslo"] = haslo;
                 newRow["Kasa"] =  KasaStandard;
                 newRow["Zarejestrowany"] = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
@@ -92,16 +92,56 @@ namespace MainServer
                 new SqlCommandBuilder(dataAdapter);
                 dataAdapter.Update(dataSet.Tables["Uzytkownik"]);
 
-                temp.trescKomunikatu = "OK";
-                temp.kodKomunikatu = 100;
-                return temp;
+                kom.trescKomunikatu = "OK";
+                kom.kodKomunikatu = 100;
+                return kom;
+            }
+        }
+        private Komunikat DodajWiadomosc(Wiadomosc wiad)
+        {
+            Komunikat kom = new Komunikat();
+            using (SqlConnection Polaczenie = new SqlConnection(CiagPolaczenia))
+            {
+                var sqlQuery = "select * from Wiadomosc";
+                var sqlQuery2 = "select UzytkownikID from Uzytkownik where Nazwa = @Nazwa";// +wiad.nazwaUzytkownika;
+                SqlDataAdapter dataAdapter2 = new SqlDataAdapter(sqlQuery2, Polaczenie);
+                DataSet dataSet2 = new DataSet();
+                
+                dataAdapter2.SelectCommand.Parameters.Add("@Nazwa",SqlDbType.NVarChar).Value=wiad.nazwaUzytkownika;
+                dataAdapter2.Fill(dataSet2, "Uzytkownik");
+                string uzytID=dataSet2.Tables["Uzytkownik"].Rows[0].ItemArray.GetValue(0).ToString();
+                //string uzytID = (string)dataAdapter2.SelectCommand.ExecuteScalar();
+                //string uzytID = dataSet2.Tables["Uzytkownik"].Rows[0].ItemArray[0].ToString();
+
+
+                SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, Polaczenie);
+                DataSet dataSet = new DataSet();
+                dataAdapter.Fill(dataSet, "Wiadomosc");
+
+
+
+                DataRow newRow = dataSet.Tables["Wiadomosc"].NewRow();
+                newRow["Czas"] = wiad.stempelCzasowy;
+                newRow["Tresc"] =wiad.trescWiadomosci;
+                newRow["Uzytkownik"] = uzytID;
+                if (wiad.numerPokoju != 0)
+                    newRow["Gra"] = wiad.numerPokoju;
+                //newRow["Zarejestrowany"] = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+                dataSet.Tables["Wiadomosc"].Rows.Add(newRow);
+
+                new SqlCommandBuilder(dataAdapter);
+                dataAdapter.Update(dataSet.Tables["Wiadomosc"]);
+
+                kom.trescKomunikatu = "OK";
+                kom.kodKomunikatu = 100;
+                return kom;
             }
         }
 
         [WebMethod]
         public Komunikat SprawdzNazwe(string nazwa)
         {
-            temp = new Komunikat();
+            Komunikat kom = new Komunikat();
             using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
             {
                 connection.Open();
@@ -116,34 +156,41 @@ namespace MainServer
                 int count = (int)cmd.ExecuteScalar();
                 if (count > 0)
                 {
-                    temp.trescKomunikatu = "ISTNIEJE";
-                    temp.kodKomunikatu = 111;
+                    kom.trescKomunikatu = "ISTNIEJE";
+                    kom.kodKomunikatu = 111;
                 }
                 else
                 {
-                    temp.trescKomunikatu = "OK";
-                    temp.kodKomunikatu = 100;
+                    kom.trescKomunikatu = "OK";
+                    kom.kodKomunikatu = 100;
                 }
                 connection.Close();
-                return temp;
+                return kom;
             }
+        }
+        private bool CzyPoprawnyEmail(string email)
+        {
+            if (!Regex.IsMatch(email, @"[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+(?:[a-zA-Z]{2}||com|org|net|edu|gov|mil|biz|info|mobi|name|aero|asia|jobs|museum)\b"))
+                return false;
+            else
+                return true;
         }
         [WebMethod]
         public Komunikat SprawdzEmail(string email)
         {
-            temp = new Komunikat();
-            if (!Regex.IsMatch(email, @"/^(?!(?:(?:\x22?\x5C[\x00-\x7E]\x22?)|(?:\x22?[^\x5C\x22]\x22?)){255,})(?!(?:(?:\x22?\x5C[\x00-\x7E]\x22?)|(?:\x22?[^\x5C\x22]\x22?)){65,}@)(?:(?:[\x21\x23-\x27\x2A\x2B\x2D\x2F-\x39\x3D\x3F\x5E-\x7E]+)|(?:\x22(?:[\x01-\x08\x0B\x0C\x0E-\x1F\x21\x23-\x5B\x5D-\x7F]|(?:\x5C[\x00-\x7F]))*\x22))(?:\.(?:(?:[\x21\x23-\x27\x2A\x2B\x2D\x2F-\x39\x3D\x3F\x5E-\x7E]+)|(?:\x22(?:[\x01-\x08\x0B\x0C\x0E-\x1F\x21\x23-\x5B\x5D-\x7F]|(?:\x5C[\x00-\x7F]))*\x22)))*@(?:(?:(?!.*[^.]{64,})(?:(?:(?:xn--)?[a-z0-9]+(?:-[a-z0-9]+)*\.){1,126}){1,}(?:(?:[a-z][a-z0-9]*)|(?:(?:xn--)[a-z0-9]+))(?:-[a-z0-9]+)*)|(?:\[(?:(?:IPv6:(?:(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){7})|(?:(?!(?:.*[a-f0-9][:\]]){7,})(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,5})?::(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,5})?)))|(?:(?:IPv6:(?:(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){5}:)|(?:(?!(?:.*[a-f0-9]:){5,})(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,3})?::(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,3}:)?)))?(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))(?:\.(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))){3}))\]))$/iD"))
+            Komunikat kom = new Komunikat();
+            if (!CzyPoprawnyEmail(email))
             {
-                temp.trescKomunikatu = "NIEPOPRAWNY FORMAT";
-                temp.kodKomunikatu = 110;
-                return temp;
+                kom.trescKomunikatu = "NIEPOPRAWNY FORMAT";
+                kom.kodKomunikatu = 110;
+                return kom;
             }
             using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand("select count(*) from Uzytkownik where Email = @Email", connection);
 
-                temp = new Komunikat();
+                kom = new Komunikat();
 
                 SqlParameter param = new SqlParameter();
                 param.ParameterName = "@Email";
@@ -154,16 +201,16 @@ namespace MainServer
                 int count = (int)cmd.ExecuteScalar();
                 if (count > 0)
                 {
-                    temp.trescKomunikatu = "ISTNIEJE";
-                    temp.kodKomunikatu = 111;
+                    kom.trescKomunikatu = "ISTNIEJE";
+                    kom.kodKomunikatu = 111;
                 }
                 else
                 {
-                    temp.trescKomunikatu = "OK";
-                    temp.kodKomunikatu = 100;
+                    kom.trescKomunikatu = "OK";
+                    kom.kodKomunikatu = 100;
                 }
                 connection.Close();
-                return temp;
+                return kom;
             }
         }
 
@@ -219,6 +266,7 @@ namespace MainServer
             timer = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             wiadomosc.stempelCzasowy = timer;
             wiadomosci.Add(wiadomosc);
+            DodajWiadomosc(wiadomosc);
             temp.trescKomunikatu = "wyslano";
             return temp;
         }

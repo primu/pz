@@ -8,3 +8,8 @@ F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\pz-master\pz-mas
 F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\pz-master\pz-master\MainServer\obj\Debug\MainServer.csprojResolveAssemblyReference.cache
 F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\pz-master\pz-master\MainServer\obj\Debug\MainServer.dll
 F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\pz-master\pz-master\MainServer\obj\Debug\MainServer.pdb
+C:\Users\X230\Desktop\pz-pawel\MainServer\bin\MainServer.dll
+C:\Users\X230\Desktop\pz-pawel\MainServer\bin\MainServer.pdb
+C:\Users\X230\Desktop\pz-pawel\MainServer\obj\Debug\MainServer.csprojResolveAssemblyReference.cache
+C:\Users\X230\Desktop\pz-pawel\MainServer\obj\Debug\MainServer.dll
+C:\Users\X230\Desktop\pz-pawel\MainServer\obj\Debug\MainServer.pdb

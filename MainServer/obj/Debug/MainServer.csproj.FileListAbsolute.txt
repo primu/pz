@@ -1,0 +1,10 @@
+C:\Users\Pawel\Downloads\pz-master\pz-master\MainServer\bin\MainServer.dll
+C:\Users\Pawel\Downloads\pz-master\pz-master\MainServer\bin\MainServer.pdb
+C:\Users\Pawel\Downloads\pz-master\pz-master\MainServer\obj\Debug\MainServer.csprojResolveAssemblyReference.cache
+C:\Users\Pawel\Downloads\pz-master\pz-master\MainServer\obj\Debug\MainServer.dll
+C:\Users\Pawel\Downloads\pz-master\pz-master\MainServer\obj\Debug\MainServer.pdb
+F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\pz-master\pz-master\MainServer\bin\MainServer.dll
+F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\pz-master\pz-master\MainServer\bin\MainServer.pdb
+F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\pz-master\pz-master\MainServer\obj\Debug\MainServer.csprojResolveAssemblyReference.cache
+F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\pz-master\pz-master\MainServer\obj\Debug\MainServer.dll
+F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\pz-master\pz-master\MainServer\obj\Debug\MainServer.pdb

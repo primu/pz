@@ -5,7 +5,7 @@ using System.Web;
 
 namespace MainServer
 {
-    public struct baza_user
+    public class baza_user
     {
         public Int64 idUzytkownika;
         public string nazwa;
@@ -32,7 +32,7 @@ namespace MainServer
 
         public StatycznaBaza()
         {
-            AddUser(1, "user1", "user1", "user1@mail.pl");
+            AddUser(1, "user1", "user1", "user1@mail.com");
         }
 
     }

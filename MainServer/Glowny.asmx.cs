@@ -219,7 +219,7 @@ namespace MainServer
 
                         SMTPserwer.Send(text);
 
-                        temp.kodKomunikatu = 201;
+                        temp.kodKomunikatu = 200;
                         temp.trescKomunikatu = "Mail wysłany!!!";
                     }
                 }

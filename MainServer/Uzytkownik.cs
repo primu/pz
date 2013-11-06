@@ -11,6 +11,7 @@ namespace MainServer
         public string nazwaUzytkownika;
         public Int64 numerPokoju;
 
-        public UkladyKart ukl= new UkladyKart();
+        public List<Karta> hand = new List<Karta>();
+        //public UkladyKart ukl= new UkladyKart();
     }
 }

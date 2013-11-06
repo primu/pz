@@ -26,7 +26,24 @@ namespace MainServer
     
     /// </summary>
     /// <returns></returns>
-    
+
+        [WebMethod]
+        public List<Karta> user1()
+        {
+            return pok.user[0].hand;
+        }
+        [WebMethod]
+        public List<Karta> user2()
+        {
+            return pok.user[1].hand;
+        }
+        [WebMethod]
+        public List<Karta> naStole()
+        {
+            pok.losujNaStol(5);
+            return pok.stol;
+        }
+
         [WebMethod]
         public string gen()
         {         

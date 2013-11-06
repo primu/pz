@@ -6,8 +6,7 @@ using System.Web;
 namespace MainServer
 {
     public class UkladyKart
-    {
-      Karta[] tab = new Karta[52]; 
+    { 
       static Karta.figuraKarty[] figury = { Karta.figuraKarty.K2, Karta.figuraKarty.K3, Karta.figuraKarty.K4, Karta.figuraKarty.K5, Karta.figuraKarty.K6, Karta.figuraKarty.K7, Karta.figuraKarty.K8, Karta.figuraKarty.K9, Karta.figuraKarty.K10, Karta.figuraKarty.KJ, Karta.figuraKarty.KD, Karta.figuraKarty.KK, Karta.figuraKarty.KA, };
       static Karta.kolorKarty[] kolory = { Karta.kolorKarty.pik, Karta.kolorKarty.kier, Karta.kolorKarty.karo, Karta.kolorKarty.trefl };
       List<Karta> najlepszyUklad = new List<Karta>();
@@ -46,25 +45,6 @@ namespace MainServer
       }
       public void generujKarty()
       {       
-          for (int i = 0; i < 52; i++)
-          {
-              if (i < 13)
-              {
-                  tab[i] = new Karta { figura = figury[i], kolor = kolory[0] };               
-              }
-              if (i > 12 && i<26)
-              {
-                  tab[i] = new Karta { figura = figury[i-13], kolor = kolory[1] };                 
-              }
-              if (i > 25 && i < 39)
-              {
-                  tab[i] = new Karta { figura = figury[i-26], kolor = kolory[2] };                
-              }
-              if (i > 38 && i < 52)
-              {
-                  tab[i] = new Karta { figura = figury[i-39], kolor = kolory[3] };                
-              }              
-          }
           rekaIstol.Clear();
           rekaIstol.Add(new Karta { figura = Karta.figuraKarty.KA, kolor = Karta.kolorKarty.trefl });
           rekaIstol.Add(new Karta { figura = Karta.figuraKarty.KK, kolor = Karta.kolorKarty.pik });

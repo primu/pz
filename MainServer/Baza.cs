@@ -7,6 +7,8 @@ using System.Data;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 
+// ############################### metoda do synchronizacja stołów dla Pawła ############################### //
+
 namespace MainServer
 {
     static public class Baza
@@ -79,15 +81,14 @@ namespace MainServer
         {
             using (SqlConnection Polaczenie = new SqlConnection(CiagPolaczenia))
             {
-                var sqlQuery = "select * from Sesja where Token like @Token";
+                var sqlQuery = "select * from Sesja where Token = @Token";
 
                 SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, Polaczenie);
                 DataSet dataSet = new DataSet();
-                dataAdapter.SelectCommand.Parameters.Add("@Token", SqlDbType.Text).Value = token;
+                dataAdapter.SelectCommand.Parameters.Add("@Token", SqlDbType.NVarChar).Value = token;
                 dataAdapter.Fill(dataSet, "Sesja");
                 
-                DataRow newRow = dataSet.Tables["Sesja"].Rows[0]; //błąd przy ponownym logowaniu, gdy zostanie podany niepoprawny token
-                                                                    // lub token z bazy nie jest kompatybilny typem string ;/ ????????
+                DataRow newRow = dataSet.Tables["Sesja"].Rows[0]; 
                 newRow["WaznyDo"] = (Int32)(DateTime.Now.AddMinutes(CzasAFK).Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
 
                 new SqlCommandBuilder(dataAdapter);
@@ -100,20 +101,23 @@ namespace MainServer
             using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
             {
                 connection.Open();
-                var sqlQuery = "select Max(WaznyDo) from Sesja where Token like @Token";
+                var sqlQuery = "select Max(WaznyDo) from Sesja where Token = @Token";
 
                 SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, connection);
                 DataSet dataSet = new DataSet();
-                dataAdapter.SelectCommand.Parameters.Add("@Token", SqlDbType.Text).Value = token;
+                dataAdapter.SelectCommand.Parameters.Add("@Token", SqlDbType.NVarChar).Value = token;
                 dataAdapter.Fill(dataSet,"Sesja");
-                int ok = (int)dataSet.Tables["Sesja"].Rows[0].ItemArray.GetValue(0);
-                if (ok > (Int32)DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds)
+                if (dataSet.Tables["Sesja"].Rows.Count > 0)
                 {
-                    zalogowany = true;
-                }
-                else
-                {
-                    zalogowany = false;
+                    int ok = (Int32)dataSet.Tables["Sesja"].Rows[0].ItemArray.GetValue(0);
+                    if (ok > (Int32)DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds)
+                    {
+                        zalogowany = true;
+                    }
+                    else
+                    {
+                        zalogowany = false;
+                    }
                 }
             }
             return zalogowany;
@@ -125,7 +129,7 @@ namespace MainServer
             {
                 
                 connection.Open();
-                var sqlQuery = "select Max(s.WaznyDo),s.Token from Sesja s join Uzytkownik u on s.Uzytkownik=u.UzytkownikID where u.Nazwa like @Nazwa group by s.Token";
+                var sqlQuery = "select s.WaznyDo,s.Token from Sesja s join Uzytkownik u on s.Uzytkownik=u.UzytkownikID where u.Nazwa like @Nazwa order by s.WaznyDo desc";
 
                 SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, connection);
 
@@ -135,7 +139,8 @@ namespace MainServer
                 if (dataSet.Tables["Sesja"].Rows.Count > 0)
                 {
                     int ok = (int)dataSet.Tables["Sesja"].Rows[0].ItemArray.GetValue(0);
-                    if (ok > (Int32)DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds)
+                    int nic = (int)DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+                    if (ok > (int)DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds)
                     {
                         token = dataSet.Tables["Sesja"].Rows[0].ItemArray.GetValue(1).ToString();
                     }
@@ -163,13 +168,13 @@ namespace MainServer
                 DataRow newRow = dataSet.Tables["Uzytkownik"].NewRow();
                 newRow["Nazwa"] = nazwa;
                 newRow["Email"] = email.ToLower();
-                using (var deriveBytes = new Rfc2898DeriveBytes(haslo, 32))
+                using (var deriveBytes = new Rfc2898DeriveBytes(haslo, 32)) //PBKDF2 Password-Based Key Derivation Function 2
                 {
                     byte[] salt = deriveBytes.Salt;
-                    byte[] key = deriveBytes.GetBytes(32);  // derive a 20-byte key
+                    byte[] key = deriveBytes.GetBytes(32);  // derive a 32-byte key(256bit)
 
-                    newRow["Haslo"] = key;//mySHA256.ComputeHash(
-                    newRow["Salt"] = salt;//mySHA256.ComputeHash(
+                    newRow["Haslo"] = key;
+                    newRow["Salt"] = salt;
                 }
                 newRow["Kasa"] = KasaStandard;
                 newRow["Zarejestrowany"] = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
@@ -264,11 +269,11 @@ namespace MainServer
             Komunikat kom = new Komunikat();
             using (SqlConnection Polaczenie = new SqlConnection(CiagPolaczenia))
             {
-                var sqlQuery = "select * from Sesja where Token like @Token and WaznyDo >= @Wazny";
+                var sqlQuery = "select * from Sesja where Token = @Token and WaznyDo >= @Wazny";
               
                 SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, Polaczenie);
                 DataSet dataSet = new DataSet();
-                dataAdapter.SelectCommand.Parameters.Add("@Token", SqlDbType.Text).Value = token;
+                dataAdapter.SelectCommand.Parameters.Add("@Token", SqlDbType.NVarChar).Value = token;
                 dataAdapter.SelectCommand.Parameters.Add("@Wazny", SqlDbType.Int).Value = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
                 dataAdapter.Fill(dataSet, "Sesja");
                 if (dataSet.Tables["Sesja"].Rows.Count > 0)
@@ -341,5 +346,24 @@ namespace MainServer
             else
                 return true;
         }
+        static public bool CzyPoprawnyToken(string token)
+        {
+            //bool poprawny = false;
+            if (token.Length != 32)
+                return false;
+            else 
+            {
+                string tablicaAscii="";
+                for(int i=32;i<=126;i++)
+                    tablicaAscii+=(char)i;
+                foreach (char znak in token)
+                {
+                    if (!tablicaAscii.ToLowerInvariant().Contains(znak))
+                        return false;
+                }
+                return true;
+            }
+        }
+
     }
 }

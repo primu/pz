@@ -177,15 +177,18 @@ namespace MainServer
         public Komunikat Wyloguj(string token)
         {
             Komunikat kom = new Komunikat();
-            if (Baza.CzyPoprawny(token))
-            {
-                kom = Baza.Wyloguj(token);
+            if(Baza.CzyPoprawnyToken(token))
+                if (Baza.CzyPoprawny(token))
+                {
+                    kom = Baza.Wyloguj(token);
                 
-            }
+                }
+                else
+                {
+                    kom.trescKomunikatu = "BLAD";
+                }
             else
-            {
                 kom.trescKomunikatu = "BLAD";
-            }
 
             return kom;
         }

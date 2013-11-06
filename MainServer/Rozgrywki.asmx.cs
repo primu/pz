@@ -20,7 +20,8 @@ namespace MainServer
         private Komunikat temp = new Komunikat();
         static private List<Pokoj> pokoje =  new List<Pokoj>();
         static private List<Akcja> akcje = new List<Akcja>();
-        static UkladyKart ukl = new UkladyKart();
+        //static UkladyKart ukl = new UkladyKart();
+        static private Pokoj pok = new Pokoj();
     /// <summary>
     
     /// </summary>
@@ -29,17 +30,17 @@ namespace MainServer
         [WebMethod]
         public string gen()
         {         
-            ukl.generujKarty();
+            //pok.user[0].ukl.generujKarty();
 
-            
-            return ukl.co_mamy(); 
+
+            return pok.gen();//pok.user[0].ukl.co_mamy(); 
         }
         [WebMethod]
         public List<Karta> nasze()
         {
-            return ukl.reka();
+            return pok.nasze();//pok.user[0].ukl.reka();
         }
-
+        
         [WebMethod]
         public string HelloWorld()
         {

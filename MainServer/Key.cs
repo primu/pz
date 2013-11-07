@@ -19,10 +19,10 @@ namespace MainServer
             //this.token = "";
             for (int i = 0; i < 32; i++)
             {// ascii od 32 do 126 /{60,62}
-                int num = temp[i] % 95 + 32;
+                int num = temp[i] % 95 + 48;
                 if (num == 60 || num == 62)
                     num++;
-                this.token += (char)num;
+                token += (char)num;
             }
             return token;
         }

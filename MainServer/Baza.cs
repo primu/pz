@@ -101,7 +101,7 @@ namespace MainServer
             using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
             {
                 connection.Open();
-                var sqlQuery = "select Max(WaznyDo) from Sesja where Token = @Token";
+                var sqlQuery = "select WaznyDo from Sesja where Token = @Token";
 
                 SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, connection);
                 DataSet dataSet = new DataSet();
@@ -348,21 +348,22 @@ namespace MainServer
         }
         static public bool CzyPoprawnyToken(string token)
         {
-            //bool poprawny = false;
-            if (token.Length != 32)
-                return false;
-            else 
-            {
-                string tablicaAscii="";
-                for(int i=32;i<=126;i++)
-                    tablicaAscii+=(char)i;
-                foreach (char znak in token)
-                {
-                    if (!tablicaAscii.ToLowerInvariant().Contains(znak))
-                        return false;
-                }
-                return true;
-            }
+            return Regex.IsMatch(token, @"[A-Za-z0-9;:=?@\[\\\]^_`]");
+            ////bool poprawny = false;
+            //if (token.Length != 32)
+            //    return false;
+            //else 
+            //{
+            //    string tablicaAscii="";
+            //    for(int i=32;i<=126;i++)
+            //        tablicaAscii+=(char)i;
+            //    foreach (char znak in token)
+            //    {
+            //        if (!tablicaAscii.ToLowerInvariant().Contains(znak))
+            //            return false;
+            //    }
+            //    return true;
+            //}
         }
 
     }

@@ -12,6 +12,7 @@ namespace MainServer
         public Int64 numerPokoju;
 
         public List<Karta> hand = new List<Karta>();
+        public List<Karta> najUklad= new List<Karta>();
         //public UkladyKart ukl= new UkladyKart();
     }
 }

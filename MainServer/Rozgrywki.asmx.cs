@@ -40,7 +40,6 @@ namespace MainServer
         [WebMethod]
         public List<Karta> naStole()
         {
-            pok.losujNaStol(5);
             return pok.stol;
         }
 

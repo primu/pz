@@ -38,6 +38,7 @@ namespace MainServer
 
         public void losujNaStol(int ile)
         {
+            stol.Clear();
             Random rnd1 = new Random();           
                 for (int j = 0; j < ile; j++)
                 {
@@ -81,15 +82,17 @@ namespace MainServer
 
         public string gen()
         {
-            pobierzUserow();
-            ukl.generujKarty();  
-            rozdanie();        
-            return ukl.co_mamy(); 
+            pobierzUserow(); 
+            rozdanie();
+            losujNaStol(5);
+            return ukl.co_mamy(stol, user[1].hand,user[1].najUklad); 
         }
 
         public List<Karta> nasze()
         {
-            return ukl.reka();
+            //user[1].najUklad = new List<Karta> (ukl.najlepszyUklad);
+           
+            return user[1].najUklad;
         }
 
         public void ktoWygral()

@@ -9,50 +9,52 @@ namespace MainServer
     { 
       static Karta.figuraKarty[] figury = { Karta.figuraKarty.K2, Karta.figuraKarty.K3, Karta.figuraKarty.K4, Karta.figuraKarty.K5, Karta.figuraKarty.K6, Karta.figuraKarty.K7, Karta.figuraKarty.K8, Karta.figuraKarty.K9, Karta.figuraKarty.K10, Karta.figuraKarty.KJ, Karta.figuraKarty.KD, Karta.figuraKarty.KK, Karta.figuraKarty.KA, };
       static Karta.kolorKarty[] kolory = { Karta.kolorKarty.pik, Karta.kolorKarty.kier, Karta.kolorKarty.karo, Karta.kolorKarty.trefl };
-      List<Karta> najlepszyUklad = new List<Karta>();
+    // public List<Karta> najlepszyUklad = new List<Karta>();
       List<Karta> temp = new List<Karta>();
       List<Karta> rekaIstol = new List<Karta>();
       int p = -1;
       static bool sf = false;//czy w tym momencie szukamy fulla
 
-      public string co_mamy()
+      public string co_mamy(List<Karta> stol, List<Karta> hand, List<Karta> najlepszyUklad)
       {
-          if (czyPokerKrolewski() == 1)
+          generujKarty(stol,hand);
+          if (czyPokerKrolewski(najlepszyUklad) == 1)
               return "Poker krolewski!";
-          else if (czyPoker() == 1)
+          else if (czyPoker(najlepszyUklad) == 1)
               return "Poker!";
-          else if (czyKareta() == 1)
+          else if (czyKareta(najlepszyUklad) == 1)
               return "Kareta!";
-          else if (czyFull() == 1)
+          else if (czyFull(najlepszyUklad) == 1)
               return "Full!";
-          else if (czyKolor() == 1)
+          else if (czyKolor(najlepszyUklad) == 1)
               return "Kolor!";
-          else if (czyStrit() == 1)
+          else if (czyStrit(najlepszyUklad) == 1)
               return "Strit!";
-          else if (czyTrojka() == 1)
+          else if (czyTrojka(najlepszyUklad) == 1)
               return "Trojka!";
-          else if (czyDwiePary() == 1)
+          else if (czyDwiePary(najlepszyUklad) == 1)
               return "Dwie pary!";
-          else if (czyPara() == 1)
+          else if (czyPara(najlepszyUklad) == 1)
               return "Para!";
 
-          return czyWysokaKarta();
+          return czyWysokaKarta(najlepszyUklad);
       }
 
-      public List<Karta> reka()
+      public List<Karta> reka(List<Karta> najlepszyUklad)
       {
           return najlepszyUklad;
       }
-      public void generujKarty()
+      public void generujKarty(List<Karta> stol, List<Karta> hand)
       {       
           rekaIstol.Clear();
-          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.KA, kolor = Karta.kolorKarty.trefl });
-          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.KK, kolor = Karta.kolorKarty.pik });
-          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.KJ, kolor = Karta.kolorKarty.pik });
-          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.KD, kolor = Karta.kolorKarty.trefl });
-          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.K10, kolor = Karta.kolorKarty.kier });
-          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.K5, kolor = Karta.kolorKarty.karo });
-          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.K6, kolor = Karta.kolorKarty.karo });        
+          for (int i = 0; i < hand.Count; i++)
+          {
+              rekaIstol.Add(new Karta {figura=hand[i].figura, kolor=hand[i].kolor });
+          }
+          for (int i = 0; i < stol.Count; i++)
+          {
+              rekaIstol.Add(new Karta { figura = stol[i].figura, kolor = stol[i].kolor });
+          }           
       }
 
       private bool szukaj(int n,int kol)
@@ -76,7 +78,7 @@ namespace MainServer
       }
 
 
-       private int czyPokerKrolewski()
+      private int czyPokerKrolewski(List<Karta> najlepszyUklad)
        {
            najlepszyUklad.Clear();
            int x = 0;
@@ -98,7 +100,7 @@ namespace MainServer
            return 0;
        }
 
-       private int czyPoker()
+      private int czyPoker(List<Karta> najlepszyUklad)
        {
            najlepszyUklad.Clear();
            int x = 0;
@@ -136,7 +138,7 @@ namespace MainServer
             return -1;
         }
 
-       private int czyStrit()//dokończyć AS jako karta niska
+        private int czyStrit(List<Karta> najlepszyUklad)//dokończyć AS jako karta niska
        {
            najlepszyUklad.Clear();
            int x = 0;
@@ -157,8 +159,8 @@ namespace MainServer
            }
            return 0;
        }
-   
-       private bool szukajKolor(int kol)
+
+        private bool szukajKolor(int kol, List<Karta> najlepszyUklad)
        {
            int z = 0;
            najlepszyUklad.Clear();
@@ -184,18 +186,18 @@ namespace MainServer
            return false;
        }
 
-       private int czyKolor()
+        private int czyKolor(List<Karta> najlepszyUklad)
        {          
            for (int k = 0; k < 4; k++)
            {                              
-                if (szukajKolor((int)Karta.kolorKarty.pik+k) == true)             
+                if (szukajKolor((int)Karta.kolorKarty.pik+k,najlepszyUklad) == true)             
                    return 1;
                 najlepszyUklad.Clear();           
            }
            return 0;
        }
 
-       private void szukajNajwyzsze(int ile)
+        private void szukajNajwyzsze(int ile, List<Karta> najlepszyUklad)
        {
            temp = new List<Karta> (rekaIstol);
            int x = 0;
@@ -227,8 +229,8 @@ namespace MainServer
                 x++;
            }                       
        }
-        
-       private int czyKareta()
+
+        private int czyKareta(List<Karta> najlepszyUklad)
        {
            int x = 0;
            najlepszyUklad.Clear();
@@ -246,7 +248,7 @@ namespace MainServer
                 }
                 if (x == 3)
                 {
-                    szukajNajwyzsze(1);
+                    szukajNajwyzsze(1,najlepszyUklad);
                     return 1;
                 }
                 x = 0;
@@ -256,7 +258,7 @@ namespace MainServer
                return 0;
        }
 
-       private int czyTrojka()
+        private int czyTrojka(List<Karta> najlepszyUklad)
        {
            int x = 0;
            najlepszyUklad.Clear();
@@ -276,7 +278,7 @@ namespace MainServer
                if (x == 2)
                {
                    if(sf==false)
-                   szukajNajwyzsze(2);
+                   szukajNajwyzsze(2,najlepszyUklad);
                    return 1;                  
                }
                x = 0;
@@ -287,7 +289,7 @@ namespace MainServer
            return 0;
        }
 
-       private int czyPara()
+        private int czyPara(List<Karta> najlepszyUklad)
        {          
            for (int j = 0; j < rekaIstol.Count; j++)
            {
@@ -299,7 +301,7 @@ namespace MainServer
                            najlepszyUklad.Add(new Karta { figura = rekaIstol[j].figura, kolor = rekaIstol[j].kolor });
                            najlepszyUklad.Add(new Karta { figura = rekaIstol[i].figura, kolor = rekaIstol[i].kolor });
                            if(sf==false)
-                           szukajNajwyzsze(3);
+                           szukajNajwyzsze(3,najlepszyUklad);
                            return 1;
                        }
                }              
@@ -307,7 +309,7 @@ namespace MainServer
            return 0;
        }
 
-       private void szukajKickera(int p1, int p2)
+        private void szukajKickera(int p1, int p2, List<Karta> najlepszyUklad)
        {
            temp = new List<Karta>(rekaIstol);        
            int z = -1;
@@ -330,7 +332,7 @@ namespace MainServer
                z = -1;
                max = -1;                 
        }
-       private int czyDwiePary()
+        private int czyDwiePary(List<Karta> najlepszyUklad)
        {
            int pierwsza = -1;
            int druga = -1;
@@ -393,7 +395,7 @@ namespace MainServer
                najlepszyUklad.Add(new Karta { figura = rekaIstol[q2].figura, kolor = rekaIstol[q2].kolor });
                najlepszyUklad.Add(new Karta { figura = rekaIstol[d].figura, kolor = rekaIstol[d].kolor });
                najlepszyUklad.Add(new Karta { figura = rekaIstol[d2].figura, kolor = rekaIstol[d2].kolor });
-               szukajKickera(pierwsza, druga);
+               szukajKickera(pierwsza, druga,najlepszyUklad);
                return 1;
            }
            else if (((trzecia > druga) && (druga > pierwsza) && (trzecia > pierwsza)) || ((trzecia < druga) && (druga > pierwsza) && (trzecia > pierwsza)))
@@ -402,7 +404,7 @@ namespace MainServer
                najlepszyUklad.Add(new Karta { figura = rekaIstol[t2].figura, kolor = rekaIstol[t2].kolor });
                najlepszyUklad.Add(new Karta { figura = rekaIstol[d].figura, kolor = rekaIstol[d].kolor });
                najlepszyUklad.Add(new Karta { figura = rekaIstol[d2].figura, kolor = rekaIstol[d2].kolor });
-               szukajKickera(trzecia, druga);
+               szukajKickera(trzecia, druga,najlepszyUklad);
                return 1;
            }
            else if (((pierwsza > trzecia) && (trzecia > druga) && (pierwsza > druga)) || ((pierwsza < trzecia) && (trzecia > druga) && (pierwsza > druga)))
@@ -411,16 +413,16 @@ namespace MainServer
                najlepszyUklad.Add(new Karta { figura = rekaIstol[t2].figura, kolor = rekaIstol[t2].kolor });
                najlepszyUklad.Add(new Karta { figura = rekaIstol[d].figura, kolor = rekaIstol[d].kolor });
                najlepszyUklad.Add(new Karta { figura = rekaIstol[d2].figura, kolor = rekaIstol[d2].kolor });
-               szukajKickera(pierwsza, trzecia);
+               szukajKickera(pierwsza, trzecia,najlepszyUklad);
                return 1;
            }
            return 0;
        }
 
-       private int czyFull()
+        private int czyFull(List<Karta> najlepszyUklad)
        {
            sf = true;
-           if ((czyTrojka() == 1) && (czyPara() == 1))
+           if ((czyTrojka(najlepszyUklad) == 1) && (czyPara(najlepszyUklad) == 1))
            {
                sf = false;
                return 1;
@@ -429,9 +431,9 @@ namespace MainServer
            return 0;
        }
 
-       private String czyWysokaKarta()
+        private String czyWysokaKarta(List<Karta> najlepszyUklad)
        {
-           szukajNajwyzsze(5);
+           szukajNajwyzsze(5,najlepszyUklad);
            return "Wysoka karta!";
        }     
     }

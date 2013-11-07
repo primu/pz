@@ -375,7 +375,7 @@ namespace MainServer
         }
         static public bool CzyPoprawnyToken(string token)
         {
-            return Regex.IsMatch(token, @"[A-Za-z0-9;:=?@\[\\\]^_`]");
+            return Regex.IsMatch(token, @"[A-Za-z0-9;:=?@\[\\\]^_`]{32}");
             //qU3H4IBgdFVi31U}jLoqd5E?dP
             ////bool poprawny = false;
             //if (token.Length != 32)

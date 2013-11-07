@@ -18,10 +18,11 @@ namespace MainServer
             rand.NextBytes(temp);
             //this.token = "";
             for (int i = 0; i < 32; i++)
-            {// ascii od 32 do 126 /{60,62} ?34" ,39'
-                //this.token += (char)( (temp[i] % 74) + 48 );
+            {// ascii od 32 do 126 /{60,62}
                 int num = temp[i] % 95 + 32;
-                token += (char)((temp[i] % 48) + 74);
+                if (num == 60 || num == 62)
+                    num++;
+                this.token += (char)num;
             }
             return token;
         }

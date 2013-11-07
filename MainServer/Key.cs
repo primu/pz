@@ -18,7 +18,7 @@ namespace MainServer
             rand.NextBytes(temp);
             //this.token = "";
             for (int i = 0; i < 32; i++)
-            {// ascii od 48 do 126 /{60,62}
+            {// ascii od 48 do 122 /{60,62} //Marcin mial racje ;p
                 int num = temp[i] % 74 + 48;//bylo95
                 if (num == 60 || num == 62)
                     num++;

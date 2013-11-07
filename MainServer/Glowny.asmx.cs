@@ -28,6 +28,12 @@ namespace MainServer
 
         //Logowanie
         [WebMethod]
+        public List<Uzytkownik> ZwrocZalogowanych()
+        {
+            return Baza.ZwrocUzytkownikowZalogowanych();
+        }
+
+        [WebMethod]
         public Komunikat Zarejestruj(string nazwa, string haslo, string email)
         {//rejestracja uzytkownika
             Komunikat kom = new Komunikat();

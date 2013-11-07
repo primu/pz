@@ -22,6 +22,7 @@ namespace MainServer
                + "Persist Security Info=False;"
                + "User ID=PokerDBUser;Password=zaq478mlp";
 
+
         static public bool CzyIstniejeUzytkownik(string nazwa)
         {
             bool istnieje = false;
@@ -50,6 +51,32 @@ namespace MainServer
             }
             return istnieje;
         }
+        static public List<Uzytkownik> ZwrocUzytkownikowZalogowanych() //trzeba to przemyśleć, żeby z automatu nie można było tworzyć userów
+        {
+            List<Uzytkownik> listaUzytkownikow = new List<Uzytkownik>();
+            using (SqlConnection Polaczenie = new SqlConnection(CiagPolaczenia))
+            {
+                var sqlQuery = "select * from Uzytkownik u join Sesja s on s.Uzytkownik=u.UzytkownikID where s.WaznyDo > @Wazny";
+
+                SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, Polaczenie);
+                DataSet dataSet = new DataSet();
+                dataAdapter.SelectCommand.Parameters.Add("@Wazny", SqlDbType.Int).Value = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+
+                dataAdapter.Fill(dataSet, "Uzytkownik");
+                if (dataSet.Tables["Uzytkownik"].Rows.Count > 0)
+                {
+                    foreach (DataRow wiersz in dataSet.Tables["Uzytkownik"].Rows)
+                    {
+                        listaUzytkownikow.Add(new Uzytkownik{nazwaUzytkownika=wiersz["Nazwa"].ToString(),identyfikatorUzytkownika=(int)wiersz["UzytkownikID"]});
+                    }
+                }
+
+                //new SqlCommandBuilder(dataAdapter);
+                //dataAdapter.Update(dataSet.Tables["Sesja"]);
+            }
+            return listaUzytkownikow;
+        }
+
         static public bool CzyIstniejEmail(string email)
         {
             bool istnieje = false;

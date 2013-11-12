@@ -54,8 +54,16 @@ namespace MainServer
           for (int i = 0; i < stol.Count; i++)
           {
               rekaIstol.Add(new Karta { figura = stol[i].figura, kolor = stol[i].kolor });
-          }           
+          }
+         /* rekaIstol.Add(new Karta { figura = Karta.figuraKarty.K9, kolor = Karta.kolorKarty.trefl });
+          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.KK, kolor = Karta.kolorKarty.trefl });
+          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.KD, kolor = Karta.kolorKarty.trefl });
+          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.KJ, kolor = Karta.kolorKarty.trefl });
+          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.K10, kolor = Karta.kolorKarty.trefl });
+          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.KK, kolor = Karta.kolorKarty.pik });
+          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.KK, kolor = Karta.kolorKarty.karo });*/
       }
+
 
       private bool szukaj(int n,int kol)
       {
@@ -435,6 +443,7 @@ namespace MainServer
        {
            szukajNajwyzsze(5,najlepszyUklad);
            return "Wysoka karta!";
-       }     
+       }
+
     }
 }

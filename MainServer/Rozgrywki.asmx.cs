@@ -28,6 +28,18 @@ namespace MainServer
     /// <returns></returns>
 
         [WebMethod]
+        public List<Uzytkownik> listaUzytkownikow()
+        {
+            return pok.user;
+        }
+
+        [WebMethod]
+        public string KtoWygral()
+        {
+            return pok.ktoWygral();
+        }
+
+        [WebMethod]
         public List<Karta> user1()
         {
             return pok.user[0].hand;

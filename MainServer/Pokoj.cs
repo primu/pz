@@ -34,8 +34,9 @@ namespace MainServer
                     talia.RemoveAt(a);
                 }
             }*/
-            user[0].hand.Add(new Karta { figura = Karta.figuraKarty.K2, kolor = Karta.kolorKarty.pik });
-            user[0].hand.Add(new Karta { figura = Karta.figuraKarty.K2, kolor = Karta.kolorKarty.karo });
+            // przypisywanie kart uzytkowniom w celach testowych
+            user[0].hand.Add(new Karta { figura = Karta.figuraKarty.K8, kolor = Karta.kolorKarty.pik });
+            user[0].hand.Add(new Karta { figura = Karta.figuraKarty.KD, kolor = Karta.kolorKarty.karo });
             user[1].hand.Add(new Karta { figura = Karta.figuraKarty.K4, kolor = Karta.kolorKarty.kier });
             user[1].hand.Add(new Karta { figura = Karta.figuraKarty.K7, kolor = Karta.kolorKarty.karo });
             user[2].hand.Add(new Karta { figura = Karta.figuraKarty.K3, kolor = Karta.kolorKarty.pik });
@@ -53,11 +54,12 @@ namespace MainServer
                     talia.RemoveAt(a);
                 }
             */
-            stol.Add(new Karta { figura = Karta.figuraKarty.KD, kolor = Karta.kolorKarty.trefl });
+            //przypisywanie kart na stol w celach testowych
             stol.Add(new Karta { figura = Karta.figuraKarty.KD, kolor = Karta.kolorKarty.kier });
-            stol.Add(new Karta { figura = Karta.figuraKarty.KD, kolor = Karta.kolorKarty.pik });
-            stol.Add(new Karta { figura = Karta.figuraKarty.KD, kolor = Karta.kolorKarty.karo });
-            stol.Add(new Karta { figura = Karta.figuraKarty.K8, kolor = Karta.kolorKarty.karo });
+            stol.Add(new Karta { figura = Karta.figuraKarty.K9, kolor = Karta.kolorKarty.kier });
+            stol.Add(new Karta { figura = Karta.figuraKarty.K5, kolor = Karta.kolorKarty.kier });
+            stol.Add(new Karta { figura = Karta.figuraKarty.K8, kolor = Karta.kolorKarty.kier });
+            stol.Add(new Karta { figura = Karta.figuraKarty.K10, kolor = Karta.kolorKarty.kier });
         }
 
         public void generujKarty()
@@ -67,8 +69,7 @@ namespace MainServer
             {
                 if (i < 13)
                 {
-                    talia.Add(new Karta { figura = figury[i], kolor = kolory[0] });
-                    //talia[i] = new Karta { figura = figury[i], kolor = kolory[0] };
+                    talia.Add(new Karta { figura = figury[i], kolor = kolory[0] });                  
                 }
                 if (i > 12 && i < 26)
                 {
@@ -159,7 +160,7 @@ namespace MainServer
                     }
                 }
             }
-            if ((ile > 1) && (ile<user.Count))
+            if ((ile > 1) && (ile<user.Count) || ((ile>1) && (max==6) ))
             {
                 if (max == 9)
                 {
@@ -251,6 +252,57 @@ namespace MainServer
                     return wygrani;
 
                 }
+                else if (max == 6)
+                {
+                    wygrani.Clear();
+
+                    for (int i = 0; i < ile; i++)
+                    {
+                        user[i].kicker=(int)user[i].najUklad[0].figura;                       
+                    }
+                    sortujKick sk = new sortujKick();
+                    user.Sort(sk);
+                    for (int i = 0; i < user.Count; i++)
+                    {
+                        if (user[i].kicker == user[0].kicker)
+                        {
+                            wygrani.Add(new Uzytkownik { nazwaUkladu = user[i].nazwaUkladu, fold = user[i].fold, hand = user[i].hand, identyfikatorUzytkownika = user[i].identyfikatorUzytkownika, kicker = user[i].kicker, najUklad = user[i].najUklad, nazwaUzytkownika = user[i].nazwaUzytkownika, numerPokoju = user[i].numerPokoju, wart = user[i].wart });                      
+                        }
+                    }
+                    if (wygrani.Count > 1)
+                    {
+                        wygrani.Clear();
+                        funkcPom(wygrani);
+                    }
+                    return wygrani;
+                }
+
+                else if (max == 5)
+                {
+                    wygrani.Clear();
+                    for (int i = 0; i < ile; i++)
+                    {
+                        user[i].kicker = -1;
+                        for (int j = 0; j < user[i].najUklad.Count; j++)
+                        {
+                            if ((int)user[i].najUklad[j].figura > user[i].kicker)
+                            {
+                                user[i].kicker = (int)user[i].najUklad[j].figura;
+                            }
+                        }
+                    }
+                    sortujKick sk = new sortujKick();
+                    user.Sort(sk);
+                    for (int i = 0; i < user.Count; i++)
+                    {
+                        if (user[i].kicker == user[0].kicker)
+                        {
+                            wygrani.Add(new Uzytkownik { nazwaUkladu = user[i].nazwaUkladu, fold = user[i].fold, hand = user[i].hand, identyfikatorUzytkownika = user[i].identyfikatorUzytkownika, kicker = user[i].kicker, najUklad = user[i].najUklad, nazwaUzytkownika = user[i].nazwaUzytkownika, numerPokoju = user[i].numerPokoju, wart = user[i].wart });                      
+                        }
+                    }
+                    return wygrani;
+                }
+
             }
             else if (ile == user.Count)//jezeli na stole jest najwyzszy uklad
             {
@@ -258,10 +310,33 @@ namespace MainServer
                 if (max == 7)
                 {
                     ///dodac kod dla tego przypadku
+                   
+                    for (int i = 0; i < ile; i++)
+                    {
+                        user[i].kicker = -1;
+                        for (int j = 0; j < user[i].hand.Count; j++)
+                        {
+                            if ((int)user[i].hand[j].figura > user[i].kicker)
+                            {
+                                user[i].kicker = (int)user[i].hand[j].figura;
+                            }
+                        }
+                    }
+                    sortujKick sk = new sortujKick();
+                    user.Sort(sk);
+                    for (int i = 0; i < user.Count; i++)
+                    {
+                        if (user[i].kicker == user[0].kicker)
+                        {
+                            wygrani.Add(new Uzytkownik { nazwaUkladu = user[i].nazwaUkladu, fold = user[i].fold, hand = user[i].hand, identyfikatorUzytkownika = user[i].identyfikatorUzytkownika, kicker = user[i].kicker, najUklad = user[i].najUklad, nazwaUzytkownika = user[i].nazwaUzytkownika, numerPokoju = user[i].numerPokoju, wart = user[i].wart });                      
+                        }
+                    }
+                    return wygrani;
                 }
                 else
-                {                   
-                    for (int i = 0; i < user.Count; i++)
+                {
+                    funkcPom(wygrani);
+                    /*for (int i = 0; i < user.Count; i++)
                     {
                         user[i].kicker = -1;
                         for (int j = 0; j < user[i].hand.Count; j++)
@@ -286,11 +361,41 @@ namespace MainServer
                     }
 
                     return wygrani;
+                    */
                 }
             }
 
-               
-                return wygrani;           
+            wygrani.Add(new Uzytkownik { nazwaUkladu = user[0].nazwaUkladu, fold = user[0].fold, hand = user[0].hand, identyfikatorUzytkownika = user[0].identyfikatorUzytkownika, kicker = user[0].kicker, najUklad = user[0].najUklad, nazwaUzytkownika = user[0].nazwaUzytkownika, numerPokoju = user[0].numerPokoju, wart = user[0].wart });
+            return wygrani;           
+        }
+
+        private List<Uzytkownik> funkcPom(List<Uzytkownik> wygrani)
+        {
+            for (int i = 0; i < user.Count; i++)
+            {
+                user[i].kicker = -1;
+                for (int j = 0; j < user[i].hand.Count; j++)
+                {
+                    if ((int)user[i].hand[j].figura > user[i].kicker)
+                    {
+                        user[i].kicker = (int)user[i].hand[j].figura;
+                    }
+                }
+            }
+            sortujKick sk = new sortujKick();
+            user.Sort(sk);
+            int ile2 = 0;
+            for (int i = 0; i < user.Count; i++)
+            {
+                if (user[i].kicker == user[0].kicker)
+                    ile2++;
+            }
+            for (int j = 0; j < ile2; j++)
+            {
+                wygrani.Add(new Uzytkownik { nazwaUkladu = user[j].nazwaUkladu, fold = user[j].fold, hand = user[j].hand, identyfikatorUzytkownika = user[j].identyfikatorUzytkownika, kicker = user[j].kicker, najUklad = user[j].najUklad, nazwaUzytkownika = user[j].nazwaUzytkownika, numerPokoju = user[j].numerPokoju, wart = user[j].wart });
+            }
+
+            return wygrani;
         }
     }    
 }

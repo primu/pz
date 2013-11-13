@@ -16,6 +16,7 @@ namespace MainServer
         public int kicker;
         public bool fold; 
         public int wart;//wartość układu kart
+        public string nazwaUkladu;
 
       
     }

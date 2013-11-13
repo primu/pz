@@ -34,7 +34,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public string KtoWygral()
+        public List<Uzytkownik> KtoWygral()
         {
             return pok.ktoWygral();
         }

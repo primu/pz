@@ -199,21 +199,22 @@ namespace MainServer
         public Komunikat Start(string token, Int64 numer)
         {
             Uzytkownik user = Glowny.ZweryfikujUzytkownika(token);
-            numer-=1;
 
-            pokoje[(int)numer].user.Find(delegate(Uzytkownik c) { return c.identyfikatorUzytkownika == user.identyfikatorUzytkownika; }).start = true;
+            int index = pokoje.FindIndex(delegate(Pokoj c) { return c.numerPokoju == numer; });
+
+            pokoje[index].user.Find(delegate(Uzytkownik c) { return c.identyfikatorUzytkownika == user.identyfikatorUzytkownika; }).start = true;
             user.start = true;
 
             int t = 0;
-            foreach ( Uzytkownik u in pokoje[(int)numer].user )
+            foreach (Uzytkownik u in pokoje[index].user)
             {
                 t++;
             }
-            if (t == pokoje[(int)numer].user.Count)
+            if (t == pokoje[index].user.Count)
             {
-                pokoje[(int)numer].rozdanie();
-                
-                foreach ( Uzytkownik u in pokoje[(int)numer].user )
+                pokoje[index].rozdanie();
+
+                foreach (Uzytkownik u in pokoje[index].user)
                 {
                     Akcja a = new Akcja();
                     a.identyfikatorGracza = u.identyfikatorUzytkownika;
@@ -221,31 +222,31 @@ namespace MainServer
                     a.stempelCzasowy = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
                     a.numerStolu = numer;
                     a.kartyGracza = u.hand;
-                    a.kartyNaStole = pokoje[(int)numer].stol;
+                    a.kartyNaStole = pokoje[index].stol;
                     a.duzyBlind = false;
                     a.malyBlind = false;
                     a.obecnaStawkaGracza = 0;
-                    
-                    if (pokoje[(int)numer].ktoBlind == u.identyfikatorUzytkownika)
+
+                    if (pokoje[index].ktoBlind == u.identyfikatorUzytkownika)
                     {
                         a.duzyBlind = true;
-                        a.obecnaStawkaGracza = pokoje[(int)numer].duzyBlind;                    
+                        a.obecnaStawkaGracza = pokoje[index].duzyBlind;                    
                     }
                     else
-                        if (pokoje[(int)numer].KtoPoprzedni(pokoje[(int)numer].ktoBlind) == u.identyfikatorUzytkownika)
+                        if (pokoje[index].KtoPoprzedni(pokoje[index].ktoBlind) == u.identyfikatorUzytkownika)
                         {
                             a.malyBlind = true;
-                            a.obecnaStawkaGracza = pokoje[(int)numer].duzyBlind/2;
+                            a.obecnaStawkaGracza = pokoje[index].duzyBlind / 2;
                         }
 
-                    if ( pokoje[(int)numer].KtoNastepny(pokoje[(int)numer].ktoBlind) == u.identyfikatorUzytkownika )
+                    if (pokoje[index].KtoNastepny(pokoje[index].ktoBlind) == u.identyfikatorUzytkownika)
                     {
                         a.nastepnyGracz = u.identyfikatorUzytkownika;
                     }
 
-                    a.obecnaStawkaStolu = pokoje[(int)numer].duzyBlind;
-                    a.iloscKasyNaStole = (Int64) (pokoje[(int)numer].duzyBlind * 1.5);
-                    a.iloscKasyGracza = pokoje[(int)numer].stawkaWejsciowa - a.obecnaStawkaGracza;
+                    a.obecnaStawkaStolu = pokoje[index].duzyBlind;
+                    a.iloscKasyNaStole = (Int64)(pokoje[index].duzyBlind * 1.5);
+                    a.iloscKasyGracza = pokoje[index].stawkaWejsciowa - a.obecnaStawkaGracza;
                     
                 }
                 

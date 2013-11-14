@@ -11,17 +11,24 @@ namespace MainServer
         public string nazwaUzytkownika;
         public Int64 numerPokoju;
 
+        public List<Karta> hand = new List<Karta>();
+        public List<Karta> najUklad = new List<Karta>();
+        public int kicker;
+        public bool fold;
+        public int wart;//wartość układu kart
+        public string nazwaUkladu;
+        public bool start = false;
+
         public Uzytkownik()
         {
         }
 
         public Uzytkownik(Int64 id, string nazwa, Int64 numer)
         {
-            this.identyfikatorUzytkownika = id;
-            this.nazwaUzytkownika = nazwa;
-            this.numerPokoju = numer;
+            identyfikatorUzytkownika = id;
+            nazwaUzytkownika = nazwa;
+            numerPokoju = numer;
         }
-
-
+      
     }
 }

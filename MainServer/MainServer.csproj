@@ -74,6 +74,8 @@
       <DependentUpon>Rozgrywki.asmx</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="sortujKick.cs" />
+    <Compile Include="sortujWart.cs" />
     <Compile Include="StatycznaBaza.cs" />
     <Compile Include="UkladyKart.cs" />
     <Compile Include="Uzytkownik.cs" />

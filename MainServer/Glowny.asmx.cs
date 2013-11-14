@@ -219,7 +219,7 @@ namespace MainServer
 
                         SMTPserwer.Send(text);
 
-                        temp.kodKomunikatu = 201;
+                        temp.kodKomunikatu = 200;
                         temp.trescKomunikatu = "Mail wysłany!!!";
                     }
                 }
@@ -265,6 +265,12 @@ namespace MainServer
             return temp;
         }
 
+        [WebMethod]
+        public List<Key> PobierzTokeny()
+        {
+            return klucze;
+        }
+
         //Chat
         [WebMethod]
         public List<Uzytkownik> PobierzUzytkownikow(string token)
@@ -295,12 +301,13 @@ namespace MainServer
             wiadomosc.stempelCzasowy = timer;
             wiadomosci.Add(wiadomosc);
             temp.trescKomunikatu = "wyslano";
+            temp.kodKomunikatu = 200;
             return temp;
         }
 
         //Serwer-Serwer
         [WebMethod]
-        public Komunikat ZweryfikujUzytkownika(string token, string nazwa)
+        public static Komunikat ZweryfikujUzytkownika(string token, string nazwa)
         {
             try
             {
@@ -332,6 +339,18 @@ namespace MainServer
             }
             return temp;
         }
+
+        public static Uzytkownik ZweryfikujUzytkownika(string token)
+        {
+            Key klucz = klucze.Find(delegate(Key u) { return u.token == token; });
+            Uzytkownik user = uzytkownicy.Find(delegate(Uzytkownik u)
+            {
+                return u.identyfikatorUzytkownika == klucz.identyfikatorUzytkownika;
+            });
+
+            return user;
+        }
+        
         //co dalej?
 
     }

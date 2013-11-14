@@ -19,8 +19,7 @@ namespace MainServer
         //Tymczasowe deklaracje
         private Komunikat temp = new Komunikat();
         static private List<Pokoj> pokoje =  new List<Pokoj>();
-        static private List<Akcja> akcje = new List<Akcja>();
-        //static UkladyKart ukl = new UkladyKart();
+        static private List<Akcja> akcje = new List<Akcja>();       
         static private Pokoj pok = new Pokoj();
     /// <summary>
     
@@ -38,17 +37,7 @@ namespace MainServer
         {
             return pok.ktoWygral();
         }
-
-        [WebMethod]
-        public List<Karta> user1()
-        {
-            return pok.user[0].hand;
-        }
-        [WebMethod]
-        public List<Karta> user2()
-        {
-            return pok.user[1].hand;
-        }
+       
         [WebMethod]
         public List<Karta> naStole()
         {
@@ -57,23 +46,10 @@ namespace MainServer
 
         [WebMethod]
         public string gen()
-        {         
-            //pok.user[0].ukl.generujKarty();
-
-
-            return pok.gen();//pok.user[0].ukl.co_mamy(); 
-        }
-        [WebMethod]
-        public List<Karta> nasze()
-        {
-            return pok.nasze();//pok.user[0].ukl.reka();
-        }
-        
-        [WebMethod]
-        public string HelloWorld()
-        {
-            return "Hello World";
-        }
+        {                    
+            return pok.gen();
+        }    
+                
         //Pokoje
         [WebMethod]
         public List<Pokoj> PobierzPokoje(string token)

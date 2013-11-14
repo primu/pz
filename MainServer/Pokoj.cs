@@ -24,7 +24,7 @@ namespace MainServer
         public void rozdanie()
         {
             generujKarty();
-            /*Random rnd1 = new Random();
+            Random rnd1 = new Random();
             for (int i = 0; i < 2; i++)
             {
                 for (int j = 0; j < user.Count; j++)
@@ -33,33 +33,33 @@ namespace MainServer
                     user[j].hand.Add(new Karta { figura = talia[a].figura, kolor = talia[a].kolor });
                     talia.RemoveAt(a);
                 }
-            }*/
+            }
             // przypisywanie kart uzytkowniom w celach testowych
-            user[0].hand.Add(new Karta { figura = Karta.figuraKarty.KJ, kolor = Karta.kolorKarty.pik });
-            user[0].hand.Add(new Karta { figura = Karta.figuraKarty.KJ, kolor = Karta.kolorKarty.karo });
-            user[1].hand.Add(new Karta { figura = Karta.figuraKarty.KK, kolor = Karta.kolorKarty.pik });
-            user[1].hand.Add(new Karta { figura = Karta.figuraKarty.KK, kolor = Karta.kolorKarty.kier });
-            user[2].hand.Add(new Karta { figura = Karta.figuraKarty.K4, kolor = Karta.kolorKarty.kier });
-            user[2].hand.Add(new Karta { figura = Karta.figuraKarty.KD, kolor = Karta.kolorKarty.pik });
+          /*  user[0].hand.Add(new Karta { figura = Karta.figuraKarty.KA, kolor = Karta.kolorKarty.kier });
+            user[0].hand.Add(new Karta { figura = Karta.figuraKarty.K7, kolor = Karta.kolorKarty.pik });
+            user[1].hand.Add(new Karta { figura = Karta.figuraKarty.K4, kolor = Karta.kolorKarty.pik });
+            user[1].hand.Add(new Karta { figura = Karta.figuraKarty.K5, kolor = Karta.kolorKarty.kier });
+            user[2].hand.Add(new Karta { figura = Karta.figuraKarty.K8, kolor = Karta.kolorKarty.kier });
+            user[2].hand.Add(new Karta { figura = Karta.figuraKarty.KA, kolor = Karta.kolorKarty.karo });*/
         }
 
         public void losujNaStol(int ile)
         {
             stol.Clear();
-           /* Random rnd1 = new Random();           
+            Random rnd1 = new Random();           
                 for (int j = 0; j < ile; j++)
                 {
                     int a = rnd1.Next(0, talia.Count);
                     stol.Add(new Karta { figura = talia[a].figura, kolor = talia[a].kolor });
                     talia.RemoveAt(a);
                 }
-            */
+            
             //przypisywanie kart na stol w celach testowych
-            stol.Add(new Karta { figura = Karta.figuraKarty.KA, kolor = Karta.kolorKarty.karo });
-            stol.Add(new Karta { figura = Karta.figuraKarty.KA, kolor = Karta.kolorKarty.trefl });
-            stol.Add(new Karta { figura = Karta.figuraKarty.K3, kolor = Karta.kolorKarty.pik });
-            stol.Add(new Karta { figura = Karta.figuraKarty.K2, kolor = Karta.kolorKarty.kier });
-            stol.Add(new Karta { figura = Karta.figuraKarty.K9, kolor = Karta.kolorKarty.karo });
+           /* stol.Add(new Karta { figura = Karta.figuraKarty.K2, kolor = Karta.kolorKarty.karo });
+            stol.Add(new Karta { figura = Karta.figuraKarty.K6, kolor = Karta.kolorKarty.trefl });
+            stol.Add(new Karta { figura = Karta.figuraKarty.KK, kolor = Karta.kolorKarty.pik });
+            stol.Add(new Karta { figura = Karta.figuraKarty.K9, kolor = Karta.kolorKarty.kier });
+            stol.Add(new Karta { figura = Karta.figuraKarty.K10, kolor = Karta.kolorKarty.karo });*/
         }
 
         public void generujKarty()
@@ -101,13 +101,7 @@ namespace MainServer
             losujNaStol(5);
             return "ok";//ukl.co_mamy(stol, user[1].hand,user[1].najUklad); 
         }
-
-        public List<Karta> nasze()
-        {
-            //user[1].najUklad = new List<Karta> (ukl.najlepszyUklad);
-           
-            return user[1].najUklad;
-        }
+     
 
         public int wartosci(string kk)
         {
@@ -160,9 +154,9 @@ namespace MainServer
                     }
                 }
             }
-            if ((ile > 1) && (ile < user.Count) || ((ile > 1) && (max == 6)) || ((ile > 1) && (max == 5)) || ((ile > 1) && (max == 3)) || ((ile > 1) && (max == 2)))
+            if ((ile > 1) && (ile < user.Count) || ((ile > 1) && (max == 6)) || ((ile > 1) && (max == 5)) || ((ile > 1) && (max == 3)) || ((ile > 1) && (max == 2)) || ((ile > 1) && (max == 1)) || ((ile > 1) && (max == 0)))
             {
-                if (max == 9)
+                if (max == 9)//poker krolewski
                 {
                     wygrani.Clear();                  
                         for (int i = 0; i < ile; i++)
@@ -171,7 +165,7 @@ namespace MainServer
                         }
                         return wygrani;                 
                 }
-                else if (max == 8)
+                else if (max == 8)//poker
                 {
                     wygrani.Clear();                 
                     List<Uzytkownik> temp= new List<Uzytkownik>(); 
@@ -207,7 +201,7 @@ namespace MainServer
                      
                     
                 }
-                else if (max == 7)
+                else if (max == 7)//kareta
                 {
                     wygrani.Clear();
                     int wartK = -1;//maksymalna wartość karety
@@ -252,7 +246,7 @@ namespace MainServer
                     return wygrani;
 
                 }
-                else if (max == 6)
+                else if (max == 6)//full
                 {
                     wygrani.Clear();
 
@@ -277,7 +271,7 @@ namespace MainServer
                     return wygrani;
                 }
 
-                else if (max == 5)
+                else if (max == 5)//kolor
                 {
                     wygrani.Clear();
                     for (int i = 0; i < ile; i++)
@@ -321,6 +315,7 @@ namespace MainServer
                             if (wygrani[i].kicker != wygrani[0].kicker)
                             {
                                 wygrani.RemoveAt(i);
+                                i--;
                             }
                         }
                         if (wygrani.Count > 1)
@@ -335,7 +330,7 @@ namespace MainServer
 
                     return wygrani;
                 }
-                else if (max == 4)
+                else if (max == 4)//strit
                 {
                     wygrani.Clear();
                     List<Uzytkownik> temp = new List<Uzytkownik>();
@@ -369,7 +364,7 @@ namespace MainServer
                     }
                     return wygrani;
                 }
-                else if (max == 3)
+                else if (max == 3)//trójka
                 {
                     wygrani.Clear();
                     int wartK = -1;//maksymalna wartość trojki
@@ -403,17 +398,18 @@ namespace MainServer
                     
                                         sortujKick sk = new sortujKick();
                                         wygrani.Sort(sk);
-                                        for (int i = 1; i < wygrani.Count; i++)
+                                        for (int i = 0; i < wygrani.Count; i++)
                                         {
                                             if (wygrani[i].kicker < wygrani[0].kicker)
                                             {
                                                 wygrani.RemoveAt(i);
+                                                i--;
                                             }
                                         }
                       
                     return wygrani;
                 }
-                else if (max == 2)
+                else if (max == 2)//dwie pary
                 {
                     wygrani.Clear();
                     for (int i = 0; i < ile; i++)
@@ -453,6 +449,7 @@ namespace MainServer
                             if (wygrani[i].kicker != wygrani[0].kicker)
                             {
                                 wygrani.RemoveAt(i);
+                                i--;
                             }
                         }
                         if (wygrani.Count > 1)//szukanie kickera
@@ -467,6 +464,160 @@ namespace MainServer
                                 if (wygrani[i].kicker != wygrani[0].kicker)
                                 {
                                     wygrani.RemoveAt(i);
+                                    i--;
+                                }
+                            }
+                            return wygrani;
+                        }
+                        return wygrani;
+                    }
+                    return wygrani;
+                }
+                else if (max == 1)//para
+                {
+                    wygrani.Clear();
+                    for (int i = 0; i < ile; i++)
+                    {
+                        user[i].kicker = (int)user[i].najUklad[0].figura; ;
+                    }
+                    sortujKick sk = new sortujKick();
+                    user.Sort(sk);
+                    for (int i = 0; i < user.Count;i++ )
+                    {
+                        if (user[i].kicker == user[0].kicker)
+                        {
+                            wygrani.Add(new Uzytkownik { nazwaUkladu = user[i].nazwaUkladu, fold = user[i].fold, hand = user[i].hand, identyfikatorUzytkownika = user[i].identyfikatorUzytkownika, kicker = user[i].kicker, najUklad = user[i].najUklad, nazwaUzytkownika = user[i].nazwaUzytkownika, numerPokoju = user[i].numerPokoju, wart = user[i].wart });
+                        }
+                    }
+                    if (wygrani.Count > 1)
+                    {
+                        for (int i = 0; i < wygrani.Count; i++)
+                        {
+                            wygrani[i].kicker=-1;
+                            for(int j=0;j<wygrani[i].najUklad.Count;j++)
+                            {
+                                if (((int)wygrani[i].najUklad[j].figura > wygrani[i].kicker) && ((int)wygrani[i].najUklad[j].figura != (int)wygrani[i].najUklad[0].figura))
+                                {
+                                    wygrani[i].kicker = (int)wygrani[i].najUklad[j].figura;
+                                }
+                            }
+                        }
+                        wygrani.Sort(sk);
+                        for (int i = 0; i < wygrani.Count; i++)
+                        {
+                            if (wygrani[i].kicker != wygrani[0].kicker)
+                            {
+                                wygrani.RemoveAt(i);
+                                i--;
+                            }
+                        }
+
+                        if (wygrani.Count > 1)
+                        {
+                            int k1 = wygrani[0].kicker;
+                            for (int i = 0; i < wygrani.Count; i++)
+                            {
+                                wygrani[i].kicker = -1;
+                                for (int j = 0; j < wygrani[i].najUklad.Count; j++)
+                                {
+                                    if (((int)wygrani[i].najUklad[j].figura > wygrani[i].kicker) && ((int)wygrani[i].najUklad[j].figura != (int)wygrani[i].najUklad[0].figura) && ((int)wygrani[i].najUklad[j].figura != k1))
+                                    {
+                                        wygrani[i].kicker = (int)wygrani[i].najUklad[j].figura;
+                                    }
+                                }
+                            }
+                            wygrani.Sort(sk);
+                            for (int i = 0; i < wygrani.Count; i++)
+                            {
+                                if (wygrani[i].kicker != wygrani[0].kicker)
+                                {
+                                    wygrani.RemoveAt(i);
+                                    i--;
+                                }
+                            }
+
+                            if (wygrani.Count > 1)
+                            {
+                                int k2 = wygrani[0].kicker;
+                                for (int i = 0; i < wygrani.Count; i++)
+                                {
+                                    wygrani[i].kicker = -1;
+                                    for (int j = 0; j < wygrani[i].najUklad.Count; j++)
+                                    {
+                                        if (((int)wygrani[i].najUklad[j].figura > wygrani[i].kicker) && ((int)wygrani[i].najUklad[j].figura != (int)wygrani[i].najUklad[0].figura) && ((int)wygrani[i].najUklad[j].figura != k1) && ((int)wygrani[i].najUklad[j].figura != k2))
+                                        {
+                                            wygrani[i].kicker = (int)wygrani[i].najUklad[j].figura;
+                                        }
+                                    }
+                                }
+                                wygrani.Sort(sk);
+                                for (int i = 0; i < wygrani.Count; i++)
+                                {
+                                    if (wygrani[i].kicker != wygrani[0].kicker)
+                                    {
+                                        wygrani.RemoveAt(i);
+                                        i--;
+                                    }
+                                }
+                                //dopisac porównywanie kart z ręki, w przypadku najwyższego układu na stole
+                                return wygrani;
+                            }
+
+                            return wygrani;
+                        }
+
+                        return wygrani;
+                    }
+
+                    return wygrani;
+                }
+                else if (max == 0)//wysoka karta ----dopisac koncowke
+                {
+                    wygrani.Clear();
+                    for (int i = 0; i < ile; i++)
+                    {
+                        user[i].kicker = (int)user[i].najUklad[0].figura; ;
+                    }
+                    sortujKick sk = new sortujKick();
+                    user.Sort(sk);
+                    for (int i = 0; i < user.Count; i++)
+                    {
+                        if (user[i].kicker == user[0].kicker)
+                        {
+                            wygrani.Add(new Uzytkownik { nazwaUkladu = user[i].nazwaUkladu, fold = user[i].fold, hand = user[i].hand, identyfikatorUzytkownika = user[i].identyfikatorUzytkownika, kicker = user[i].kicker, najUklad = user[i].najUklad, nazwaUzytkownika = user[i].nazwaUzytkownika, numerPokoju = user[i].numerPokoju, wart = user[i].wart });
+                        }
+                    }
+                    if (wygrani.Count > 1)
+                    {
+                        int k1 = wygrani[0].kicker;
+                        for (int i = 0; i < wygrani.Count; i++)
+                        {
+                            wygrani[i].kicker = (int)wygrani[i].najUklad[1].figura;                          
+                        }
+                        wygrani.Sort(sk);
+                        for (int i = 0; i < wygrani.Count; i++)
+                        {
+                            if (wygrani[i].kicker != wygrani[0].kicker)
+                            {
+                                wygrani.RemoveAt(i);
+                                i--;
+                            }
+                        }
+
+                        if (wygrani.Count > 1)
+                        {
+                            int k2 = wygrani[0].kicker;
+                            for (int i = 0; i < wygrani.Count; i++)
+                            {
+                                wygrani[i].kicker = (int)wygrani[i].najUklad[2].figura;
+                            }
+                            wygrani.Sort(sk);
+                            for (int i = 0; i < wygrani.Count; i++)
+                            {
+                                if (wygrani[i].kicker != wygrani[0].kicker)
+                                {
+                                    wygrani.RemoveAt(i);
+                                    i--;
                                 }
                             }
                             return wygrani;
@@ -506,33 +657,7 @@ namespace MainServer
                 }
                 else
                 {
-                    funkcPom(wygrani,user);
-                    /*for (int i = 0; i < user.Count; i++)
-                    {
-                        user[i].kicker = -1;
-                        for (int j = 0; j < user[i].hand.Count; j++)
-                        {
-                            if ((int)user[i].hand[j].figura > user[i].kicker)
-                            {
-                                user[i].kicker = (int)user[i].hand[j].figura;
-                            }
-                        }
-                    }
-                    sortujKick sk = new sortujKick();
-                    user.Sort(sk);
-                    int ile2 = 0;
-                    for (int i = 0; i < user.Count; i++)
-                    {
-                        if (user[i].kicker == user[0].kicker)
-                            ile2++;
-                    }
-                    for (int j = 0; j < ile2; j++)
-                    {
-                        wygrani.Add(new Uzytkownik { nazwaUkladu = user[j].nazwaUkladu, fold = user[j].fold, hand = user[j].hand, identyfikatorUzytkownika = user[j].identyfikatorUzytkownika, kicker = user[j].kicker, najUklad = user[j].najUklad, nazwaUzytkownika = user[j].nazwaUzytkownika, numerPokoju = user[j].numerPokoju, wart = user[j].wart });
-                    }
-
-                    return wygrani;
-                    */
+                    funkcPom(wygrani,user);                   
                 }
             }
 
@@ -564,9 +689,7 @@ namespace MainServer
             for (int j = 0; j < ile2; j++)
             {
                 wygrani.Add(new Uzytkownik { nazwaUkladu = user2[j].nazwaUkladu, fold = user2[j].fold, hand = user2[j].hand, identyfikatorUzytkownika = user2[j].identyfikatorUzytkownika, kicker = user2[j].kicker, najUklad = user2[j].najUklad, nazwaUzytkownika = user2[j].nazwaUzytkownika, numerPokoju = user2[j].numerPokoju, wart = user2[j].wart });
-            }
-
-            //return wygrani;
+            }          
         }
     }    
 }

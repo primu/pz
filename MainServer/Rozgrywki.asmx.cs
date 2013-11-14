@@ -112,14 +112,14 @@ namespace MainServer
                     int tmp = pokoje.Find(delegate(Pokoj c) { return c.numerPokoju == numer; }).UsunUzytkownika(user);
                     switch (tmp)
                     {
-                        case 1://user dodany do pokoju
+                        case 1://user usuniety z pokoju
                             temp.kodKomunikatu = 200;
                             temp.trescKomunikatu = "Opuściłeś pokój.";
                             user.numerPokoju = 0;
                             break;
                         default://user nie jest w pokoju / błąd
                             temp.kodKomunikatu = 403;
-                            temp.trescKomunikatu = "Jesteś już w tym pokoju.";
+                            temp.trescKomunikatu = "Nie jesteś w tym pokoju.";
                             break;
                     }      
                 }
@@ -193,8 +193,11 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat WyslijRuch(string token, Akcja akcja)
+        public Komunikat WyslijRuch(string token, Akcja akcja, Int64 numer)
         {
+            Uzytkownik user = Glowny.ZweryfikujUzytkownika(token);
+
+
             return temp;
         }
 

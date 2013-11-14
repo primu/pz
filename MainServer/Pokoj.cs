@@ -741,10 +741,6 @@ namespace MainServer
         {
             if (user.Exists(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }))
             {
-                return 0;
-            }
-            else
-            {                                
                 if (iloscGraczyObecna == 1)
                     ktoBlind = 0;
                 else
@@ -758,7 +754,11 @@ namespace MainServer
 
                 user.Remove(u);
 
-                return 1;     
+                return 1;                
+            }
+            else
+            {                                
+                return 0;     
             }
                
         }

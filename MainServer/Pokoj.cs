@@ -19,10 +19,14 @@ namespace MainServer
 
 
         //pola GRY
+        public enum Stan : int { STARTING, PREFLOP, FLOP, TURN, RIVER };
+
+        public Stan stan;
         public Int64 ktoBlind = 0;        
         public Int64 stawia;
         public Int64 obecnaStawka;
-        
+        public List<Akcja> akcje = new List<Akcja>();
+
         public List<Uzytkownik> user = new List<Uzytkownik>();
         static Karta.figuraKarty[] figury = { Karta.figuraKarty.K2, Karta.figuraKarty.K3, Karta.figuraKarty.K4, Karta.figuraKarty.K5, Karta.figuraKarty.K6, Karta.figuraKarty.K7, Karta.figuraKarty.K8, Karta.figuraKarty.K9, Karta.figuraKarty.K10, Karta.figuraKarty.KJ, Karta.figuraKarty.KD, Karta.figuraKarty.KK, Karta.figuraKarty.KA, };
         static Karta.kolorKarty[] kolory = { Karta.kolorKarty.pik, Karta.kolorKarty.kier, Karta.kolorKarty.karo, Karta.kolorKarty.trefl };
@@ -45,6 +49,8 @@ namespace MainServer
             }
 
             stawia = ktoBlind;
+            stan = Stan.PREFLOP;
+
             // przypisywanie kart uzytkowniom w celach testowych
             /*  user[0].hand.Add(new Karta { figura = Karta.figuraKarty.KA, kolor = Karta.kolorKarty.kier });
               user[0].hand.Add(new Karta { figura = Karta.figuraKarty.K7, kolor = Karta.kolorKarty.pik });
@@ -716,6 +722,7 @@ namespace MainServer
             duzyBlind = bigBlind;
             DodajUzytkownika(u);
             ktoBlind = u.identyfikatorUzytkownika;
+            stan = Stan.STARTING;
         }
 
         public int DodajUzytkownika(Uzytkownik u)
@@ -779,8 +786,7 @@ namespace MainServer
                 return user[user.Count-1].identyfikatorUzytkownika;
             else
                 return user[i - 1].identyfikatorUzytkownika;
-        }
-
+        }        
 
     }    
 }

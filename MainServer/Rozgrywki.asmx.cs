@@ -195,32 +195,43 @@ namespace MainServer
         [WebMethod]
         public Komunikat WyslijRuch(string token, Akcja akcja, Int64 numer)
         {
+            temp = new Komunikat();
             Uzytkownik user = Glowny.ZweryfikujUzytkownika(token);
+            Pokoj pokoj = pokoje.Find(delegate(Pokoj c) { return c.numerPokoju == numer; });
+
+            switch (pokoj.stan)
+            {
+                case Pokoj.Stan.STARTING:
+                    temp.kodKomunikatu = 404;
+                    temp.trescKomunikatu = "";
+                    break;
+            }
+            
 
 
             return temp;
         }
 
         [WebMethod]
-        public Komunikat Start(string token, Int64 numer)
+        public Komunikat Start(string token, Int64 numer)//inicjalizacja stołu z rozgrywką
         {
             Uzytkownik user = Glowny.ZweryfikujUzytkownika(token);
 
-            int index = pokoje.FindIndex(delegate(Pokoj c) { return c.numerPokoju == numer; });
+            Pokoj pokoj = pokoje.Find(delegate(Pokoj c) { return c.numerPokoju == numer; });
 
-            pokoje[index].user.Find(delegate(Uzytkownik c) { return c.identyfikatorUzytkownika == user.identyfikatorUzytkownika; }).start = true;
+            pokoj.user.Find(delegate(Uzytkownik c) { return c.identyfikatorUzytkownika == user.identyfikatorUzytkownika; }).start = true;
             user.start = true;
 
             int t = 0;
-            foreach (Uzytkownik u in pokoje[index].user)
+            foreach (Uzytkownik u in pokoj.user)
             {
                 t++;
             }
-            if (t == pokoje[index].iloscGraczyMax)
+            if (t == pokoj.iloscGraczyMax)
             {
-                pokoje[index].rozdanie();
+                pokoj.rozdanie();
 
-                foreach (Uzytkownik u in pokoje[index].user)
+                foreach (Uzytkownik u in pokoj.user)
                 {
                     Akcja a = new Akcja();
                     a.identyfikatorGracza = u.identyfikatorUzytkownika;
@@ -228,31 +239,31 @@ namespace MainServer
                     a.stempelCzasowy = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
                     a.numerStolu = numer;
                     a.kartyGracza = u.hand;
-                    a.kartyNaStole = pokoje[index].stol;
+                    a.kartyNaStole = pokoj.stol;
                     a.duzyBlind = false;
                     a.malyBlind = false;
                     a.obecnaStawkaGracza = 0;
 
-                    if (pokoje[index].ktoBlind == u.identyfikatorUzytkownika)
+                    if (pokoj.ktoBlind == u.identyfikatorUzytkownika)
                     {
                         a.duzyBlind = true;
-                        a.obecnaStawkaGracza = pokoje[index].duzyBlind;                    
+                        a.obecnaStawkaGracza = pokoj.duzyBlind;                    
                     }
                     else
-                        if (pokoje[index].KtoPoprzedni(pokoje[index].ktoBlind) == u.identyfikatorUzytkownika)
+                        if (pokoj.KtoPoprzedni(pokoj.ktoBlind) == u.identyfikatorUzytkownika)
                         {
                             a.malyBlind = true;
-                            a.obecnaStawkaGracza = pokoje[index].duzyBlind / 2;
+                            a.obecnaStawkaGracza = pokoj.duzyBlind / 2;
                         }
 
-                    if (pokoje[index].KtoNastepny(pokoje[index].ktoBlind) == u.identyfikatorUzytkownika)
+                    if (pokoj.KtoNastepny(pokoj.ktoBlind) == u.identyfikatorUzytkownika)
                     {
                         a.nastepnyGracz = u.identyfikatorUzytkownika;
                     }
 
-                    a.obecnaStawkaStolu = pokoje[index].duzyBlind;
-                    a.iloscKasyNaStole = (Int64)(pokoje[index].duzyBlind * 1.5);
-                    a.iloscKasyGracza = pokoje[index].stawkaWejsciowa - a.obecnaStawkaGracza;
+                    a.obecnaStawkaStolu = pokoj.duzyBlind;
+                    a.iloscKasyNaStole = (Int64)(pokoj.duzyBlind * 1.5);
+                    a.iloscKasyGracza = pokoj.stawkaWejsciowa - a.obecnaStawkaGracza;
                     
                 }
                 

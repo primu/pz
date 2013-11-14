@@ -714,7 +714,7 @@ namespace MainServer
             graRozpoczeta = false;
             stawkaWejsciowa = stawkaWe;
             duzyBlind = bigBlind;
-            user.Add(u);
+            DodajUzytkownika(u);
             ktoBlind = u.identyfikatorUzytkownika;
         }
 

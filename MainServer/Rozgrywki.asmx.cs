@@ -78,6 +78,7 @@ namespace MainServer
                         case 1://user dodany do pokoju
                             temp.kodKomunikatu = 200;
                             temp.trescKomunikatu = "Dodano Cię do pokoju.";
+                            user.numerPokoju = numer;
                             break;
                         default://pokój pełny / błąd
                             temp.kodKomunikatu = 402;
@@ -107,13 +108,14 @@ namespace MainServer
             {
                 if (token.Length > 30) // ;]
                 {
-                    Uzytkownik user = Glowny.ZweryfikujUzytkownika(token);
+                    Uzytkownik user = Glowny.ZweryfikujUzytkownika(token);                    
                     int tmp = pokoje.Find(delegate(Pokoj c) { return c.numerPokoju == numer; }).UsunUzytkownika(user);
                     switch (tmp)
                     {
                         case 1://user dodany do pokoju
                             temp.kodKomunikatu = 200;
                             temp.trescKomunikatu = "Opuściłeś pokój.";
+                            user.numerPokoju = 0;
                             break;
                         default://user nie jest w pokoju / błąd
                             temp.kodKomunikatu = 403;
@@ -142,11 +144,12 @@ namespace MainServer
             {
                 if (token.Length > 30) // ;]
                 {
-                    Uzytkownik user = new Uzytkownik();
+                    Uzytkownik user = Glowny.ZweryfikujUzytkownika(token);
                     int p = pokoje.Count+1;
+                    user.numerPokoju = p;
                     pokoje.Add(new Pokoj(nazwa, p, maxGraczy, stawkaWe, bigBlind, user));
 
-                    user.numerPokoju = p;
+                    
 
                     temp.kodKomunikatu = 201;
                     temp.trescKomunikatu = "Pokój został utworzony.";
@@ -210,7 +213,7 @@ namespace MainServer
             {
                 t++;
             }
-            if (t == pokoje[index].user.Count)
+            if (t == pokoje[index].iloscGraczyMax)
             {
                 pokoje[index].rozdanie();
 

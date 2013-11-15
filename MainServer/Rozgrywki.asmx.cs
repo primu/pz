@@ -199,16 +199,127 @@ namespace MainServer
             Uzytkownik user = Glowny.ZweryfikujUzytkownika(token);
             Pokoj pokoj = pokoje.Find(delegate(Pokoj c) { return c.numerPokoju == numer; });
 
-            switch (pokoj.stan)
-            {
-                case Pokoj.Stan.STARTING:
-                    temp.kodKomunikatu = 404;
-                    temp.trescKomunikatu = "";
-                    break;
+            if (pokoj.user.Exists(delegate(Uzytkownik c)
+                        { return c.identyfikatorUzytkownika == user.identyfikatorUzytkownika; })
+                && 
+                pokoj.akcje.Last<Akcja>().nastepnyGracz == user.identyfikatorUzytkownika )
+
+            {//jest taki user przy stole i do niego należy obecny ruch
+                akcja.stempelCzasowy = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+                switch (pokoj.stan)
+                {
+                    case Pokoj.Stan.STARTING:
+                        temp.kodKomunikatu = 404;
+                        temp.trescKomunikatu = "Rozgrywka jeszcze się nie toczy na tym stole.";
+                        break;  //starting
+
+                    case Pokoj.Stan.RIVER:  //będzie porównanie
+                        temp.kodKomunikatu = 200;
+                        temp.trescKomunikatu = "OK";
+                        break;  //river
+
+                    default:    //preFlop, Flop, Turn
+
+                        pokoj.akcje.Add(akcja);
+
+                        switch (akcja.nazwaAkcji)
+                        {
+                            case Akcja.nAkcji.FOLD:
+                                user.fold = true;
+
+                                if (akcja.nastepnyGracz == pokoj.stawia)
+                                {//sytuacja ustabilizowana/spasowana/koniec licytacji
+                                    Akcja akSys = new Akcja();
+                                    akSys = akcja;
+                                    akSys.nazwaAkcji = Akcja.nAkcji.SYSTEM;
+                                    akSys.stempelCzasowy = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+
+                                    if (pokoj.user.Count<Uzytkownik>(delegate(Uzytkownik c) { return c.fold == true; }) == pokoj.user.Count - 1)
+                                    {//user wygrał licytację, inni fold'owali
+
+                                        akSys.iloscKasyGracza = akcja.iloscKasyGracza + akcja.iloscKasyNaStole;
+                                        akSys.iloscKasyNaStole = 0;
+                                        akSys.obecnaStawkaGracza = 0;
+                                        akSys.obecnaStawkaStolu = 0;
+                                        akSys.kartyGracza = akcja.kartyGracza;
+                                        akSys.kartyNaStole = akcja.kartyNaStole;
+
+                                        //dla nowego rozdania
+                                        pokoj.ktoBlind = pokoj.KtoNastepny(pokoj.ktoBlind);
+                                        pokoj.duzyBlind = pokoj.duzyBlind * 2;
+                                        akSys.nastepnyGracz = pokoj.KtoNastepny(pokoj.ktoBlind);
+                                    }
+                                    else
+                                    {//przynajmniej dwóch userów w licytacji
+                                        akSys.identyfikatorGracza = 0;
+                                        akSys.kartyGracza = null;
+
+                                        switch (pokoj.stan)
+                                        {
+                                            case Pokoj.Stan.PREFLOP:
+                                                pokoj.stan = Pokoj.Stan.FLOP;
+                                                akSys.nastepnyGracz = pokoj.KtoPoprzedni(pokoj.ktoBlind);
+                                                for (int i = 0; i < pokoj.user.Count; i++)
+                                                {
+                                                    if (!pokoj.user.Find(delegate(Uzytkownik c) { return c.identyfikatorUzytkownika == akSys.nastepnyGracz; }).fold)
+                                                        break;
+                                                    else
+                                                        akSys.nastepnyGracz = pokoj.KtoNastepny(akSys.nastepnyGracz);
+                                                }
+                                                 
+
+                                                pokoj.losujNaStol(3);
+                                                
+                                                break;
+
+                                            case Pokoj.Stan.FLOP:
+                                                pokoj.stan = Pokoj.Stan.TURN;
+                                                pokoj.losujNaStol(1);
+                                                break;
+
+                                            case Pokoj.Stan.TURN:
+                                                pokoj.stan = Pokoj.Stan.RIVER;
+                                                pokoj.losujNaStol(1);
+                                                break;
+                                        }
+
+                                        akSys.kartyNaStole = pokoj.stol;
+                                        
+                                    }
+
+                                    akSys.nazwaAkcji = Akcja.nAkcji.SYSTEM;
+                                }
+
+                                break;  //Fold
+
+                            case Akcja.nAkcji.RISE:
+                                //pokoj.obecnaStawka = akcja.obecnaStawkaGracza;
+                                pokoj.stawia = user.identyfikatorUzytkownika;
+
+                                break;  //Fold
+
+                            case Akcja.nAkcji.CALL:
+
+                                break;  //Call
+
+                            case Akcja.nAkcji.ALLIN:
+                                if (akcja.obecnaStawkaStolu < akcja.obecnaStawkaGracza)
+                                    pokoj.stawia = user.identyfikatorUzytkownika;
+
+                                break;
+                        }
+
+                        temp.kodKomunikatu = 200;
+                        temp.trescKomunikatu = "OK";
+                        break;  //default                  
+                }
+            }
+            else
+            {//nie ma takiego usera przy stole lub nie jego ruch
+                temp.kodKomunikatu = 404;
+                temp.trescKomunikatu = "Nie za szybko, nie twój ruch, albo nawet nie twój stół!!!";
             }
             
-
-
             return temp;
         }
 
@@ -235,7 +346,7 @@ namespace MainServer
                 {
                     Akcja a = new Akcja();
                     a.identyfikatorGracza = u.identyfikatorUzytkownika;
-                    a.nazwaAkcji = "rozdanie kart";
+                    a.nazwaAkcji = Akcja.nAkcji.SYSTEM;
                     a.stempelCzasowy = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
                     a.numerStolu = numer;
                     a.kartyGracza = u.hand;
@@ -264,7 +375,8 @@ namespace MainServer
                     a.obecnaStawkaStolu = pokoj.duzyBlind;
                     a.iloscKasyNaStole = (Int64)(pokoj.duzyBlind * 1.5);
                     a.iloscKasyGracza = pokoj.stawkaWejsciowa - a.obecnaStawkaGracza;
-                    
+
+                    pokoj.akcje.Add(a);
                 }
                 
             }

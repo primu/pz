@@ -213,12 +213,12 @@ namespace MainServer
                         temp.trescKomunikatu = "Rozgrywka jeszcze się nie toczy na tym stole.";
                         break;  //starting
 
-                    case Pokoj.Stan.RIVER:  //będzie porównanie
+                /*    case Pokoj.Stan.RIVER:  //będzie porównanie
                         temp.kodKomunikatu = 200;
                         temp.trescKomunikatu = "OK";
-                        break;  //river
+                        break;  //river */
 
-                    default:    //preFlop, Flop, Turn
+                    default:    //preFlop, Flop, Turn, River
 
                         pokoj.akcje.Add(akcja);
 
@@ -270,7 +270,7 @@ namespace MainServer
 
                                                 pokoj.losujNaStol(3);
                                                 
-                                                break;
+                                                break;//PREFLOP
 
                                             case Pokoj.Stan.FLOP:
                                                 pokoj.stan = Pokoj.Stan.TURN;
@@ -280,6 +280,10 @@ namespace MainServer
                                             case Pokoj.Stan.TURN:
                                                 pokoj.stan = Pokoj.Stan.RIVER;
                                                 pokoj.losujNaStol(1);
+                                                break;
+
+                                            case Pokoj.Stan.RIVER:
+                                                //kto wygra z kilku graczy - porównanie kart
                                                 break;
                                         }
 

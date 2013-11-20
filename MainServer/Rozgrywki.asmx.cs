@@ -24,7 +24,6 @@ namespace MainServer
         //static private Pokoj pok = new Pokoj();
 
     /// <summary>
-    
     /// </summary>
     /// <returns></returns>
 
@@ -169,28 +168,7 @@ namespace MainServer
         }
     
         //Rozgrywka
-        [WebMethod]
-        public List<Akcja> PobierzStanStolu(string token)
-        {
-            /*
-            List<Akcja> lsa = new List<Akcja>();
-            List<Karta> karty = new List<Karta>();
-            karty.Add(new Karta{figura = Karta.figuraKarty.K3,kolor=Karta.kolorKarty.pik});
-            karty.Add(new Karta{figura = Karta.figuraKarty.KK,kolor=Karta.kolorKarty.trefl});
-            lsa.Add(new Akcja { nazwaAkcji = "fold", duzyBlind = true, obecnaStawkaStolu = 350,kartyGracza=karty});
-            lsa.Add(new Akcja { nazwaAkcji = "rise", obecnaStawkaStolu = 650 });
-             * */
-            List<Akcja> a = new List<Akcja>();
-            a.Clear();/*
-            for (int i = 0; i < wiadomosci.Count; i++)
-            {r
-                if (timT < wiadomosci.ElementAt(i).stempelCzasowy)
-                {
-                    wiad.Add(wiadomosci.ElementAt(i));
-                }
-            }*/
-            return a;
-        }
+        
 
         [WebMethod]
         public Komunikat WyslijRuch(string token, Akcja akcja, Int64 numer)
@@ -327,8 +305,10 @@ namespace MainServer
             return temp;
         }
 
+//==============================================================================================================================
+
         [WebMethod]
-        public Komunikat Start(string token, Int64 numer)//inicjalizacja stołu z rozgrywką
+        public Komunikat Start(string token, Int64 numer)//
         {
             Uzytkownik user = Glowny.ZweryfikujUzytkownika(token);
 
@@ -389,10 +369,61 @@ namespace MainServer
             return temp;
         }
 
+        [WebMethod]
+        public Gra PobierzStanStolu(string token)
+        {
+            /*
+            List<Akcja> lsa = new List<Akcja>();
+            List<Karta> karty = new List<Karta>();
+            karty.Add(new Karta{figura = Karta.figuraKarty.K3,kolor=Karta.kolorKarty.pik});
+            karty.Add(new Karta{figura = Karta.figuraKarty.KK,kolor=Karta.kolorKarty.trefl});
+            lsa.Add(new Akcja { nazwaAkcji = "fold", duzyBlind = true, obecnaStawkaStolu = 350,kartyGracza=karty});
+            lsa.Add(new Akcja { nazwaAkcji = "rise", obecnaStawkaStolu = 650 });
+             * */
+            List<Akcja> a = new List<Akcja>();
+            a.Clear();/*
+            for (int i = 0; i < wiadomosci.Count; i++)
+            {r
+                if (timT < wiadomosci.ElementAt(i).stempelCzasowy)
+                {
+                    wiad.Add(wiadomosci.ElementAt(i));
+                }
+            }*/
+            return a;
+        }
+
+        [WebMethod]
+        public List<Karta> PobierzKarty(string token)
+        {
+            return null;
+        }
+
+        [WebMethod]
+        public Komunikat Fold(string token)
+        {
+            return temp;
+        }
+
+        [WebMethod]
+        public Komunikat Call(string token)
+        {
+            return temp;
+        }
+
+        [WebMethod]
+        public Komunikat Rise(string token, Int64 dokladam)
+        {
+            return temp;
+        }
+
+        [WebMethod]
+        public Komunikat AllIn(string token)
+        {
+            return temp;
+        }
 
 
-
-
-
+        // gdy komunikat zwrotny posiada kod np: 213 to klient wie, że musi pobrać jakieś karty (swoje lub na showdown)
+        
     }
 }

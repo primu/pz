@@ -11,6 +11,11 @@ namespace MainServer
         public string nazwaUzytkownika;
         public Int64 numerPokoju;
 
+        public Int64 kasa;
+
+
+
+
         public List<Karta> hand = new List<Karta>();
         public List<Karta> najUklad = new List<Karta>();
         public int kicker;

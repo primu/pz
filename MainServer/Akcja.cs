@@ -12,10 +12,14 @@ namespace MainServer
         public nAkcji nazwaAkcji;
         public Int32 stempelCzasowy;
         public Int64 numerStolu;
-        public List<Karta> kartyGracza;
-        public List<Karta> kartyNaStole;
+        
         public bool malyBlind;
         public bool duzyBlind;
+
+
+
+        public List<Karta> kartyGracza;
+        public List<Karta> kartyNaStole;
 
         public Int64 obecnaStawkaStolu; //na początku duży blind
         public Int64 obecnaStawkaGracza;    //ile dał

@@ -8,13 +8,14 @@ namespace MainServer
     public class Gra
     {
         public enum Stan : int { PREFLOP, FLOP, TURN, RIVER, SHOWDOWN, STARTING };
-
         public List<Gracz> user = new List<Gracz>();
+        public List<Gracz> aktywni = new List<Gracz>();
 
         public Stan stan;   // obecny stan gry
 
         public Int64 ktoBigBlind = 0;   // id gracza, który jest w obecnym rozdaniu na BigBlind
         public Int64 ktoStawia; // id gracza, który stawi
+        public Int64 czyjRuch;  // id gracza, który ma wykonać teraz ruch
         public Int64 najwyzszaStawka;  //ile wynosi najwyższa stawka
         public Int64 pula;  //wartość stołu
 
@@ -54,6 +55,9 @@ namespace MainServer
 
         public bool KoniecRozdania() // gdy wszyscy gracze Fold lub ma być SHOWDOWN 
         {
+            if (user.Count<Gracz>(delegate(Gracz c) { return c.stawia == najwyzszaStawka; }) > 1)
+            { }
+
             return false;
         }
 
@@ -68,6 +72,11 @@ namespace MainServer
 
         public void KoniecRuchu() // działania na końcu akcji gracza (Fold, Rise, Call, AllIn 
         {
+        }
+
+        public void ZakonczenieRozdania() // akcja na zakończenie rozdania, przydzielenie zwyciestwa w rozdaniu 
+        {
+
         }
     
 //================================================================================================================================

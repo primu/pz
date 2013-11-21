@@ -279,7 +279,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public List<Wiadomosc> PobierzWiadomosci(string token, Int32 timT)
+        public List<Wiadomosc> PobierzWiadomosci(string token, Int32 timT)//
         {
             List<Wiadomosc> wiad = new List<Wiadomosc>();
             wiad.Clear();

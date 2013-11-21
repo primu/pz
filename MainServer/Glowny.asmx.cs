@@ -104,8 +104,9 @@ namespace MainServer
             return kom;
         }
         [WebMethod]
-        public Komunikat Zaloguj(string nazwa, string haslo)
+        public byte[] Zaloguj(string nazwa, string haslo)
         {
+            byte[] token = null;
             Komunikat kom = new Komunikat();
             if (!Baza.CzyIstniejeUzytkownik(nazwa))
             {
@@ -119,20 +120,21 @@ namespace MainServer
                 }
                 else
                 {
-                    string temp = Baza.CzyZalogowany(nazwa);
+                    byte[] temp = Baza.CzyZalogowany(nazwa);
                     if (temp == null)
                     {
-                        kom = Baza.Zaloguj(nazwa);
+                        token = Baza.Zaloguj(nazwa);
                     }
                     else
                     {
-                        kom.trescKomunikatu = temp;
-                        Baza.PrzedluzToken(temp);
+                        Baza.Wyloguj(temp);
+                        //Baza.PrzedluzToken(temp);
+                        token = Baza.Zaloguj(nazwa);
                     }
                 }
             }
 
-            return kom;
+            return token;
         }
         //[WebMethod]
         //public Komunikat Zaloguj(string nazwa, string haslo)
@@ -180,22 +182,19 @@ namespace MainServer
         //}
 
         [WebMethod]
-        public Komunikat Wyloguj(string token)
+        public Komunikat Wyloguj(byte[] token)
         {
             Komunikat kom = new Komunikat();
-            if(Baza.CzyPoprawnyToken(token))
-                if (Baza.CzyPoprawny(token))
-                {
-                    kom = Baza.Wyloguj(token);
+            //if(Baza.CzyPoprawnyToken(token))
+            if (Baza.CzyPoprawny(token))
+            {
+                kom = Baza.Wyloguj(token);
                 
-                }
-                else
-                {
-                    kom.trescKomunikatu = "BLAD";
-                }
+            }
             else
+            {
                 kom.trescKomunikatu = "BLAD";
-
+            }
             return kom;
         }
 
@@ -358,7 +357,7 @@ namespace MainServer
             timer = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             wiadomosc.stempelCzasowy = timer;
             wiadomosci.Add(wiadomosc);
-            Baza.DodajWiadomosc(wiadomosc);
+            //Baza.DodajWiadomosc(wiadomosc);
             temp.trescKomunikatu = "wyslano";
             return temp;
         }

@@ -5,10 +5,10 @@ using System.Web;
 
 namespace MainServer
 {
-    public class Gra
+    public class Gra : Pokoj
     {
         public enum Stan : int { PREFLOP, FLOP, TURN, RIVER, SHOWDOWN, STARTING };
-        public List<Gracz> user = new List<Gracz>();
+       
         public List<Gracz> aktywni = new List<Gracz>();
 
         public Stan stan;   // obecny stan gry
@@ -31,7 +31,10 @@ namespace MainServer
         //Zwrócmy uwagę na metody!!!
         public bool WszyscyGotowi() // gdy wszyscy gracze gotowi -> true 
         {
-            return false;
+            if (aktywni.Count<Gracz>(delegate(Gracz c) { return c.stan == Gracz.StanGracza.Ready; }) == aktywni.Count)
+                return true;
+            else
+                return false;
         }        
 
         public void StartujGre() // inicjalizuje rozgrywkę, jeśli się ona jeszcze nie rozpoczęła 

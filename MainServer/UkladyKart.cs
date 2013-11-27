@@ -8,7 +8,8 @@ namespace MainServer
     public class UkladyKart
     { 
       static Karta.figuraKarty[] figury = { Karta.figuraKarty.K2, Karta.figuraKarty.K3, Karta.figuraKarty.K4, Karta.figuraKarty.K5, Karta.figuraKarty.K6, Karta.figuraKarty.K7, Karta.figuraKarty.K8, Karta.figuraKarty.K9, Karta.figuraKarty.K10, Karta.figuraKarty.KJ, Karta.figuraKarty.KD, Karta.figuraKarty.KK, Karta.figuraKarty.KA, };
-      static Karta.kolorKarty[] kolory = { Karta.kolorKarty.pik, Karta.kolorKarty.kier, Karta.kolorKarty.karo, Karta.kolorKarty.trefl };   
+      static Karta.kolorKarty[] kolory = { Karta.kolorKarty.pik, Karta.kolorKarty.kier, Karta.kolorKarty.karo, Karta.kolorKarty.trefl };
+    // public List<Karta> najlepszyUklad = new List<Karta>();
       List<Karta> temp = new List<Karta>();
       List<Karta> rekaIstol = new List<Karta>();
       int p = -1;
@@ -39,6 +40,10 @@ namespace MainServer
           return czyWysokaKarta(najlepszyUklad);
       }
 
+      public List<Karta> reka(List<Karta> najlepszyUklad)
+      {
+          return najlepszyUklad;
+      }
       public void generujKarty(List<Karta> stol, List<Karta> hand)
       {       
           rekaIstol.Clear();
@@ -49,7 +54,14 @@ namespace MainServer
           for (int i = 0; i < stol.Count; i++)
           {
               rekaIstol.Add(new Karta { figura = stol[i].figura, kolor = stol[i].kolor });
-          }      
+          }
+         /* rekaIstol.Add(new Karta { figura = Karta.figuraKarty.K9, kolor = Karta.kolorKarty.trefl });
+          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.KK, kolor = Karta.kolorKarty.trefl });
+          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.KD, kolor = Karta.kolorKarty.trefl });
+          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.KJ, kolor = Karta.kolorKarty.trefl });
+          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.K10, kolor = Karta.kolorKarty.trefl });
+          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.KK, kolor = Karta.kolorKarty.pik });
+          rekaIstol.Add(new Karta { figura = Karta.figuraKarty.KK, kolor = Karta.kolorKarty.karo });*/
       }
 
 

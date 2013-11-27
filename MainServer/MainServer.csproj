@@ -61,7 +61,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Akcja.cs" />
+    <Compile Include="Gra.cs" />
+    <Compile Include="Gracz.cs" />
     <Compile Include="Karta.cs" />
+    <Compile Include="Key.cs" />
     <Compile Include="Komunikat.cs" />
     <Compile Include="Pokoj.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -75,6 +78,7 @@
     </Compile>
     <Compile Include="sortujKick.cs" />
     <Compile Include="sortujWart.cs" />
+    <Compile Include="StatycznaBaza.cs" />
     <Compile Include="UkladyKart.cs" />
     <Compile Include="Uzytkownik.cs" />
     <Compile Include="Glowny.asmx.cs">

@@ -41,11 +41,15 @@ namespace MainServer
         [WebMethod]
         public List<Pokoj> PobierzPokoje(string token)
         {
-            return pokoje;
+            //return pokoje;
+            List<Pokoj> a = new List<Pokoj>();
+            a.Add(Baza.ZwrocPokoj(token));
+            return a; 
         }
         [WebMethod]
-        public Komunikat DolaczDoStolu(string token, Uzytkownik uzytkownik)
+        public Komunikat DolaczDoStolu()//string token, Uzytkownik uzytkownik)
         {
+            Baza.DodajPokoj("ok", 100, 23, 8);
             return temp;
         }
         [WebMethod]

@@ -47,9 +47,11 @@ namespace MainServer
             return a; 
         }
         [WebMethod]
-        public Komunikat DolaczDoStolu()//string token, Uzytkownik uzytkownik)
+        public Komunikat DolaczDoStolu(string nazwa)//string token, Uzytkownik uzytkownik)
         {
-            Baza.DodajPokoj("ok", 100, 23, 8);
+
+            Baza.ZmienPokoj(Baza.CzyZalogowany(nazwa), Baza.DodajPokoj("ok3", 100, 23, 8));
+            Baza.ZmienPokoj(Baza.CzyZalogowany(nazwa), Baza.DodajPokoj("asd5", 1040, 233, 48));
             return temp;
         }
         [WebMethod]

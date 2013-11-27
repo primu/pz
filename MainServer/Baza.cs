@@ -211,8 +211,43 @@ namespace MainServer
             }
             return istnieje;
         }
-        static public void DodajPokoj(string nazwa, int stawkaWejsciowa, int bigBlind, int iloscGraczy)
+
+        static public bool CzyIstniejPokoj(int id)
         {
+            bool istnieje = false;
+            using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
+            {
+                connection.Open();
+                SqlCommand cmd = new SqlCommand("select count(*) from Pokoj where IdPokoju = @Id", connection);
+
+                SqlParameter param = new SqlParameter();
+                param.ParameterName = "@Id";
+                param.Value = id;
+
+                cmd.Parameters.Add(param);
+
+                int count = (int)cmd.ExecuteScalar();
+                if (count > 0)
+                {
+                    istnieje = true;
+                }
+                else
+                {
+                    istnieje = false;
+                }
+                connection.Close();
+            }
+            return istnieje;
+        }
+
+        static public long DodajPokoj(string nazwa, int stawkaWejsciowa, int bigBlind, int iloscGraczy)
+        {
+            
+            if (CzyIstniejPokoj(nazwa))
+            {
+                return -1; // jeśli taki pokój istnieje!!!!
+            }
+            int id = 0;
             using (SqlConnection Polaczenie = new SqlConnection(CiagPolaczenia))
             {
                 var sqlQuery = "select * from Pokoj";
@@ -231,6 +266,7 @@ namespace MainServer
                 new SqlCommandBuilder(dataAdapter);
                 dataAdapter.Update(dataSet.Tables["Pokoj"]);
             }
+            return ZwrocPokoj(nazwa).numerPokoju;
         }
         static public Pokoj ZwrocPokoj(string nazwa)
         {
@@ -252,7 +288,28 @@ namespace MainServer
             }
             return pokoj;
         }
-        static public void ZmienPokoj(byte[] token, int nowyPokoj)
+        static public Pokoj ZwrocPokoj(int id)
+        {
+            Pokoj pokoj = null;
+            using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
+            {
+                connection.Open();
+                var sqlQuery = "select * from Pokoj where IdPokoju = @Id";
+
+                SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, connection);
+                DataSet dataSet = new DataSet();
+                dataAdapter.SelectCommand.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+                dataAdapter.Fill(dataSet, "Pokoj");
+                if (dataSet.Tables["Pokoj"].Rows.Count > 0)
+                {
+                    DataRow wiersz = dataSet.Tables["Pokoj"].Rows[0];
+                    pokoj = new Pokoj { numerPokoju = (int)wiersz["IdPokoju"], duzyBlind = (int)wiersz["BigBlind"], stawkaWejsciowa = (int)wiersz["StawkaWejsciowa"], iloscGraczyMax = (int)wiersz["IloscGraczy"] };
+                }
+            }
+            return pokoj;
+        }
+
+        static public void ZmienPokoj(byte[] token, long nowyPokoj)
         {
             using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
             {
@@ -268,10 +325,11 @@ namespace MainServer
 
                 cmd.Parameters.Add(id);
                 cmd.Parameters.Add(tok);
-                // Co z pokojami które mają taką samą nazwe?
+                cmd.ExecuteNonQuery();
                 connection.Close();
             }
         }
+
         static public List<Pokoj> ZwrocPokoje() //trzeba to przemyśleć, żeby z automatu nie można było tworzyć userów
         {
             List<Pokoj> listaPokoi = new List<Pokoj>();

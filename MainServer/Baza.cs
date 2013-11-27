@@ -247,7 +247,7 @@ namespace MainServer
             {
                 return -1; // jeśli taki pokój istnieje!!!!
             }
-            int id = 0;
+            //int id = 0;
             using (SqlConnection Polaczenie = new SqlConnection(CiagPolaczenia))
             {
                 var sqlQuery = "select * from Pokoj";
@@ -286,6 +286,17 @@ namespace MainServer
                     pokoj = new Pokoj { numerPokoju = (int)wiersz["IdPokoju"], duzyBlind = (int)wiersz["BigBlind"], stawkaWejsciowa = (int)wiersz["StawkaWejsciowa"], iloscGraczyMax = (int)wiersz["IloscGraczy"] };
                 }
             }
+            if (pokoj != null)
+            {
+                List<Uzytkownik> uzytkownicy = ZwrocUzytkownikowZalogowanych();
+                foreach (Uzytkownik u in uzytkownicy)
+                {
+                    if (u.numerPokoju == pokoj.numerPokoju)
+                    {
+                        pokoj.user.Add(u);
+                    }
+                }
+            }
             return pokoj;
         }
         static public Pokoj ZwrocPokoj(int id)
@@ -304,6 +315,17 @@ namespace MainServer
                 {
                     DataRow wiersz = dataSet.Tables["Pokoj"].Rows[0];
                     pokoj = new Pokoj { numerPokoju = (int)wiersz["IdPokoju"], duzyBlind = (int)wiersz["BigBlind"], stawkaWejsciowa = (int)wiersz["StawkaWejsciowa"], iloscGraczyMax = (int)wiersz["IloscGraczy"] };
+                }
+            }
+            if (pokoj != null)
+            {
+                List<Uzytkownik> uzytkownicy = ZwrocUzytkownikowZalogowanych();
+                foreach (Uzytkownik u in uzytkownicy)
+                {
+                    if (u.numerPokoju == pokoj.numerPokoju)
+                    {
+                        pokoj.user.Add(u);
+                    }
                 }
             }
             return pokoj;
@@ -347,6 +369,17 @@ namespace MainServer
                     foreach (DataRow wiersz in dataSet.Tables["Pokoj"].Rows)
                     {
                         listaPokoi.Add(new Pokoj { numerPokoju=(int)wiersz["IdPokoju"],duzyBlind=(int)wiersz["BigBlind"],stawkaWejsciowa=(int)wiersz["StawkaWejsciowa"],iloscGraczyMax=(int)wiersz["IloscGraczy"]});
+                    }
+                }
+            }
+            List<Uzytkownik> uzytkownicy = ZwrocUzytkownikowZalogowanych();
+            foreach (Pokoj pokoj in listaPokoi)
+            {
+                foreach (Uzytkownik u in uzytkownicy)
+                {
+                    if (u.numerPokoju == pokoj.numerPokoju)
+                    {
+                        pokoj.user.Add(u);
                     }
                 }
             }

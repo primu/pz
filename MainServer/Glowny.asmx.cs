@@ -143,6 +143,7 @@ namespace MainServer
                         //Baza.PrzedluzToken(temp);
                         token = Baza.Zaloguj(nazwa);
                     }
+                    uzytkownicy = Baza.ZwrocUzytkownikowZalogowanych();
                 }
             }
 
@@ -157,7 +158,7 @@ namespace MainServer
             if (Baza.CzyPoprawny(token))
             {
                 kom = Baza.Wyloguj(token);
-                
+                uzytkownicy = Baza.ZwrocUzytkownikowZalogowanych();
             }
             else
             {
@@ -331,38 +332,10 @@ namespace MainServer
         }
 
         //serwer-serwer
-        [webmethod]
-        public Uzytkownik pobierzUzytkownika()
+        [WebMethod]
+        static public Uzytkownik PobierzUzytkownika(Int64 id)
         {
-            try
-            {
-                key klucz = klucze.find(delegate(key u) { return u.token == token; });
-                if (klucz == null)
-                {//token nie istnieje
-                    temp.kodkomunikatu = 404;
-                    temp.tresckomunikatu = "token nie został znaleziony!!!";
-                }
-                else
-                {//token istnieje
-                    uzytkownik user = uzytkownicy.find(delegate(uzytkownik u) { return u.nazwauzytkownika == nazwa; });
-                    if (user == null)
-                    {//nazwa użytkownika nie istnieje
-                        temp.kodkomunikatu = 404;
-                        temp.tresckomunikatu = "nazwa użytkownika nie została znaleziona!!!";
-                    }
-                    else
-                    {//nazwa użytkownika istnieje
-                        temp.kodkomunikatu = 201;
-                        temp.tresckomunikatu = "nazwa użytkownika została znaleziona!!!";
-                    }
-                }
-            }
-            catch (exception e)
-            {
-                temp.kodkomunikatu = 666;
-                temp.tresckomunikatu = "fatal error!!!\n" + e.tostring();
-            }
-            return temp;
+            return uzytkownicy.Find(delegate(Uzytkownik c) { return c.identyfikatorUzytkownika == id; });
         }
         //co dalej?
 

@@ -30,11 +30,53 @@ namespace MainServer
         {
             return gra;
         }
+
+        public int DodajUzytkownika(Uzytkownik u)
+        {
+            if (iloscGraczyObecna < iloscGraczyMax)
+            {
+                if (user.Exists(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }))
+                {
+                    return 0;
+                }
+                else
+                {
+                    user.Add(u);                    
+                }
+            }
+            return -1;
+        }
+
         public void utworz()
         {
-            gra = new Gra(duzyBlind, user,stawkaWejsciowa);
+            gra = new Gra(duzyBlind, user, stawkaWejsciowa);
         }
-        //pola GRY
+
+        /*     public int UsunUzytkownika(Uzytkownik u)
+             {
+                 if (user.Exists(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }))
+                 {
+                     if (iloscGraczyObecna == 1)
+                         ktoBlind = 0;
+                     else
+                     {
+                         int i = user.FindIndex(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; });
+                         if (i == user.Count - 1)
+                             ktoBlind = user[1].identyfikatorUzytkownika;
+                         else
+                             ktoBlind = user[i + 1].identyfikatorUzytkownika;
+                     }
+
+                     user.Remove(u);
+
+                     return 1;
+                 }
+                 else
+                 {
+                     return 0;
+                 }
+
+             }*/
 
 
     }

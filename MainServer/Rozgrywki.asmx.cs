@@ -22,13 +22,13 @@ namespace MainServer
         static private List<Akcja> akcje = new List<Akcja>();
         static UkladyKart ukl = new UkladyKart();
         
-        [WebMethod]
-       // public int gen()
+        //[WebMethod]
+        //public int gen()
         //{         
-           // ukl.generujKarty();
+        //    ukl.generujKarty();
 
 
-            //return ukl.czyPara(); 
+        //    return ukl.czyPara(); 
         //}
 
 
@@ -46,14 +46,47 @@ namespace MainServer
             a.Add(Baza.ZwrocPokoj(token));
             return a; 
         }
-        [WebMethod]
-        public Komunikat DolaczDoStolu(byte[] token, string id)
-        {
 
-            Baza.ZmienPokoj(token, id);
-            Baza.ZmienPokoj(Baza.CzyZalogowany(token), Baza.DodajPokoj("asd5", 1040, 233, 48));
+        [WebMethod]
+        public Komunikat DolaczDoStolu(byte[] token, Int64 id)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                Baza.ZmienPokoj(token, id);
+                pokoje.Find(delegate(Pokoj c) { return c.numerPokoju == id && c.iloscGraczyMax >= c.user.Count; }).DodajUzytkownika(Glowny.PobierzUzytkownika(Baza.ZwrocIdUzytkownika(token)));
+                //Baza.ZmienPokoj(Baza.CzyZalogowany(token), Baza.DodajPokoj("asd5", 1040, 233, 48));
+                temp.kodKomunikatu = 200;
+                temp.trescKomunikatu = "ok";
+            }
+            else
+            {
+                temp.kodKomunikatu = 404;
+                temp.trescKomunikatu = "not_ok";
+            }
             return temp;
         }
+
+        [WebMethod]
+        public Komunikat UtworzStol(byte[] token, string nazwa, int stawka, int blind, int ilosc)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                Baza.DodajPokoj(nazwa, stawka, blind, ilosc);
+
+                pokoje.Add(Baza.ZwrocPokoj(nazwa));
+
+                temp.kodKomunikatu = 200;
+                temp.trescKomunikatu = "ok";
+            }
+            else
+            {
+                temp.kodKomunikatu = 404;
+                temp.trescKomunikatu = "not_ok";
+            }
+
+            return temp;
+        }
+
         [WebMethod]
         public Komunikat OpuscStol(string token, Uzytkownik uzytkownik)
         {
@@ -62,105 +95,53 @@ namespace MainServer
     
         //Rozgrywka
         [WebMethod]
-        public List<Akcja> PobierzStanStolu(string token)
+        public List<Karta> PobierzKarty(byte[] token)//do spr 
         {
-            List<Akcja> lsa = new List<Akcja>();
-            List<Karta> karty = new List<Karta>();
-            karty.Add(new Karta{figura = Karta.figuraKarty.K3,kolor=Karta.kolorKarty.pik});
-            karty.Add(new Karta{figura = Karta.figuraKarty.KK,kolor=Karta.kolorKarty.trefl});
-            lsa.Add(new Akcja { nazwaAkcji = "fold", duzyBlind = true, obecnaStawkaStolu = 350,kartyGracza=karty});
-            lsa.Add(new Akcja { nazwaAkcji = "rise", obecnaStawkaStolu = 650 });
-            return lsa;
-        }
-        [WebMethod]
-        public Komunikat WyslijRuch(string token, Akcja akcja)
-        {
-            return temp;
-        }
-        //===========
-        [WebMethod]
-        public Komunikat Start(string token, Int64 numer)//
-        {
-            Uzytkownik user = Glowny.ZweryfikujUzytkownika(token);
-
-            Pokoj pokoj = pokoje.Find(delegate(Pokoj c) { return c.numerPokoju == numer; });
-
-            pokoj.user.Find(delegate(Uzytkownik c) { return c.identyfikatorUzytkownika == user.identyfikatorUzytkownika; }).start = true;
-            user.start = true;
-
-            int t = 0;
-            foreach (Uzytkownik u in pokoj.user)
+            if (Baza.CzyPoprawny(token))
             {
-                t++;
-            }
-            if (t == pokoj.iloscGraczyMax)
-            {
-                pokoj.rozdanie();
-
-                foreach (Uzytkownik u in pokoj.user)
-                {
-                    Akcja a = new Akcja();
-                    a.identyfikatorGracza = u.identyfikatorUzytkownika;
-                    a.nazwaAkcji = Akcja.nAkcji.SYSTEM;
-                    a.stempelCzasowy = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-                    a.numerStolu = numer;
-                    a.kartyGracza = u.hand;
-                    a.kartyNaStole = pokoj.stol;
-                    a.duzyBlind = false;
-                    a.malyBlind = false;
-                    a.obecnaStawkaGracza = 0;
-
-                    if (pokoj.ktoBlind == u.identyfikatorUzytkownika)
-                    {
-                        a.duzyBlind = true;
-                        a.obecnaStawkaGracza = pokoj.duzyBlind;
-                    }
-                    else
-                        if (pokoj.KtoPoprzedni(pokoj.ktoBlind) == u.identyfikatorUzytkownika)
-                        {
-                            a.malyBlind = true;
-                            a.obecnaStawkaGracza = pokoj.duzyBlind / 2;
-                        }
-
-                    if (pokoj.KtoNastepny(pokoj.ktoBlind) == u.identyfikatorUzytkownika)
-                    {
-                        a.nastepnyGracz = u.identyfikatorUzytkownika;
-                    }
-
-                    a.obecnaStawkaStolu = pokoj.duzyBlind;
-                    a.iloscKasyNaStole = (Int64)(pokoj.duzyBlind * 1.5);
-                    a.iloscKasyGracza = pokoj.stawkaWejsciowa - a.obecnaStawkaGracza;
-
-                    pokoj.akcje.Add(a);
-                }
-
-            }
-            temp.kodKomunikatu = 200;
-            temp.trescKomunikatu = "ok";
-            return temp;
-        }
-
-        [WebMethod]
-        public Gra PobierzStanStolu(byte[] token)//prawie OK
-        {
-            if (Baza.CzyPoprawny(token) == true)//chyba ok
-            {
+                int id = Baza.ZwrocIdUzytkownika(token);
                 foreach (Pokoj p in pokoje)
                 {
-                    if (p.jestWpokoju(Baza.ZwrocIdUzytkownika(token)) == true)
+                    if (p.jestWpokoju(id))
                     {
-                        return p.zwrocGre();
+                        //List<Karta> t = p.zwrocGre().aktywni.Find(delegate(Gracz c){return c.identyfikatorUzytkownika==id;}).hand;
+                        return p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }).hand;
+                    }
+                    else
+                    {
+                        return null;
                     }
                 }
+
             }
+            else
+            {
+                return null;
+            }
+
             return null;
         }
 
         [WebMethod]
-        public List<Karta> PobierzKarty(byte[] token)
+        public Komunikat Start(byte[] token)//do skończenia 
         {
-            return null;
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                Pokoj pokoj = pokoje.Find(delegate(Pokoj c) { return c.jestWpokoju(id) == true; });
+                if (pokoj.user.Count == pokoj.iloscGraczyMax)
+                {
+                    pokoj.utworz();
+                }
+
+                temp.kodKomunikatu = 200;
+                temp.trescKomunikatu = "ok";
+
+            }                       
+            return temp;
+            
         }
+
 
         [WebMethod]
         public Komunikat Fold(byte[] token)
@@ -169,7 +150,7 @@ namespace MainServer
             {
                 int id = Baza.ZwrocIdUzytkownika(token);
                 foreach (Pokoj p in pokoje)
-                {                 
+                {
                     if (p.jestWpokoju(id) == true)
                     {
                         if (p.zwrocGre().czyjRuch == id)
@@ -186,7 +167,7 @@ namespace MainServer
                         {
                             temp.kodKomunikatu = 404;
                         }
-                            
+
                     }
                 }
             }
@@ -266,17 +247,6 @@ namespace MainServer
             return temp;
         }
 
-        //[WebMethod]
-        //public Komunikat Rise(string token, Int64 dokladam)
-        //{
-        //    return temp;
-        //}
-
-        //[WebMethod]
-        //public Komunikat AllIn(string token)
-        //{
-        //    return temp;
-        //}
 
     }
 }

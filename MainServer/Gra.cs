@@ -8,7 +8,7 @@ namespace MainServer
     public class Gra
     {
         public enum Stan : int { PREFLOP, FLOP, TURN, RIVER, SHOWDOWN, STARTING };
-        public List<Gracz> user ;//= new List<Gracz>();
+        public List<Gracz> user;//= new List<Gracz>();
         public List<Gracz> aktywni = new List<Gracz>();
 
         public Stan stan;   // obecny stan gry
@@ -35,9 +35,9 @@ namespace MainServer
             foreach (Uzytkownik q in u)
             {
                 q.kasiora -= stawkaWejsciowa;
-                user.Add();//coś z tym trzeaba zrobic!
+                //user.Add();//coś z tym trzeaba zrobic!
             }
-            
+
 
         }
         //Zwrócmy uwagę na metody!!!
@@ -997,50 +997,50 @@ namespace MainServer
              stan = Stan.STARTING;
          } */
 
-        public int DodajUzytkownika(Uzytkownik u)
-        {
-            if (iloscGraczyObecna < iloscGraczyMax)
-            {
-                if (user.Exists(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }))
-                {
-                    return 0;
-                }
-                else
-                {
-                    user.Add(u);
-                    if (iloscGraczyObecna == 1)
-                        ktoBlind = u.identyfikatorUzytkownika;
-                    return 1;
-                }
-            }
-            return -1;
-        }
+        //public int DodajUzytkownika(Uzytkownik u)
+        //{
+        //    if (iloscGraczyObecna < iloscGraczyMax)
+        //    {
+        //        if (user.Exists(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }))
+        //        {
+        //            return 0;
+        //        }
+        //        else
+        //        {
+        //            user.Add(u);
+        //            if (iloscGraczyObecna == 1)
+        //                ktoBlind = u.identyfikatorUzytkownika;
+        //            return 1;
+        //        }
+        //    }
+        //    return -1;
+        //}
 
-        public int UsunUzytkownika(Uzytkownik u)
-        {
-            if (user.Exists(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }))
-            {
-                if (iloscGraczyObecna == 1)
-                    ktoBlind = 0;
-                else
-                {
-                    int i = user.FindIndex(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; });
-                    if (i == user.Count - 1)
-                        ktoBlind = user[1].identyfikatorUzytkownika;
-                    else
-                        ktoBlind = user[i + 1].identyfikatorUzytkownika;
-                }
+        //public int UsunUzytkownika(Uzytkownik u)
+        //{
+        //    if (user.Exists(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }))
+        //    {
+        //        if (iloscGraczyObecna == 1)
+        //            ktoBlind = 0;
+        //        else
+        //        {
+        //            int i = user.FindIndex(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; });
+        //            if (i == user.Count - 1)
+        //                ktoBlind = user[1].identyfikatorUzytkownika;
+        //            else
+        //                ktoBlind = user[i + 1].identyfikatorUzytkownika;
+        //        }
 
-                user.Remove(u);
+        //        user.Remove(u);
 
-                return 1;
-            }
-            else
-            {
-                return 0;
-            }
+        //        return 1;
+        //    }
+        //    else
+        //    {
+        //        return 0;
+        //    }
 
-        }
+        //}
 
         public Int64 KtoNastepny(List<Gracz> lista, Int64 numer)
         {

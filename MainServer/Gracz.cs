@@ -10,8 +10,11 @@ namespace MainServer
         private List<Karta> hand = new List<Karta>();
         private List<Karta> najUklad = new List<Karta>();
         private int kicker;
+        //dodajemy w przypadku kiedy user wygrał
+        public List<Karta> handWin = new List<Karta>();
+        public List<Karta> najUkladWin = new List<Karta>();
 
-        public enum StanGracza : int { Fold, Call, Rise, AllIn, BigBlind, SmallBlind, Dealer, Ready, NotReady};
+        public enum StanGracza : int { Fold, Call, Rise, AllIn, BigBlind, SmallBlind, Dealer, Ready, NotReady, Winner};
         
         public StanGracza stan;
         public int wart;//wartość układu kart

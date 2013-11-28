@@ -8,7 +8,7 @@ namespace MainServer
     public class Gra
     {
         public enum Stan : int { PREFLOP, FLOP, TURN, RIVER, SHOWDOWN, STARTING };
-        static  public List<Gracz> user = new List<Gracz>();
+        public List<Gracz> user = new List<Gracz>();
         public List<Gracz> aktywni = new List<Gracz>();
 
         public Stan stan;   // obecny stan gry
@@ -44,29 +44,58 @@ namespace MainServer
 
         public void StartujGre() // inicjalizuje rozgrywkę, jeśli się ona jeszcze nie rozpoczęła 
         {
-            ktoBigBlind = aktywni.ElementAt(0).identyfikatorUzytkownika;
-            najwyzszaStawka=
-            //if (aktywni.Count<Gracz>(delegate(Gracz c) { return c.stan == Gracz.StanGracza.Ready; }) == aktywni.Count)
-                
+            ktoBigBlind = aktywni.ElementAt(0).identyfikatorUzytkownika;    
         }
-
+        //ok
         public void NoweRozdanie() // 
         {
-
+            pula=0;
+            foreach (Gracz a in aktywni)
+            {
+                a.stawia = 0;
+            }
             stan = Stan.PREFLOP;
             generujKarty();
             rozdanie();
-            aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoPoprzedni(ktoBigBlind); }).stan = Gracz.StanGracza.Dealer;
+            //dealer
+            aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoPoprzedni(aktywni,ktoBigBlind); }).stan = Gracz.StanGracza.Dealer;
+           //smallBlind
             Gracz x = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == ktoBigBlind; });
             if (x.kasa > najwyzszaStawka / 2)
             {
                 x.stan = Gracz.StanGracza.SmallBlind;
                 x.kasa -= najwyzszaStawka / 2;
+                x.stawia = najwyzszaStawka / 2;
+                pula+=najwyzszaStawka/2;
+            }
+            else
+            {
+                x.stan = Gracz.StanGracza.AllIn;
+                pula+=x.kasa;
+                x.stawia = x.kasa;
+                x.kasa = 0;
+            }
+            //BigBlind
+            Gracz b = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoNastepny(aktywni,ktoBigBlind); });
+            if (b.kasa > najwyzszaStawka)
+            {
+                b.stan = Gracz.StanGracza.BigBlind;
+                b.kasa -= najwyzszaStawka ;
+                b.stawia = najwyzszaStawka;
+                pula += najwyzszaStawka;
+            }
+            else
+            {
+                b.stan = Gracz.StanGracza.AllIn;
+                pula += b.kasa;
+                b.stawia = b.kasa;
+                b.kasa = 0;
             }
 
-            ktoBigBlind =KtoNastepny(ktoBigBlind);
-            ktoStawia = ktoBigBlind;
-            czyjRuch = KtoNastepny(ktoStawia);
+            //ustawienia poczatkowe
+            ktoBigBlind = b.identyfikatorUzytkownika;//KtoNastepny(ktoBigBlind);
+            ktoStawia = KtoNastepny(aktywni,ktoBigBlind);
+            czyjRuch = ktoStawia;
         }
 
         public void ZakonczGre() // 
@@ -77,7 +106,7 @@ namespace MainServer
         //ok
         public bool KoniecLicytacji() // gdy wszyscy Call do jednej stawki lub Fold 
         {
-            if (ktoStawia == KtoNastepny(czyjRuch))
+            if (ktoStawia == KtoNastepny(aktywni,czyjRuch))
             {
                 return true;
             }
@@ -87,9 +116,9 @@ namespace MainServer
         //ok
         public bool KoniecRozdania() // gdy wszyscy gracze Fold lub ma być SHOWDOWN 
         {
-            if (aktywni.Count<Gracz>(delegate(Gracz c) { return c.stawia == najwyzszaStawka; }) > 1)
+            if (aktywni.Count<Gracz>(delegate(Gracz c) { return c.stawia == najwyzszaStawka || c.stan == Gracz.StanGracza.AllIn; }) > 1)
             {
-                if (stan == Stan.SHOWDOWN)
+                if (stan == Stan.RIVER)
                 {
                     return true;
                 }
@@ -99,10 +128,12 @@ namespace MainServer
             else
                 return true;
         }
-
+        //powiedzmy ok
         public void NastepnyStan() // przejście do następnego stanu gry 
         {
-
+            stan++;
+            ktoStawia = KtoPoprzedni(aktywni, KtoPoprzedni(aktywni, ktoBigBlind));
+            czyjRuch = ktoStawia;
         }
         //ok
         public bool KoniecGry() // czy w grze został tylko jeden gracz 
@@ -112,6 +143,20 @@ namespace MainServer
             else
                 return false;
         }
+        private void aktualizujListeUser()
+        {
+            foreach (Gracz c in user)
+            {
+                int ko = aktywni.FindIndex(delegate(Gracz a) { return a.identyfikatorUzytkownika == c.identyfikatorUzytkownika; });
+                if (ko >= 0)
+                {
+                    c.stan = aktywni[ko].stan;
+                    c.kasa = aktywni[ko].kasa;
+                    c.stawia = aktywni[ko].stawia;
+                }
+
+            }
+        }
         //ok
         public void KoniecRuchu() // działania na końcu akcji gracza (Fold, Rise, Call, AllIn 
         {
@@ -119,11 +164,11 @@ namespace MainServer
             {
                 if (KoniecRozdania() == true)
                 {
+                    ZakonczenieRozdania();
                     if (KoniecGry() == true)
                         ZakonczGre();
                     else
-                    {
-                        ZakonczenieRozdania();
+                    {                     
                         NoweRozdanie();
                     }
                 }
@@ -131,12 +176,29 @@ namespace MainServer
                     NastepnyStan();
             }
             else
-                czyjRuch = KtoNastepny(czyjRuch);
+                czyjRuch = KtoNastepny(aktywni, czyjRuch);
         }
-        
+        //chyba ok
         public void ZakonczenieRozdania() // akcja na zakończenie rozdania, przydzielenie zwyciestwa w rozdaniu 
         {
-
+            List<Gracz> listaWin = new List<Gracz>(ktoWygral());
+            foreach (Gracz a in aktywni)
+            {
+                if (listaWin.FindIndex(delegate(Gracz c) { return c.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }) >= 0)
+                {
+                    a.handWin = a.hand;
+                    a.najUkladWin = a.najUklad;
+                    a.kasa += pula / listaWin.Count;
+                    a.stan = Gracz.StanGracza.Winner;
+                }
+                else
+                {
+                    if (a.kasa == 0)
+                        aktywni.Remove(a);
+                }
+            }
+            stan = Stan.SHOWDOWN;
+            
         }
     
 //================================================================================================================================
@@ -285,7 +347,7 @@ namespace MainServer
                     wygrani.Clear();
                     for (int i = 0; i < ile; i++)
                     {
-                        wygrani.Add(new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
+                        wygrani.Add(aktywni[i]);//new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
                     }
                     return wygrani;
                 }
@@ -329,7 +391,7 @@ namespace MainServer
             }
 
             if (ile == 1)
-                wygrani.Add(new Gracz { nazwaUkladu = aktywni[0].nazwaUkladu, fold = aktywni[0].fold, hand = aktywni[0].hand, identyfikatorUzytkownika = aktywni[0].identyfikatorUzytkownika, kicker = aktywni[0].kicker, najUklad = aktywni[0].najUklad, nazwaUzytkownika = aktywni[0].nazwaUzytkownika, numerPokoju = aktywni[0].numerPokoju, wart = aktywni[0].wart });
+                wygrani.Add(aktywni[0]);//new Gracz { nazwaUkladu = aktywni[0].nazwaUkladu, fold = aktywni[0].fold, hand = aktywni[0].hand, identyfikatorUzytkownika = aktywni[0].identyfikatorUzytkownika, kicker = aktywni[0].kicker, najUklad = aktywni[0].najUklad, nazwaUzytkownika = aktywni[0].nazwaUzytkownika, numerPokoju = aktywni[0].numerPokoju, wart = aktywni[0].wart });
             return wygrani;
         }
 
@@ -351,7 +413,7 @@ namespace MainServer
             for (int j = 0; j < user2.Count; j++)
             {
                 if (user2[j].kicker == user2[0].kicker)
-                    wygrani.Add(new Gracz { nazwaUkladu = user2[j].nazwaUkladu, fold = user2[j].fold, hand = user2[j].hand, identyfikatorUzytkownika = user2[j].identyfikatorUzytkownika, kicker = user2[j].kicker, najUklad = user2[j].najUklad, nazwaUzytkownika = user2[j].nazwaUzytkownika, numerPokoju = user2[j].numerPokoju, wart = user2[j].wart });
+                    wygrani.Add(user2[j]);//new Gracz { nazwaUkladu = user2[j].nazwaUkladu, fold = user2[j].fold, hand = user2[j].hand, identyfikatorUzytkownika = user2[j].identyfikatorUzytkownika, kicker = user2[j].kicker, najUklad = user2[j].najUklad, nazwaUzytkownika = user2[j].nazwaUzytkownika, numerPokoju = user2[j].numerPokoju, wart = user2[j].wart });
             }
             if (wygrani.Count > 1)
             {
@@ -396,7 +458,7 @@ namespace MainServer
             }
             for (int i = 0; i < ile; i++)
             {
-                temp.Add(new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
+                temp.Add(aktywni[i]);//new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
 
             }
             sortujKick sk = new sortujKick();
@@ -409,7 +471,7 @@ namespace MainServer
             }
             for (int i = 0; i < ile2; i++)
             {
-                wygrani.Add(new Gracz { nazwaUkladu = temp[i].nazwaUkladu, fold = temp[i].fold, hand = temp[i].hand, identyfikatorUzytkownika = temp[i].identyfikatorUzytkownika, kicker = temp[i].kicker, najUklad = temp[i].najUklad, nazwaUzytkownika = temp[i].nazwaUzytkownika, numerPokoju = temp[i].numerPokoju, wart = temp[i].wart });
+                wygrani.Add(temp[i]);//new Gracz { nazwaUkladu = temp[i].nazwaUkladu, fold = temp[i].fold, hand = temp[i].hand, identyfikatorUzytkownika = temp[i].identyfikatorUzytkownika, kicker = temp[i].kicker, najUklad = temp[i].najUklad, nazwaUzytkownika = temp[i].nazwaUzytkownika, numerPokoju = temp[i].numerPokoju, wart = temp[i].wart });
             }
             if (wygrani.Count > 1)
             {
@@ -435,7 +497,7 @@ namespace MainServer
             {
                 if ((int)aktywni[i].najUklad[0].figura == wartK)
                 {
-                    wygrani.Add(new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
+                    wygrani.Add(aktywni[i]);//new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
                 }
             }
             if (wygrani.Count > 1)
@@ -478,7 +540,7 @@ namespace MainServer
             {
                 if (aktywni[i].kicker == aktywni[0].kicker)
                 {
-                    wygrani.Add(new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
+                    wygrani.Add(aktywni[i]);//new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
                 }
             }
             if (wygrani.Count > 1)
@@ -526,7 +588,7 @@ namespace MainServer
             {
                 if (aktywni[i].kicker == aktywni[0].kicker)
                 {
-                    wygrani.Add(new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
+                    wygrani.Add(aktywni[i]);//new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
                 }
             }
             int temp = wygrani[0].kicker;
@@ -583,14 +645,14 @@ namespace MainServer
             }
             for (int i = 0; i < ile; i++)
             {
-                temp.Add(new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
+                temp.Add(aktywni[i]);//new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
             }
             sortujKick sk = new sortujKick();
             temp.Sort(sk);
             for (int i = 0; i < temp.Count; i++)
             {
                 if (temp[i].kicker == temp[0].kicker)
-                    wygrani.Add(new Gracz { nazwaUkladu = temp[i].nazwaUkladu, fold = temp[i].fold, hand = temp[i].hand, identyfikatorUzytkownika = temp[i].identyfikatorUzytkownika, kicker = temp[i].kicker, najUklad = temp[i].najUklad, nazwaUzytkownika = temp[i].nazwaUzytkownika, numerPokoju = temp[i].numerPokoju, wart = temp[i].wart });
+                    wygrani.Add(temp[i]);//new Gracz { nazwaUkladu = temp[i].nazwaUkladu, fold = temp[i].fold, hand = temp[i].hand, identyfikatorUzytkownika = temp[i].identyfikatorUzytkownika, kicker = temp[i].kicker, najUklad = temp[i].najUklad, nazwaUzytkownika = temp[i].nazwaUzytkownika, numerPokoju = temp[i].numerPokoju, wart = temp[i].wart });
             }
             if (wygrani.Count > 1)
             {
@@ -615,7 +677,7 @@ namespace MainServer
             {
                 if ((int)aktywni[i].najUklad[0].figura == wartK)
                 {
-                    wygrani.Add(new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
+                    wygrani.Add(aktywni[i]);//new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
                 }
             }
             if (wygrani.Count > 1)
@@ -694,7 +756,7 @@ namespace MainServer
             {
                 if (aktywni[i].kicker == aktywni[0].kicker)
                 {
-                    wygrani.Add(new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
+                    wygrani.Add(aktywni[i]);//new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
                 }
             }
             if (wygrani.Count > 1)//szukanie drugiej najwyzszej pary
@@ -759,7 +821,7 @@ namespace MainServer
             {
                 if (aktywni[i].kicker == aktywni[0].kicker)
                 {
-                    wygrani.Add(new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
+                    wygrani.Add(aktywni[i]);//(new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
                 }
             }
             if (wygrani.Count > 1)
@@ -862,7 +924,7 @@ namespace MainServer
             {
                 if (aktywni[i].kicker == aktywni[0].kicker)
                 {
-                    wygrani.Add(new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
+                    wygrani.Add(aktywni[i]);//new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
                 }
             }
             if (wygrani.Count > 1)
@@ -972,22 +1034,22 @@ namespace MainServer
                
         }
 
-        public Int64 KtoNastepny(Int64 numer)
+        public Int64 KtoNastepny(List<Gracz> lista, Int64 numer)
         {
-            int i = user.FindIndex(delegate(Gracz a) { return numer == a.identyfikatorUzytkownika; });
-            if (i == user.Count - 1)
-                return user[1].identyfikatorUzytkownika;
+            int i = lista.FindIndex(delegate(Gracz a) { return numer == a.identyfikatorUzytkownika; });
+            if (i == lista.Count - 1)
+                return lista[1].identyfikatorUzytkownika;
             else
-                return user[i + 1].identyfikatorUzytkownika;            
+                return lista[i + 1].identyfikatorUzytkownika;            
         }
 
-        public Int64 KtoPoprzedni(Int64 numer)
+        public Int64 KtoPoprzedni(List<Gracz> lista, Int64 numer)
         {
-            int i = user.FindIndex(delegate(Gracz a) { return numer == a.identyfikatorUzytkownika; });
+            int i = lista.FindIndex(delegate(Gracz a) { return numer == a.identyfikatorUzytkownika; });
             if (i == 0)
-                return user[user.Count-1].identyfikatorUzytkownika;
+                return lista[lista.Count-1].identyfikatorUzytkownika;
             else
-                return user[i - 1].identyfikatorUzytkownika;
+                return lista[i - 1].identyfikatorUzytkownika;
         }        
         
 //================================================================================================================================

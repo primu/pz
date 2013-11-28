@@ -23,6 +23,21 @@ namespace MainServer
         //Nowe
         public Int64 kasa;  //ile pieniędzy pozostało w obecnej grze
         public Int64 stawia;    //ile pieniędzi stawia w obecnym rozdaniu
-        //public bool start = false;
+        
+        
+        public Gracz(Uzytkownik u, Int64 stawka)
+        {
+            identyfikatorUzytkownika = u.identyfikatorUzytkownika;
+            nazwaUzytkownika = u.nazwaUzytkownika;
+            u.kasiora -= stawka;
+            kasiora = u.kasiora;
+            kasa = stawka;
+            stawia = 0;
+            stan = StanGracza.Ready;
+            wart = 0;
+            nazwaUkladu = "";
+        }
+        
+        
     }
 }

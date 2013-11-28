@@ -17,11 +17,11 @@ namespace MainServer
         public Int64 duzyBlind; // około 1/100 stawki wejściowej
         public List<Uzytkownik> user = new List<Uzytkownik>();
 
-        private Gra gra ;//= new Gra(duzyBlind);
+        private Gra gra;//= new Gra(duzyBlind);
 
         public bool jestWpokoju(Int64 idUsera)//sprawdza czy uzytkownik znajduje sie wpokoju, zwraca nr pokoju
         {
-            if (user.FindIndex(delegate(Uzytkownik c) { return c.identyfikatorUzytkownika == idUsera; })>0)
+            if (user.FindIndex(delegate(Uzytkownik c) { return c.identyfikatorUzytkownika == idUsera; }) > 0)
                 return true;
             else
                 return false;
@@ -30,8 +30,12 @@ namespace MainServer
         {
             return gra;
         }
+        public void utworz()
+        {
+            gra = new Gra(duzyBlind, user,stawkaWejsciowa);
+        }
         //pola GRY
-        
 
-    }    
+
+    }
 }

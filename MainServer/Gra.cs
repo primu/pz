@@ -8,7 +8,7 @@ namespace MainServer
     public class Gra
     {
         public enum Stan : int { PREFLOP, FLOP, TURN, RIVER, SHOWDOWN, STARTING };
-        public List<Gracz> user = new List<Gracz>();
+        public List<Gracz> user ;//= new List<Gracz>();
         public List<Gracz> aktywni = new List<Gracz>();
 
         public Stan stan;   // obecny stan gry
@@ -22,16 +22,23 @@ namespace MainServer
         //public List<Akcja> akcje = new List<Akcja>();
         public List<Karta> stol = new List<Karta>();
 
-        
+
         private static Karta.figuraKarty[] figury = { Karta.figuraKarty.K2, Karta.figuraKarty.K3, Karta.figuraKarty.K4, Karta.figuraKarty.K5, Karta.figuraKarty.K6, Karta.figuraKarty.K7, Karta.figuraKarty.K8, Karta.figuraKarty.K9, Karta.figuraKarty.K10, Karta.figuraKarty.KJ, Karta.figuraKarty.KD, Karta.figuraKarty.KK, Karta.figuraKarty.KA, };
-        private static Karta.kolorKarty[] kolory = { Karta.kolorKarty.pik, Karta.kolorKarty.kier, Karta.kolorKarty.karo, Karta.kolorKarty.trefl };        
+        private static Karta.kolorKarty[] kolory = { Karta.kolorKarty.pik, Karta.kolorKarty.kier, Karta.kolorKarty.karo, Karta.kolorKarty.trefl };
         private List<Karta> talia = new List<Karta>();
         private UkladyKart ukl = new UkladyKart();
 
-        public Gra(Int64 duzyBlind)
+        public Gra(Int64 duzyBlind, List<Uzytkownik> u, Int64 stawkaWejsciowa)
         {
             this.duzyBlind = duzyBlind;
             najwyzszaStawka = duzyBlind;
+            foreach (Uzytkownik q in u)
+            {
+                q.kasiora -= stawkaWejsciowa;
+                user.Add();//coś z tym trzeaba zrobic!
+            }
+            
+
         }
         //Zwrócmy uwagę na metody!!!
         public bool WszyscyGotowi() // gdy wszyscy gracze gotowi -> true 
@@ -40,16 +47,16 @@ namespace MainServer
                 return true;
             else
                 return false;
-        }        
+        }
 
         public void StartujGre() // inicjalizuje rozgrywkę, jeśli się ona jeszcze nie rozpoczęła 
         {
-            ktoBigBlind = aktywni.ElementAt(0).identyfikatorUzytkownika;    
+            ktoBigBlind = aktywni.ElementAt(0).identyfikatorUzytkownika;
         }
         //ok
         public void NoweRozdanie() // 
         {
-            pula=0;
+            pula = 0;
             foreach (Gracz a in aktywni)
             {
                 a.stawia = 0;
@@ -58,29 +65,29 @@ namespace MainServer
             generujKarty();
             rozdanie();
             //dealer
-            aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoPoprzedni(aktywni,ktoBigBlind); }).stan = Gracz.StanGracza.Dealer;
-           //smallBlind
+            aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoPoprzedni(aktywni, ktoBigBlind); }).stan = Gracz.StanGracza.Dealer;
+            //smallBlind
             Gracz x = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == ktoBigBlind; });
             if (x.kasa > najwyzszaStawka / 2)
             {
                 x.stan = Gracz.StanGracza.SmallBlind;
                 x.kasa -= najwyzszaStawka / 2;
                 x.stawia = najwyzszaStawka / 2;
-                pula+=najwyzszaStawka/2;
+                pula += najwyzszaStawka / 2;
             }
             else
             {
                 x.stan = Gracz.StanGracza.AllIn;
-                pula+=x.kasa;
+                pula += x.kasa;
                 x.stawia = x.kasa;
                 x.kasa = 0;
             }
             //BigBlind
-            Gracz b = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoNastepny(aktywni,ktoBigBlind); });
+            Gracz b = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoNastepny(aktywni, ktoBigBlind); });
             if (b.kasa > najwyzszaStawka)
             {
                 b.stan = Gracz.StanGracza.BigBlind;
-                b.kasa -= najwyzszaStawka ;
+                b.kasa -= najwyzszaStawka;
                 b.stawia = najwyzszaStawka;
                 pula += najwyzszaStawka;
             }
@@ -94,19 +101,19 @@ namespace MainServer
 
             //ustawienia poczatkowe
             ktoBigBlind = b.identyfikatorUzytkownika;//KtoNastepny(ktoBigBlind);
-            ktoStawia = KtoNastepny(aktywni,ktoBigBlind);
+            ktoStawia = KtoNastepny(aktywni, ktoBigBlind);
             czyjRuch = ktoStawia;
         }
 
         public void ZakonczGre() // 
         {
-            
+
         }
 
         //ok
         public bool KoniecLicytacji() // gdy wszyscy Call do jednej stawki lub Fold 
         {
-            if (ktoStawia == KtoNastepny(aktywni,czyjRuch))
+            if (ktoStawia == KtoNastepny(aktywni, czyjRuch))
             {
                 return true;
             }
@@ -143,7 +150,8 @@ namespace MainServer
             else
                 return false;
         }
-        private void aktualizujListeUser()
+
+        public void aktualizujListeUser()
         {
             foreach (Gracz c in user)
             {
@@ -168,7 +176,7 @@ namespace MainServer
                     if (KoniecGry() == true)
                         ZakonczGre();
                     else
-                    {                     
+                    {
                         NoweRozdanie();
                     }
                 }
@@ -198,11 +206,11 @@ namespace MainServer
                 }
             }
             stan = Stan.SHOWDOWN;
-            
+
         }
-    
-//================================================================================================================================
-       
+
+        //================================================================================================================================
+
         public void rozdanie()
         {
             aktywni = new List<Gracz>(user); ;
@@ -972,22 +980,22 @@ namespace MainServer
             return wygrani;
         }
 
-//=======================================================================================================================================
-       /* public Pokoj() { }
+        //=======================================================================================================================================
+        /* public Pokoj() { }
 
-        public Pokoj(string nazwa, int nr, int maxGraczy, Int64 stawkaWe, Int64 bigBlind, Uzytkownik u)
-        {
-            nazwaPokoju = nazwa;
-            numerPokoju = nr;
-            iloscGraczyMax = maxGraczy;
-            iloscGraczyObecna = 1;
-            graRozpoczeta = false;
-            stawkaWejsciowa = stawkaWe;
-            duzyBlind = bigBlind;
-            DodajUzytkownika(u);
-            ktoBlind = u.identyfikatorUzytkownika;
-            stan = Stan.STARTING;
-        } */
+         public Pokoj(string nazwa, int nr, int maxGraczy, Int64 stawkaWe, Int64 bigBlind, Uzytkownik u)
+         {
+             nazwaPokoju = nazwa;
+             numerPokoju = nr;
+             iloscGraczyMax = maxGraczy;
+             iloscGraczyObecna = 1;
+             graRozpoczeta = false;
+             stawkaWejsciowa = stawkaWe;
+             duzyBlind = bigBlind;
+             DodajUzytkownika(u);
+             ktoBlind = u.identyfikatorUzytkownika;
+             stan = Stan.STARTING;
+         } */
 
         public int DodajUzytkownika(Uzytkownik u)
         {
@@ -1025,13 +1033,13 @@ namespace MainServer
 
                 user.Remove(u);
 
-                return 1;                
+                return 1;
             }
             else
-            {                                
-                return 0;     
+            {
+                return 0;
             }
-               
+
         }
 
         public Int64 KtoNastepny(List<Gracz> lista, Int64 numer)
@@ -1040,21 +1048,21 @@ namespace MainServer
             if (i == lista.Count - 1)
                 return lista[1].identyfikatorUzytkownika;
             else
-                return lista[i + 1].identyfikatorUzytkownika;            
+                return lista[i + 1].identyfikatorUzytkownika;
         }
 
         public Int64 KtoPoprzedni(List<Gracz> lista, Int64 numer)
         {
             int i = lista.FindIndex(delegate(Gracz a) { return numer == a.identyfikatorUzytkownika; });
             if (i == 0)
-                return lista[lista.Count-1].identyfikatorUzytkownika;
+                return lista[lista.Count - 1].identyfikatorUzytkownika;
             else
                 return lista[i - 1].identyfikatorUzytkownika;
-        }        
-        
-//================================================================================================================================
+        }
 
-        
+        //================================================================================================================================
+
+
 
 
 

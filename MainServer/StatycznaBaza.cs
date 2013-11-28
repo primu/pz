@@ -33,9 +33,6 @@ namespace MainServer
         public StatycznaBaza()
         {
             AddUser(1, "user1", "user1", "user1@mail.com");
-            AddUser(2, "a", "a", "a");
-            AddUser(3, "b", "b", "b");
-            AddUser(4, "c", "c", "c");
         }
 
     }

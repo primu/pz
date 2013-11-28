@@ -11,7 +11,7 @@ namespace MainServer
         public string nazwaUzytkownika;
         public Int64 numerPokoju;
 
-        public Int64 kasa;
+        public Int64 kasiora;
 
 
 
@@ -34,6 +34,6 @@ namespace MainServer
             nazwaUzytkownika = nazwa;
             numerPokoju = numer;
         }
-      
+
     }
 }

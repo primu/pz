@@ -14,8 +14,8 @@ namespace MainServer
         public List<Karta> handWin = new List<Karta>();
         public List<Karta> najUkladWin = new List<Karta>();
 
-        public enum StanGracza : int { Fold, Call, Rise, AllIn, BigBlind, SmallBlind, Dealer, Ready, NotReady, Winner};
-        
+        public enum StanGracza : int { Fold, Call, Rise, AllIn, BigBlind, SmallBlind, Dealer, Ready, NotReady, Winner };
+
         public StanGracza stan;
         public int wart;//wartość układu kart
         public string nazwaUkladu;

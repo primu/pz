@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Akcja.cs" />
+    <Compile Include="Baza.cs" />
     <Compile Include="Gra.cs" />
     <Compile Include="Gracz.cs" />
     <Compile Include="Karta.cs" />

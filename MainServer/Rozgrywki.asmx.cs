@@ -39,7 +39,7 @@ namespace MainServer
         }
         //Pokoje
         [WebMethod]
-        public List<Pokoj> PobierzPokoje(string token)
+        public List<Pokoj> PobierzPokoje(byte[] token)
         {
             if (Baza.CzyPoprawny(token))
             {

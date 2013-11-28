@@ -35,6 +35,7 @@ namespace MainServer
             foreach (Uzytkownik q in u)
             {
                 q.kasiora -= stawkaWejsciowa;
+                user.Add(new Gracz(q,stawkaWejsciowa));
                 //user.Add();//coś z tym trzeaba zrobic!
             }
 

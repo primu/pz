@@ -29,8 +29,7 @@ namespace MainServer
         {
             identyfikatorUzytkownika = u.identyfikatorUzytkownika;
             nazwaUzytkownika = u.nazwaUzytkownika;
-            u.kasiora -= stawka;
-            kasiora = u.kasiora;
+            kasiora = u.kasiora - stawka;
             kasa = stawka;
             stawia = 0;
             stan = StanGracza.Ready;

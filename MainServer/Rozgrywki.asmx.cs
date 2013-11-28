@@ -41,10 +41,15 @@ namespace MainServer
         [WebMethod]
         public List<Pokoj> PobierzPokoje(string token)
         {
+            if (Baza.CzyPoprawny(token))
+            {
+                return pokoje;
+            }
+            return null;
             //return pokoje;
-            List<Pokoj> a = new List<Pokoj>();
-            a.Add(Baza.ZwrocPokoj(token));
-            return a; 
+            //List<Pokoj> a = new List<Pokoj>();
+            //a.Add(Baza.ZwrocPokoj(token));
+            //return a; 
         }
 
         [WebMethod]

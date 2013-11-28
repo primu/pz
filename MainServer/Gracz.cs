@@ -9,7 +9,7 @@ namespace MainServer
     {
         private List<Karta> hand = new List<Karta>();
         private List<Karta> najUklad = new List<Karta>();
-        private int kicker;
+        public int kicker;
         //dodajemy w przypadku kiedy user wygrał
         public List<Karta> handWin = new List<Karta>();
         public List<Karta> najUkladWin = new List<Karta>();
@@ -24,5 +24,27 @@ namespace MainServer
         public Int64 kasa;  //ile pieniędzy pozostało w obecnej grze
         public Int64 stawia;    //ile pieniędzi stawia w obecnym rozdaniu
         //public bool start = false;
+         public Gracz(Uzytkownik u, Int64 stawka)
+         {
+             identyfikatorUzytkownika = u.identyfikatorUzytkownika;
+             nazwaUzytkownika = u.nazwaUzytkownika;
+             u.kasiora -= stawka;
+             kasiora = u.kasiora;
+             kasa = stawka;
+             stawia = 0;
+             stan = StanGracza.Ready;
+             wart = 0;
+             nazwaUkladu = "";
+         }
+
+         public List<Karta> zwroc_hand()
+         {
+             return hand;
+         }
+         public List<Karta> zwroc_najUklad()
+         {
+             return najUklad;
+         }
+
     }
 }

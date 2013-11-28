@@ -35,7 +35,7 @@ namespace MainServer
             foreach (Uzytkownik q in u)
             {
                 q.kasiora -= stawkaWejsciowa;
-                //user.Add();//coś z tym trzeaba zrobic!
+                user.Add(new Gracz(q,stawkaWejsciowa));
             }
 
 
@@ -139,6 +139,20 @@ namespace MainServer
         public void NastepnyStan() // przejście do następnego stanu gry 
         {
             stan++;
+            switch (stan)
+            {
+                case Stan.FLOP:
+                    losujNaStol(3);
+                    break;
+
+                case Stan.TURN:
+                    losujNaStol(1);
+                    break;
+
+                case Stan.RIVER:
+                    losujNaStol(1);
+                    break;
+            }
             ktoStawia = KtoPoprzedni(aktywni, KtoPoprzedni(aktywni, ktoBigBlind));
             czyjRuch = ktoStawia;
         }
@@ -194,8 +208,8 @@ namespace MainServer
             {
                 if (listaWin.FindIndex(delegate(Gracz c) { return c.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }) >= 0)
                 {
-                    a.handWin = a.hand;
-                    a.najUkladWin = a.najUklad;
+                    a.handWin = a.zwroc_hand();
+                    a.najUkladWin = a.zwroc_najUklad();
                     a.kasa += pula / listaWin.Count;
                     a.stan = Gracz.StanGracza.Winner;
                 }
@@ -221,7 +235,7 @@ namespace MainServer
                 for (int j = 0; j < aktywni.Count; j++)
                 {
                     int a = rnd1.Next(0, talia.Count);
-                    aktywni[j].hand.Add(new Karta { figura = talia[a].figura, kolor = talia[a].kolor });
+                    aktywni[j].zwroc_hand().Add(new Karta { figura = talia[a].figura, kolor = talia[a].kolor });
                     talia.RemoveAt(a);
                 }
             }
@@ -281,13 +295,13 @@ namespace MainServer
             }
         }
 
-        private void pobierzUserow()
-        {
-            user.Clear();
-            user.Add(new Gracz { identyfikatorUzytkownika = 1, nazwaUzytkownika = "Pawel", numerPokoju = 1 });
-            user.Add(new Gracz { identyfikatorUzytkownika = 2, nazwaUzytkownika = "Bogdan", numerPokoju = 1 });
-            user.Add(new Gracz { identyfikatorUzytkownika = 3, nazwaUzytkownika = "Primu", numerPokoju = 1 });
-        }
+        //private void pobierzUserow()
+        //{
+        //    user.Clear();
+        //    user.Add(new Gracz { identyfikatorUzytkownika = 1, nazwaUzytkownika = "Pawel", numerPokoju = 1 });
+        //    user.Add(new Gracz { identyfikatorUzytkownika = 2, nazwaUzytkownika = "Bogdan", numerPokoju = 1 });
+        //    user.Add(new Gracz { identyfikatorUzytkownika = 3, nazwaUzytkownika = "Primu", numerPokoju = 1 });
+        //}
 
         public string gen()
         {
@@ -329,7 +343,7 @@ namespace MainServer
             List<Gracz> wygrani = new List<Gracz>();
             for (int i = 0; i < aktywni.Count; i++)
             {
-                aktywni[i].nazwaUkladu = ukl.co_mamy(stol, aktywni[i].hand, aktywni[i].najUklad);
+                aktywni[i].nazwaUkladu = ukl.co_mamy(stol, aktywni[i].zwroc_hand(), aktywni[i].zwroc_najUklad());
                 if (aktywni[i].fold == false)
                 {
                     aktywni[i].wart = wartosci(aktywni[i].nazwaUkladu);
@@ -408,11 +422,11 @@ namespace MainServer
             for (int i = 0; i < user2.Count; i++)
             {
                 user2[i].kicker = -1;
-                for (int j = 0; j < user2[i].hand.Count; j++)
+                for (int j = 0; j < user2[i].zwroc_hand().Count; j++)
                 {
-                    if ((int)user2[i].hand[j].figura > user2[i].kicker)
+                    if ((int)user2[i].zwroc_hand()[j].figura > user2[i].kicker)
                     {
-                        user2[i].kicker = (int)user2[i].hand[j].figura;
+                        user2[i].kicker = (int)user2[i].zwroc_hand()[j].figura;
                     }
                 }
             }
@@ -429,11 +443,11 @@ namespace MainServer
                 for (int i = 0; i < wygrani.Count; i++)
                 {
                     wygrani[i].kicker = -1;
-                    for (int j = 0; j < wygrani[i].hand.Count; j++)
+                    for (int j = 0; j < wygrani[i].zwroc_hand().Count; j++)
                     {
-                        if (((int)wygrani[i].hand[j].figura > wygrani[i].kicker) && ((int)wygrani[i].hand[j].figura != k1))
+                        if (((int)wygrani[i].zwroc_hand()[j].figura > wygrani[i].kicker) && ((int)wygrani[i].zwroc_hand()[j].figura != k1))
                         {
-                            wygrani[i].kicker = (int)wygrani[i].hand[j].figura;
+                            wygrani[i].kicker = (int)wygrani[i].zwroc_hand()[j].figura;
                         }
                     }
                 }
@@ -456,11 +470,11 @@ namespace MainServer
             for (int i = 0; i < ile; i++)
             {
                 aktywni[i].kicker = -1;
-                for (int j = 0; j < aktywni[i].najUklad.Count; j++)
+                for (int j = 0; j < aktywni[i].zwroc_najUklad().Count; j++)
                 {
-                    if ((int)aktywni[i].najUklad[j].figura > aktywni[i].kicker)
+                    if ((int)aktywni[i].zwroc_najUklad()[j].figura > aktywni[i].kicker)
                     {
-                        aktywni[i].kicker = (int)aktywni[i].najUklad[j].figura;
+                        aktywni[i].kicker = (int)aktywni[i].zwroc_najUklad()[j].figura;
                     }
                 }
             }
@@ -495,15 +509,15 @@ namespace MainServer
             int wartK = -1;//maksymalna wartość karety
             for (int i = 0; i < ile; i++)
             {
-                if ((int)aktywni[i].najUklad[0].figura > wartK)
+                if ((int)aktywni[i].zwroc_najUklad()[0].figura > wartK)
                 {
-                    wartK = (int)aktywni[i].najUklad[0].figura;
+                    wartK = (int)aktywni[i].zwroc_najUklad()[0].figura;
                 }
             }
 
             for (int i = 0; i < ile; i++)
             {
-                if ((int)aktywni[i].najUklad[0].figura == wartK)
+                if ((int)aktywni[i].zwroc_najUklad()[0].figura == wartK)
                 {
                     wygrani.Add(aktywni[i]);//new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
                 }
@@ -512,7 +526,7 @@ namespace MainServer
             {
                 for (int i = 0; i < wygrani.Count; i++)
                 {
-                    wygrani[i].kicker = (int)wygrani[i].najUklad[4].figura;
+                    wygrani[i].kicker = (int)wygrani[i].zwroc_najUklad()[4].figura;
                 }
                 sortujKick sk = new sortujKick();
                 wygrani.Sort(sk);
@@ -540,7 +554,7 @@ namespace MainServer
             wygrani.Clear();
             for (int i = 0; i < ile; i++)
             {
-                aktywni[i].kicker = (int)aktywni[i].najUklad[0].figura;
+                aktywni[i].kicker = (int)aktywni[i].zwroc_najUklad()[0].figura;
             }
             sortujKick sk = new sortujKick();
             aktywni.Sort(sk);
@@ -555,7 +569,7 @@ namespace MainServer
             {
                 for (int i = 0; i < wygrani.Count; i++)
                 {
-                    wygrani[i].kicker = (int)wygrani[i].najUklad[3].figura;
+                    wygrani[i].kicker = (int)wygrani[i].zwroc_najUklad()[3].figura;
                 }
                 wygrani.Sort(sk);
                 for (int i = 0; i < wygrani.Count; i++)
@@ -582,11 +596,11 @@ namespace MainServer
             for (int i = 0; i < ile; i++)
             {
                 aktywni[i].kicker = -1;
-                for (int j = 0; j < aktywni[i].najUklad.Count; j++)
+                for (int j = 0; j < aktywni[i].zwroc_najUklad().Count; j++)
                 {
-                    if ((int)aktywni[i].najUklad[j].figura > aktywni[i].kicker)
+                    if ((int)aktywni[i].zwroc_najUklad()[j].figura > aktywni[i].kicker)
                     {
-                        aktywni[i].kicker = (int)aktywni[i].najUklad[j].figura;
+                        aktywni[i].kicker = (int)aktywni[i].zwroc_najUklad()[j].figura;
                     }
                 }
             }
@@ -606,11 +620,11 @@ namespace MainServer
                 for (int i = 0; i < wygrani.Count; i++)
                 {
                     wygrani[i].kicker = -1;
-                    for (int j = 0; j < wygrani[i].najUklad.Count; j++)
+                    for (int j = 0; j < wygrani[i].zwroc_najUklad().Count; j++)
                     {
-                        if (((int)wygrani[i].najUklad[j].figura > wygrani[i].kicker) && ((int)wygrani[i].najUklad[j].figura != temp))
+                        if (((int)wygrani[i].zwroc_najUklad()[j].figura > wygrani[i].kicker) && ((int)wygrani[i].zwroc_najUklad()[j].figura != temp))
                         {
-                            wygrani[i].kicker = (int)wygrani[i].najUklad[j].figura;
+                            wygrani[i].kicker = (int)wygrani[i].zwroc_najUklad()[j].figura;
                         }
                     }
                 }
@@ -643,11 +657,11 @@ namespace MainServer
             for (int i = 0; i < ile; i++)
             {
                 aktywni[i].kicker = -1;
-                for (int j = 0; j < aktywni[i].najUklad.Count; j++)
+                for (int j = 0; j < aktywni[i].zwroc_najUklad().Count; j++)
                 {
-                    if ((int)aktywni[i].najUklad[j].figura > aktywni[i].kicker)
+                    if ((int)aktywni[i].zwroc_najUklad()[j].figura > aktywni[i].kicker)
                     {
-                        aktywni[i].kicker = (int)aktywni[i].najUklad[j].figura;
+                        aktywni[i].kicker = (int)aktywni[i].zwroc_najUklad()[j].figura;
                     }
                 }
             }
@@ -676,14 +690,14 @@ namespace MainServer
             int wartK = -1;//maksymalna wartość trojki
             for (int i = 0; i < ile; i++)
             {
-                if ((int)aktywni[i].najUklad[0].figura > wartK)
+                if ((int)aktywni[i].zwroc_najUklad()[0].figura > wartK)
                 {
-                    wartK = (int)aktywni[i].najUklad[0].figura;
+                    wartK = (int)aktywni[i].zwroc_najUklad()[0].figura;
                 }
             }
             for (int i = 0; i < ile; i++)
             {
-                if ((int)aktywni[i].najUklad[0].figura == wartK)
+                if ((int)aktywni[i].zwroc_najUklad()[0].figura == wartK)
                 {
                     wygrani.Add(aktywni[i]);//new Gracz { nazwaUkladu = aktywni[i].nazwaUkladu, fold = aktywni[i].fold, hand = aktywni[i].hand, identyfikatorUzytkownika = aktywni[i].identyfikatorUzytkownika, kicker = aktywni[i].kicker, najUklad = aktywni[i].najUklad, nazwaUzytkownika = aktywni[i].nazwaUzytkownika, numerPokoju = aktywni[i].numerPokoju, wart = aktywni[i].wart });
                 }
@@ -693,11 +707,11 @@ namespace MainServer
                 for (int j = 0; j < wygrani.Count; j++)
                 {
                     wygrani[j].kicker = -1;
-                    for (int i = 0; i < wygrani[j].najUklad.Count; i++)
+                    for (int i = 0; i < wygrani[j].zwroc_najUklad().Count; i++)
                     {
-                        if (((int)wygrani[j].najUklad[i].figura != (int)wygrani[j].najUklad[0].figura) && ((int)wygrani[j].najUklad[i].figura > wygrani[j].kicker))
+                        if (((int)wygrani[j].zwroc_najUklad()[i].figura != (int)wygrani[j].zwroc_najUklad()[0].figura) && ((int)wygrani[j].zwroc_najUklad()[i].figura > wygrani[j].kicker))
                         {
-                            wygrani[j].kicker = (int)wygrani[j].najUklad[i].figura;
+                            wygrani[j].kicker = (int)wygrani[j].zwroc_najUklad()[i].figura;
                         }
                     }
                 }
@@ -717,11 +731,11 @@ namespace MainServer
                     for (int j = 0; j < wygrani.Count; j++)
                     {
                         wygrani[j].kicker = -1;
-                        for (int i = 0; i < wygrani[j].najUklad.Count; i++)
+                        for (int i = 0; i < wygrani[j].zwroc_najUklad().Count; i++)
                         {
-                            if (((int)wygrani[j].najUklad[i].figura != k1) && ((int)wygrani[j].najUklad[i].figura != (int)wygrani[j].najUklad[0].figura) && ((int)wygrani[j].najUklad[i].figura > wygrani[j].kicker))
+                            if (((int)wygrani[j].zwroc_najUklad()[i].figura != k1) && ((int)wygrani[j].zwroc_najUklad()[i].figura != (int)wygrani[j].zwroc_najUklad()[0].figura) && ((int)wygrani[j].zwroc_najUklad()[i].figura > wygrani[j].kicker))
                             {
-                                wygrani[j].kicker = (int)wygrani[j].najUklad[i].figura;
+                                wygrani[j].kicker = (int)wygrani[j].zwroc_najUklad()[i].figura;
                             }
                         }
                     }
@@ -751,12 +765,12 @@ namespace MainServer
             wygrani.Clear();
             for (int i = 0; i < ile; i++)
             {
-                if ((int)aktywni[i].najUklad[0].figura > (int)aktywni[i].najUklad[2].figura)
+                if ((int)aktywni[i].zwroc_najUklad()[0].figura > (int)aktywni[i].zwroc_najUklad()[2].figura)
                 {
-                    aktywni[i].kicker = (int)aktywni[i].najUklad[0].figura;
+                    aktywni[i].kicker = (int)aktywni[i].zwroc_najUklad()[0].figura;
                 }
                 else
-                    aktywni[i].kicker = (int)aktywni[i].najUklad[2].figura;
+                    aktywni[i].kicker = (int)aktywni[i].zwroc_najUklad()[2].figura;
             }
             sortujKick sk = new sortujKick();
             aktywni.Sort(sk);
@@ -772,12 +786,12 @@ namespace MainServer
                 int p1 = aktywni[0].kicker;
                 for (int i = 0; i < wygrani.Count; i++)
                 {
-                    if ((int)wygrani[i].najUklad[0].figura == p1)
+                    if ((int)wygrani[i].zwroc_najUklad()[0].figura == p1)
                     {
-                        wygrani[i].kicker = (int)wygrani[i].najUklad[2].figura;
+                        wygrani[i].kicker = (int)wygrani[i].zwroc_najUklad()[2].figura;
                     }
                     else
-                        wygrani[i].kicker = (int)wygrani[i].najUklad[0].figura;
+                        wygrani[i].kicker = (int)wygrani[i].zwroc_najUklad()[0].figura;
                 }
                 wygrani.Sort(sk);
 
@@ -793,7 +807,7 @@ namespace MainServer
                 {
                     for (int i = 0; i < wygrani.Count; i++)
                     {
-                        wygrani[i].kicker = (int)wygrani[i].najUklad[4].figura;
+                        wygrani[i].kicker = (int)wygrani[i].zwroc_najUklad()[4].figura;
                     }
                     wygrani.Sort(sk);
                     for (int i = 0; i < wygrani.Count; i++)
@@ -821,7 +835,7 @@ namespace MainServer
             wygrani.Clear();
             for (int i = 0; i < ile; i++)
             {
-                aktywni[i].kicker = (int)aktywni[i].najUklad[0].figura; ;
+                aktywni[i].kicker = (int)aktywni[i].zwroc_najUklad()[0].figura; ;
             }
             sortujKick sk = new sortujKick();
             aktywni.Sort(sk);
@@ -837,11 +851,11 @@ namespace MainServer
                 for (int i = 0; i < wygrani.Count; i++)
                 {
                     wygrani[i].kicker = -1;
-                    for (int j = 0; j < wygrani[i].najUklad.Count; j++)
+                    for (int j = 0; j < wygrani[i].zwroc_najUklad().Count; j++)
                     {
-                        if (((int)wygrani[i].najUklad[j].figura > wygrani[i].kicker) && ((int)wygrani[i].najUklad[j].figura != (int)wygrani[i].najUklad[0].figura))
+                        if (((int)wygrani[i].zwroc_najUklad()[j].figura > wygrani[i].kicker) && ((int)wygrani[i].zwroc_najUklad()[j].figura != (int)wygrani[i].zwroc_najUklad()[0].figura))
                         {
-                            wygrani[i].kicker = (int)wygrani[i].najUklad[j].figura;
+                            wygrani[i].kicker = (int)wygrani[i].zwroc_najUklad()[j].figura;
                         }
                     }
                 }
@@ -861,11 +875,11 @@ namespace MainServer
                     for (int i = 0; i < wygrani.Count; i++)
                     {
                         wygrani[i].kicker = -1;
-                        for (int j = 0; j < wygrani[i].najUklad.Count; j++)
+                        for (int j = 0; j < wygrani[i].zwroc_najUklad().Count; j++)
                         {
-                            if (((int)wygrani[i].najUklad[j].figura > wygrani[i].kicker) && ((int)wygrani[i].najUklad[j].figura != (int)wygrani[i].najUklad[0].figura) && ((int)wygrani[i].najUklad[j].figura != k1))
+                            if (((int)wygrani[i].zwroc_najUklad()[j].figura > wygrani[i].kicker) && ((int)wygrani[i].zwroc_najUklad()[j].figura != (int)wygrani[i].zwroc_najUklad()[0].figura) && ((int)wygrani[i].zwroc_najUklad()[j].figura != k1))
                             {
-                                wygrani[i].kicker = (int)wygrani[i].najUklad[j].figura;
+                                wygrani[i].kicker = (int)wygrani[i].zwroc_najUklad()[j].figura;
                             }
                         }
                     }
@@ -885,11 +899,11 @@ namespace MainServer
                         for (int i = 0; i < wygrani.Count; i++)
                         {
                             wygrani[i].kicker = -1;
-                            for (int j = 0; j < wygrani[i].najUklad.Count; j++)
+                            for (int j = 0; j < wygrani[i].zwroc_najUklad().Count; j++)
                             {
-                                if (((int)wygrani[i].najUklad[j].figura > wygrani[i].kicker) && ((int)wygrani[i].najUklad[j].figura != (int)wygrani[i].najUklad[0].figura) && ((int)wygrani[i].najUklad[j].figura != k1) && ((int)wygrani[i].najUklad[j].figura != k2))
+                                if (((int)wygrani[i].zwroc_najUklad()[j].figura > wygrani[i].kicker) && ((int)wygrani[i].zwroc_najUklad()[j].figura != (int)wygrani[i].zwroc_najUklad()[0].figura) && ((int)wygrani[i].zwroc_najUklad()[j].figura != k1) && ((int)wygrani[i].zwroc_najUklad()[j].figura != k2))
                                 {
-                                    wygrani[i].kicker = (int)wygrani[i].najUklad[j].figura;
+                                    wygrani[i].kicker = (int)wygrani[i].zwroc_najUklad()[j].figura;
                                 }
                             }
                         }
@@ -924,7 +938,7 @@ namespace MainServer
             wygrani.Clear();
             for (int i = 0; i < ile; i++)
             {
-                aktywni[i].kicker = (int)aktywni[i].najUklad[0].figura; ;
+                aktywni[i].kicker = (int)aktywni[i].zwroc_najUklad()[0].figura; ;
             }
             sortujKick sk = new sortujKick();
             aktywni.Sort(sk);
@@ -940,7 +954,7 @@ namespace MainServer
                 int k1 = wygrani[0].kicker;
                 for (int i = 0; i < wygrani.Count; i++)
                 {
-                    wygrani[i].kicker = (int)wygrani[i].najUklad[1].figura;
+                    wygrani[i].kicker = (int)wygrani[i].zwroc_najUklad()[1].figura;
                 }
                 wygrani.Sort(sk);
                 for (int i = 0; i < wygrani.Count; i++)
@@ -957,7 +971,7 @@ namespace MainServer
                     int k2 = wygrani[0].kicker;
                     for (int i = 0; i < wygrani.Count; i++)
                     {
-                        wygrani[i].kicker = (int)wygrani[i].najUklad[2].figura;
+                        wygrani[i].kicker = (int)wygrani[i].zwroc_najUklad()[2].figura;
                     }
                     wygrani.Sort(sk);
                     for (int i = 0; i < wygrani.Count; i++)

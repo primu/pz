@@ -39,12 +39,17 @@ namespace MainServer
         }
         //Pokoje
         [WebMethod]
-        public List<Pokoj> PobierzPokoje(string token)
+        public List<Pokoj> PobierzPokoje(byte[] token)
         {
+            if (Baza.CzyPoprawny(token))
+            {
+                return pokoje;
+            }
+            return null;
             //return pokoje;
-            List<Pokoj> a = new List<Pokoj>();
-            a.Add(Baza.ZwrocPokoj(token));
-            return a; 
+            //List<Pokoj> a = new List<Pokoj>();
+            //a.Add(Baza.ZwrocPokoj(token));
+            //return a; 
         }
 
         [WebMethod]
@@ -105,7 +110,7 @@ namespace MainServer
                     if (p.jestWpokoju(id))
                     {
                         //List<Karta> t = p.zwrocGre().aktywni.Find(delegate(Gracz c){return c.identyfikatorUzytkownika==id;}).hand;
-                        return p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }).hand;
+                        return p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }).zwroc_hand();
                     }
                     else
                     {

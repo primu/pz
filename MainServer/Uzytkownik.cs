@@ -16,12 +16,12 @@ namespace MainServer
 
 
 
-        public List<Karta> hand = new List<Karta>();
-        public List<Karta> najUklad = new List<Karta>();
-        public int kicker;
+        //public List<Karta> hand = new List<Karta>();
+        //public List<Karta> najUklad = new List<Karta>();
+        //public int kicker;
         public bool fold;
-        public int wart;//wartość układu kart
-        public string nazwaUkladu;
+        //public int wart;//wartość układu kart
+        //public string nazwaUkladu;
         public bool start = false;
 
         public Uzytkownik()

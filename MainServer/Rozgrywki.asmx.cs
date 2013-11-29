@@ -43,6 +43,14 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
+                List<Pokoj> pok = Baza.ZwrocPokoje();
+                foreach (Pokoj p in pok)
+                {
+                    if (pokoje.Find(delegate(Pokoj c) { return c.numerPokoju == p.numerPokoju; }) == null)
+                    {
+                        pokoje.Add(p);
+                    }
+                }                
                 return pokoje;
             }
             return null;
@@ -257,6 +265,31 @@ namespace MainServer
             return temp;
         }
 
+        [WebMethod]
+        public Gra ZwrocGre(byte[] token)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                foreach (Pokoj p in pokoje)
+                {
+                    if (p.jestWpokoju(id))
+                    {
+                        return p.zwrocGre();
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
 
+            }
+            else
+            {
+                return null;
+            }
+
+            return null;
+        }
     }
 }

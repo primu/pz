@@ -28,6 +28,7 @@ namespace MainServer
         private List<Karta> talia = new List<Karta>();
         private UkladyKart ukl = new UkladyKart();
 
+        public Gra() { }
         public Gra(Int64 duzyBlind, List<Uzytkownik> u, Int64 stawkaWejsciowa)
         {
             this.duzyBlind = duzyBlind;

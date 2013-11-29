@@ -368,7 +368,7 @@ namespace MainServer
                 {
                     foreach (DataRow wiersz in dataSet.Tables["Pokoj"].Rows)
                     {
-                        listaPokoi.Add(new Pokoj { numerPokoju=(int)wiersz["IdPokoju"],duzyBlind=(int)wiersz["BigBlind"],stawkaWejsciowa=(int)wiersz["StawkaWejsciowa"],iloscGraczyMax=(int)wiersz["IloscGraczy"]});
+                        listaPokoi.Add(new Pokoj { nazwaPokoju = (string)wiersz["NazwaPokoju"], numerPokoju = (int)wiersz["IdPokoju"], duzyBlind = (int)wiersz["BigBlind"], stawkaWejsciowa = (int)wiersz["StawkaWejsciowa"], iloscGraczyMax = (int)wiersz["IloscGraczy"] });
                     }
                 }
             }

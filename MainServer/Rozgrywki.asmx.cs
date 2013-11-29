@@ -142,7 +142,12 @@ namespace MainServer
                 temp.kodKomunikatu = 200;
                 temp.trescKomunikatu = "ok";
 
-            }                       
+            }
+            else
+            {
+                temp.kodKomunikatu = 404;
+                temp.trescKomunikatu = "ok";
+            }
             return temp;
             
         }

@@ -50,6 +50,8 @@ namespace MainServer
         public void utworz()
         {
             gra = new Gra(duzyBlind, user, stawkaWejsciowa);
+            gra.StartujGre();
+            gra.NoweRozdanie();
         }
 
         /*     public int UsunUzytkownika(Uzytkownik u)

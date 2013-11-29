@@ -524,8 +524,8 @@ namespace MainServer
                     new SqlCommandBuilder(dataAdapter);
                     dataAdapter.Update(dataSet.Tables["Sesja"]);
                 }
-                    kom.trescKomunikatu = "OK";
-                    kom.kodKomunikatu = 100;
+                    kom.trescKomunikatu = "Nastąpiło poprawne wylogowanie!";
+                    kom.kodKomunikatu = 200;
 
             }
             return kom;

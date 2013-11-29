@@ -66,10 +66,16 @@ namespace MainServer
                 }
                 else
                 {
-                    if(Baza.DodajUzytkownika(nazwa, email, haslo))
+                    if (Baza.DodajUzytkownika(nazwa, email, haslo))
+                    {
                         kom.trescKomunikatu = "OK";
+                        kom.kodKomunikatu = 200;
+                    }
                     else
+                    {
                         kom.trescKomunikatu = "Blad";
+                        kom.kodKomunikatu = 404;
+                    }
                 }
             }
             return kom;
@@ -328,6 +334,7 @@ namespace MainServer
             wiadomosci.Add(wiadomosc);
             //Baza.DodajWiadomosc(wiadomosc);
             temp.trescKomunikatu = "wyslano";
+            temp.kodKomunikatu = 200;
             return temp;
         }
 

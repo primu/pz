@@ -101,14 +101,14 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat OpuscStol(byte[] token)
+        public Komunikat OpuscStol(byte[] token)// NIE ZROBIONE 
         {
             return temp;
         }
     
         //Rozgrywka
         [WebMethod]
-        public List<Karta> PobierzKarty(byte[] token)//do spr 
+        public List<Karta> PobierzKarty(byte[] token) 
         {
             if (Baza.CzyPoprawny(token))
             {
@@ -136,7 +136,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat Start(byte[] token)//do skończenia 
+        public Komunikat Start(byte[] token)//do skończenia? 
         {
             if (Baza.CzyPoprawny(token))
             {

@@ -168,10 +168,30 @@ namespace MainServer
             }
             else
             {
+                kom.kodKomunikatu = 404;
                 kom.trescKomunikatu = "BLAD";
             }
             return kom;
         }
+
+        [WebMethod]
+        public Komunikat PobierzSwojeID(byte[] token)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                temp.kodKomunikatu = 200;
+                temp.trescKomunikatu = id.ToString();
+            }
+            else
+            {
+                temp.kodKomunikatu = 404;
+                temp.trescKomunikatu = "BLAD";
+            }
+                       
+            return temp;
+        }
+
 
         //[WebMethod]
         //public Komunikat ZmienHaslo(string token, string haslo)

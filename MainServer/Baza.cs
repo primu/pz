@@ -283,7 +283,7 @@ namespace MainServer
                 if (dataSet.Tables["Pokoj"].Rows.Count > 0)
                 {
                     DataRow wiersz = dataSet.Tables["Pokoj"].Rows[0];
-                    pokoj = new Pokoj { numerPokoju = (int)wiersz["IdPokoju"], duzyBlind = (int)wiersz["BigBlind"], stawkaWejsciowa = (int)wiersz["StawkaWejsciowa"], iloscGraczyMax = (int)wiersz["IloscGraczy"] };
+                    pokoj = new Pokoj {nazwaPokoju = (string)wiersz["NazwaPokoju"], numerPokoju = (int)wiersz["IdPokoju"], duzyBlind = (int)wiersz["BigBlind"], stawkaWejsciowa = (int)wiersz["StawkaWejsciowa"], iloscGraczyMax = (int)wiersz["IloscGraczy"] };
                 }
             }
             if (pokoj != null)

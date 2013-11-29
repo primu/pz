@@ -8,7 +8,7 @@ namespace MainServer
     public class Gra
     {
         public enum Stan : int { PREFLOP, FLOP, TURN, RIVER, SHOWDOWN, STARTING };
-        public List<Gracz> user;//= new List<Gracz>();
+        public List<Gracz> user = new List<Gracz>();
         public List<Gracz> aktywni = new List<Gracz>();
 
         public Stan stan;   // obecny stan gry
@@ -52,7 +52,7 @@ namespace MainServer
 
         public void StartujGre() // inicjalizuje rozgrywkę, jeśli się ona jeszcze nie rozpoczęła 
         {
-            ktoBigBlind = aktywni.ElementAt(0).identyfikatorUzytkownika;
+            ktoBigBlind = user.ElementAt(0).identyfikatorUzytkownika;
         }
         //ok
         public void NoweRozdanie() // 

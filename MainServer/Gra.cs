@@ -8,10 +8,10 @@ namespace MainServer
     public class Gra
     {
         public enum Stan : int { PREFLOP, FLOP, TURN, RIVER, SHOWDOWN, STARTING };
-        public List<Gracz> user;//= new List<Gracz>();
+        public List<Gracz> user= new List<Gracz>();
         public List<Gracz> aktywni = new List<Gracz>();
 
-        public Stan stan;   // obecny stan gry
+        public Stan stan=Stan.PREFLOP;   // obecny stan gry
 
         public Int64 ktoBigBlind = 0;   // id gracza, który jest w obecnym rozdaniu na BigBlind
         public Int64 ktoStawia; // id gracza, który stawi
@@ -28,6 +28,7 @@ namespace MainServer
         private List<Karta> talia = new List<Karta>();
         private UkladyKart ukl = new UkladyKart();
 
+        public Gra() { }
         public Gra(Int64 duzyBlind, List<Uzytkownik> u, Int64 stawkaWejsciowa)
         {
             this.duzyBlind = duzyBlind;
@@ -51,19 +52,21 @@ namespace MainServer
 
         public void StartujGre() // inicjalizuje rozgrywkę, jeśli się ona jeszcze nie rozpoczęła 
         {
-            ktoBigBlind = aktywni.ElementAt(0).identyfikatorUzytkownika;
+            ktoBigBlind = user.ElementAt(0).identyfikatorUzytkownika;
         }
         //ok
         public void NoweRozdanie() // 
         {
             pula = 0;
+
+            rozdanie();
             foreach (Gracz a in aktywni)
             {
                 a.stawia = 0;
             }
             stan = Stan.PREFLOP;
-            generujKarty();
-            rozdanie();
+            //generujKarty();
+            
             //dealer
             aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoPoprzedni(aktywni, ktoBigBlind); }).stan = Gracz.StanGracza.Dealer;
             //smallBlind
@@ -221,6 +224,22 @@ namespace MainServer
             }
             stan = Stan.SHOWDOWN;
 
+        }
+
+        public bool czyWszyscyPobraliKarty()
+        {
+            int licz = 0;
+            foreach (Gracz g in aktywni)
+            {
+                if (g.czyPobralKarty ==true)
+                {
+                    licz++;
+                }
+            }
+            if (licz == aktywni.Count)
+                return true;
+            else
+                return false;
         }
 
         //================================================================================================================================

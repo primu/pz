@@ -66,10 +66,16 @@ namespace MainServer
                 }
                 else
                 {
-                    if(Baza.DodajUzytkownika(nazwa, email, haslo))
+                    if (Baza.DodajUzytkownika(nazwa, email, haslo))
+                    {
                         kom.trescKomunikatu = "OK";
+                        kom.kodKomunikatu = 200;
+                    }
                     else
+                    {
                         kom.trescKomunikatu = "Blad";
+                        kom.kodKomunikatu = 404;
+                    }
                 }
             }
             return kom;
@@ -162,10 +168,30 @@ namespace MainServer
             }
             else
             {
+                kom.kodKomunikatu = 404;
                 kom.trescKomunikatu = "BLAD";
             }
             return kom;
         }
+
+        [WebMethod]
+        public Komunikat PobierzSwojeID(byte[] token)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                temp.kodKomunikatu = 200;
+                temp.trescKomunikatu = id.ToString();
+            }
+            else
+            {
+                temp.kodKomunikatu = 404;
+                temp.trescKomunikatu = "BLAD";
+            }
+                       
+            return temp;
+        }
+
 
         //[WebMethod]
         //public Komunikat ZmienHaslo(string token, string haslo)
@@ -299,13 +325,13 @@ namespace MainServer
 
         //Chat
         [WebMethod]
-        public List<Uzytkownik> PobierzUzytkownikow(string token)
+        public List<Uzytkownik> PobierzUzytkownikow(byte[] token)
         {
             return uzytkownicy;
         }
 
         [WebMethod]
-        public List<Wiadomosc> PobierzWiadomosci(string token, Int32 timT, Int64 pokoj)
+        public List<Wiadomosc> PobierzWiadomosci(byte[] token, Int32 timT, Int64 pokoj)
         {
             List<Wiadomosc> wiad = new List<Wiadomosc>();
             wiad.Clear();
@@ -320,7 +346,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat WyslijWiadomosc(string token, Wiadomosc wiadomosc)
+        public Komunikat WyslijWiadomosc(byte[] token, Wiadomosc wiadomosc)
         {
             Int32 timer;
             timer = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
@@ -328,6 +354,7 @@ namespace MainServer
             wiadomosci.Add(wiadomosc);
             //Baza.DodajWiadomosc(wiadomosc);
             temp.trescKomunikatu = "wyslano";
+            temp.kodKomunikatu = 200;
             return temp;
         }
 

@@ -21,7 +21,7 @@ namespace MainServer
         static private List<Pokoj> pokoje =  new List<Pokoj>();
         static private List<Akcja> akcje = new List<Akcja>();
         static UkladyKart ukl = new UkladyKart();
-        
+      
         //[WebMethod]
         //public int gen()
         //{         
@@ -33,9 +33,31 @@ namespace MainServer
 
 
         [WebMethod]
-        public string HelloWorld()
+        public List<Karta> zwrocStol(byte[] token)
         {
-            return "Hello World";
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                foreach (Pokoj p in pokoje)
+                {
+                    if (p.jestWpokoju(id))
+                    {
+                        return p.zwrocGre().stol;//aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }).zwroc_hand();
+
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+
+            }
+            else
+            {
+                return null;
+            }
+
+            return null;
         }
         //Pokoje
         [WebMethod]
@@ -43,6 +65,14 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
+                List<Pokoj> pok = Baza.ZwrocPokoje();
+                foreach (Pokoj p in pok)
+                {
+                    if (pokoje.Find(delegate(Pokoj c) { return c.numerPokoju == p.numerPokoju; }) == null)
+                    {
+                        pokoje.Add(p);
+                    }
+                }                
                 return pokoje;
             }
             return null;
@@ -93,14 +123,14 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat OpuscStol(string token, Uzytkownik uzytkownik)
+        public Komunikat OpuscStol(byte[] token)// NIE ZROBIONE 
         {
             return temp;
         }
     
         //Rozgrywka
         [WebMethod]
-        public List<Karta> PobierzKarty(byte[] token)//do spr 
+        public List<Karta> PobierzKarty(byte[] token) 
         {
             if (Baza.CzyPoprawny(token))
             {
@@ -109,8 +139,13 @@ namespace MainServer
                 {
                     if (p.jestWpokoju(id))
                     {
+                        Gracz s = p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; });
+                        s.czyPobralKarty = true;
                         //List<Karta> t = p.zwrocGre().aktywni.Find(delegate(Gracz c){return c.identyfikatorUzytkownika==id;}).hand;
-                        return p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }).zwroc_hand();
+                        if (p.zwrocGre().czyWszyscyPobraliKarty() == true)                           
+                            p.zwrocGre().NastepnyStan();
+                        return s.zwroc_hand();
+                        
                     }
                     else
                     {
@@ -128,7 +163,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat Start(byte[] token)//do skończenia 
+        public Komunikat Start(byte[] token)//do skończenia? 
         {
             if (Baza.CzyPoprawny(token))
             {
@@ -142,7 +177,12 @@ namespace MainServer
                 temp.kodKomunikatu = 200;
                 temp.trescKomunikatu = "ok";
 
-            }                       
+            }
+            else
+            {
+                temp.kodKomunikatu = 404;
+                temp.trescKomunikatu = "ok";
+            }
             return temp;
             
         }
@@ -252,6 +292,31 @@ namespace MainServer
             return temp;
         }
 
+        [WebMethod]
+        public Gra ZwrocGre(byte[] token)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                foreach (Pokoj p in pokoje)
+                {
+                    if (p.jestWpokoju(id))
+                    {
+                        return p.zwrocGre();
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
 
+            }
+            else
+            {
+                return null;
+            }
+
+            return null;
+        }
     }
 }

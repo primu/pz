@@ -283,7 +283,7 @@ namespace MainServer
                 if (dataSet.Tables["Pokoj"].Rows.Count > 0)
                 {
                     DataRow wiersz = dataSet.Tables["Pokoj"].Rows[0];
-                    pokoj = new Pokoj { numerPokoju = (int)wiersz["IdPokoju"], duzyBlind = (int)wiersz["BigBlind"], stawkaWejsciowa = (int)wiersz["StawkaWejsciowa"], iloscGraczyMax = (int)wiersz["IloscGraczy"] };
+                    pokoj = new Pokoj {nazwaPokoju = (string)wiersz["NazwaPokoju"], numerPokoju = (int)wiersz["IdPokoju"], duzyBlind = (int)wiersz["BigBlind"], stawkaWejsciowa = (int)wiersz["StawkaWejsciowa"], iloscGraczyMax = (int)wiersz["IloscGraczy"] };
                 }
             }
             if (pokoj != null)
@@ -314,7 +314,7 @@ namespace MainServer
                 if (dataSet.Tables["Pokoj"].Rows.Count > 0)
                 {
                     DataRow wiersz = dataSet.Tables["Pokoj"].Rows[0];
-                    pokoj = new Pokoj { numerPokoju = (int)wiersz["IdPokoju"], duzyBlind = (int)wiersz["BigBlind"], stawkaWejsciowa = (int)wiersz["StawkaWejsciowa"], iloscGraczyMax = (int)wiersz["IloscGraczy"] };
+                    pokoj = new Pokoj { nazwaPokoju = (string)wiersz["NazwaPokoju"], numerPokoju = (int)wiersz["IdPokoju"], duzyBlind = (int)wiersz["BigBlind"], stawkaWejsciowa = (int)wiersz["StawkaWejsciowa"], iloscGraczyMax = (int)wiersz["IloscGraczy"] };
                 }
             }
             if (pokoj != null)
@@ -368,7 +368,7 @@ namespace MainServer
                 {
                     foreach (DataRow wiersz in dataSet.Tables["Pokoj"].Rows)
                     {
-                        listaPokoi.Add(new Pokoj { numerPokoju=(int)wiersz["IdPokoju"],duzyBlind=(int)wiersz["BigBlind"],stawkaWejsciowa=(int)wiersz["StawkaWejsciowa"],iloscGraczyMax=(int)wiersz["IloscGraczy"]});
+                        listaPokoi.Add(new Pokoj { nazwaPokoju = (string)wiersz["NazwaPokoju"], numerPokoju = (int)wiersz["IdPokoju"], duzyBlind = (int)wiersz["BigBlind"], stawkaWejsciowa = (int)wiersz["StawkaWejsciowa"], iloscGraczyMax = (int)wiersz["IloscGraczy"] });
                     }
                 }
             }
@@ -524,8 +524,8 @@ namespace MainServer
                     new SqlCommandBuilder(dataAdapter);
                     dataAdapter.Update(dataSet.Tables["Sesja"]);
                 }
-                    kom.trescKomunikatu = "OK";
-                    kom.kodKomunikatu = 100;
+                    kom.trescKomunikatu = "Nastąpiło poprawne wylogowanie!";
+                    kom.kodKomunikatu = 200;
 
             }
             return kom;

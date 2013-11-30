@@ -19,11 +19,14 @@ namespace MainServer
         public StanGracza stan;
         public int wart;//wartość układu kart
         public string nazwaUkladu;
+        public bool czyPobralKarty;
 
         //Nowe
         public Int64 kasa;  //ile pieniędzy pozostało w obecnej grze
         public Int64 stawia;    //ile pieniędzi stawia w obecnym rozdaniu
         //public bool start = false;
+
+        public Gracz() { }
          public Gracz(Uzytkownik u, Int64 stawka)
          {
              identyfikatorUzytkownika = u.identyfikatorUzytkownika;

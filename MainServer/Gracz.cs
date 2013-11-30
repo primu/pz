@@ -31,7 +31,7 @@ namespace MainServer
          {
              identyfikatorUzytkownika = u.identyfikatorUzytkownika;
              nazwaUzytkownika = u.nazwaUzytkownika;
-             u.kasiora -= stawka;
+             u.kasiora -= stawka; 
              kasiora = u.kasiora;
              kasa = stawka;
              stawia = 0;

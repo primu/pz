@@ -145,7 +145,7 @@ namespace MainServer
                         if (p.zwrocGre().czyWszyscyPobraliKarty() == true)                           
                             p.zwrocGre().NastepnyStan();
                         return s.zwroc_hand();
-                        
+                       
                     }
                     else
                     {

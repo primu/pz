@@ -41,6 +41,8 @@ namespace MainServer
 
 
         }
+      
+
         //Zwrócmy uwagę na metody!!!
         public bool WszyscyGotowi() // gdy wszyscy gracze gotowi -> true 
         {
@@ -65,7 +67,7 @@ namespace MainServer
                 a.stawia = 0;
             }
             stan = Stan.PREFLOP;
-            //generujKarty();
+            //generujKarty(); 
             
             //dealer
             aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoPoprzedni(aktywni, ktoBigBlind); }).stan = Gracz.StanGracza.Dealer;
@@ -162,7 +164,8 @@ namespace MainServer
         //ok
         public bool KoniecGry() // czy w grze został tylko jeden gracz 
         {
-            if (aktywni.Count<Gracz>(delegate(Gracz c) { return c.kasa > 0; }) == 1)
+            if (user.Count<Gracz>(delegate(Gracz c) { return c.kasa > 0; }) == 1)
+            //if (aktywni.Count<Gracz>(delegate(Gracz c) { return c.stan !=Gracz.StanGracza.Fold; }) == 1)
                 return true;
             else
                 return false;
@@ -206,6 +209,20 @@ namespace MainServer
         //chyba ok
         public void ZakonczenieRozdania() // akcja na zakończenie rozdania, przydzielenie zwyciestwa w rozdaniu 
         {
+            //foreach (Gracz g in aktywni)//usuniecie graczy foldujacych
+            //{
+            //    if (g.stan == Gracz.StanGracza.Fold)
+            //    {
+            //        aktywni.Remove(g);
+            //    }
+            //}
+            for (int i = 0; i < aktywni.Count; i++)
+            {
+                if (aktywni[i].stan == Gracz.StanGracza.Fold)
+                {
+                    aktywni.RemoveAt(i);
+                }
+            }
             List<Gracz> listaWin = new List<Gracz>(ktoWygral());
             foreach (Gracz a in aktywni)
             {
@@ -248,6 +265,10 @@ namespace MainServer
         {
             aktywni = new List<Gracz>(user); ;
             generujKarty();
+            foreach (Gracz c in aktywni)
+            {
+                c.zwroc_hand().Clear();
+            }
             Random rnd1 = new Random();
             for (int i = 0; i < 2; i++)
             {
@@ -260,15 +281,7 @@ namespace MainServer
             }
 
             //stawia = ktoBlind;
-            //stan = Stan.PREFLOP;
-
-            // przypisywanie kart uzytkowniom w celach testowych
-            /*  user[0].hand.Add(new Karta { figura = Karta.figuraKarty.KA, kolor = Karta.kolorKarty.kier });
-              user[0].hand.Add(new Karta { figura = Karta.figuraKarty.K7, kolor = Karta.kolorKarty.pik });
-              user[1].hand.Add(new Karta { figura = Karta.figuraKarty.K4, kolor = Karta.kolorKarty.pik });
-              user[1].hand.Add(new Karta { figura = Karta.figuraKarty.K5, kolor = Karta.kolorKarty.kier });
-              user[2].hand.Add(new Karta { figura = Karta.figuraKarty.K8, kolor = Karta.kolorKarty.kier });
-              user[2].hand.Add(new Karta { figura = Karta.figuraKarty.KA, kolor = Karta.kolorKarty.karo });*/
+            //stan = Stan.PREFLOP;        
         }
 
         public void losujNaStol(int ile)
@@ -281,13 +294,7 @@ namespace MainServer
                 stol.Add(new Karta { figura = talia[a].figura, kolor = talia[a].kolor });
                 talia.RemoveAt(a);
             }
-
-            //przypisywanie kart na stol w celach testowych
-            /* stol.Add(new Karta { figura = Karta.figuraKarty.K2, kolor = Karta.kolorKarty.karo });
-             stol.Add(new Karta { figura = Karta.figuraKarty.K6, kolor = Karta.kolorKarty.trefl });
-             stol.Add(new Karta { figura = Karta.figuraKarty.KK, kolor = Karta.kolorKarty.pik });
-             stol.Add(new Karta { figura = Karta.figuraKarty.K9, kolor = Karta.kolorKarty.kier });
-             stol.Add(new Karta { figura = Karta.figuraKarty.K10, kolor = Karta.kolorKarty.karo });*/
+           
         }
 
         public void generujKarty()
@@ -313,14 +320,7 @@ namespace MainServer
                 }
             }
         }
-
-        //private void pobierzUserow()
-        //{
-        //    user.Clear();
-        //    user.Add(new Gracz { identyfikatorUzytkownika = 1, nazwaUzytkownika = "Pawel", numerPokoju = 1 });
-        //    user.Add(new Gracz { identyfikatorUzytkownika = 2, nazwaUzytkownika = "Bogdan", numerPokoju = 1 });
-        //    user.Add(new Gracz { identyfikatorUzytkownika = 3, nazwaUzytkownika = "Primu", numerPokoju = 1 });
-        //}
+      
 
         public string gen()
         {

@@ -30,6 +30,26 @@ namespace MainServer
 
         //    return ukl.czyPara(); 
         //}
+        [WebMethod]
+        public Gracz PobierzGracza(byte[] token,Int64 mojID)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                foreach (Pokoj p in pokoje)
+                {
+                    if (p.jestWpokoju(id))
+                    {
+                        return p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == mojID; });
+                    }
+                    else
+                        return null;
+                }
+            }
+            else
+                return null;
+            return null;
+        }
 
 
         [WebMethod]
@@ -203,9 +223,12 @@ namespace MainServer
                             if (p.zwrocGre().aktywni.FindIndex(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }) >= 0)
                             {
                                 p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }).stan = Gracz.StanGracza.Fold;
-                                p.zwrocGre().aktualizujListeUser();// aktualizowanie na liscie userow stanu gracza
-                                p.zwrocGre().aktywni.Remove(p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }));//usuwanie gracza ktory folduje
+                               
+                                //p.zwrocGre().aktywni.Remove(p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }));//usuwanie gracza ktory folduje
+                                p.zwrocGre().aktualizujListeUser();// aktualizowanie na liscie userow stanu gracza    
+                                p.zwrocGre().KoniecRuchu();
                                 temp.kodKomunikatu = 200;
+                               
                             }
                         }
                         else

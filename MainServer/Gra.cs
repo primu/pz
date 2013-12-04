@@ -14,7 +14,7 @@ namespace MainServer
         public Stan stan=Stan.PREFLOP;   // obecny stan gry
 
         public Int64 ktoBigBlind = 0;   // id gracza, który jest w obecnym rozdaniu na BigBlind
-        public Int64 ktoStawia; // id gracza, który stawi
+        public Int64 ktoStawia; // id gracza, który stawia
         public Int64 czyjRuch;  // id gracza, który ma wykonać teraz ruch
         public Int64 najwyzszaStawka;  //ile wynosi najwyższa stawka
         public Int64 pula;  //wartość stołu       
@@ -35,7 +35,7 @@ namespace MainServer
             najwyzszaStawka = duzyBlind;
             foreach (Uzytkownik q in u)
             {
-                q.kasiora -= stawkaWejsciowa;
+               // q.kasiora -= stawkaWejsciowa;
                 user.Add(new Gracz(q,stawkaWejsciowa));
             }
 
@@ -55,6 +55,8 @@ namespace MainServer
         public void StartujGre() // inicjalizuje rozgrywkę, jeśli się ona jeszcze nie rozpoczęła 
         {
             ktoBigBlind = user.ElementAt(0).identyfikatorUzytkownika;
+            ktoStawia = ktoBigBlind;
+            czyjRuch = KtoNastepny(user, ktoBigBlind);
         }
         //ok
         public void NoweRozdanie() // 
@@ -75,10 +77,14 @@ namespace MainServer
             Gracz x = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == ktoBigBlind; });
             if (x.kasa > najwyzszaStawka / 2)
             {
-                x.stan = Gracz.StanGracza.SmallBlind;
-                x.kasa -= najwyzszaStawka / 2;
-                x.stawia = najwyzszaStawka / 2;
-                pula += najwyzszaStawka / 2;
+                //x.stan = Gracz.StanGracza.SmallBlind;
+                //x.kasa -= najwyzszaStawka / 2;
+                //x.stawia = najwyzszaStawka / 2;
+                //pula += najwyzszaStawka / 2;
+                x.stan = Gracz.StanGracza.BigBlind;
+                x.kasa -= najwyzszaStawka;
+                x.stawia = najwyzszaStawka;
+                pula += najwyzszaStawka;
             }
             else
             {
@@ -91,10 +97,14 @@ namespace MainServer
             Gracz b = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoNastepny(aktywni, ktoBigBlind); });
             if (b.kasa > najwyzszaStawka)
             {
-                b.stan = Gracz.StanGracza.BigBlind;
-                b.kasa -= najwyzszaStawka;
-                b.stawia = najwyzszaStawka;
-                pula += najwyzszaStawka;
+                //b.stan = Gracz.StanGracza.BigBlind;
+                //b.kasa -= najwyzszaStawka;
+                //b.stawia = najwyzszaStawka;
+                //pula += najwyzszaStawka;
+                b.stan = Gracz.StanGracza.SmallBlind;
+                b.kasa -= najwyzszaStawka / 2;
+                b.stawia = najwyzszaStawka / 2;
+                pula += najwyzszaStawka / 2;
             }
             else
             {
@@ -105,9 +115,10 @@ namespace MainServer
             }
 
             //ustawienia poczatkowe
-            ktoBigBlind = b.identyfikatorUzytkownika;//KtoNastepny(ktoBigBlind);
-            ktoStawia = KtoNastepny(aktywni, ktoBigBlind);
-            czyjRuch = ktoStawia;
+            ktoBigBlind = b.identyfikatorUzytkownika;//KtoNastepny(ktoBigBlind);          
+            ktoStawia = ktoBigBlind;//KtoNastepny(aktywni, ktoBigBlind);
+            czyjRuch = KtoNastepny(aktywni, ktoBigBlind);//ktoStawia;
+            
         }
 
         public void ZakonczGre() // 
@@ -1079,7 +1090,7 @@ namespace MainServer
         {
             int i = lista.FindIndex(delegate(Gracz a) { return numer == a.identyfikatorUzytkownika; });
             if (i == lista.Count - 1)
-                return lista[1].identyfikatorUzytkownika;
+                return lista[0].identyfikatorUzytkownika;
             else
                 return lista[i + 1].identyfikatorUzytkownika;
         }

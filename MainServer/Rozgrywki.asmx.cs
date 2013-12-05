@@ -31,6 +31,24 @@ namespace MainServer
         //    return ukl.czyPara(); 
         //}
         [WebMethod]
+        public string NazwaMojegoUkladu(byte[] token)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                foreach (Pokoj p in pokoje)
+                {
+                    if (p.jestWpokoju(id))
+                    {
+                        return p.zwrocGre().NazwaMojegoUkladu2(id);
+                    }
+                }
+            }
+            return "";
+            //return g.NazwaMojegoUkladu2(id);
+        }
+
+        [WebMethod]
         public Gracz PobierzGracza(byte[] token,Int64 mojID)
         {
             if (Baza.CzyPoprawny(token))
@@ -267,6 +285,7 @@ namespace MainServer
                                 {
                                     p.zwrocGre().ktoStawia = R.identyfikatorUzytkownika;
                                     R.stan = Gracz.StanGracza.Rise;
+                                    p.zwrocGre().najwyzszaStawka = R.stawia + ile;//dodane niedawno
                                     pom = true;
                                 }
                                 else if (R.stawia + ile == p.zwrocGre().najwyzszaStawka)

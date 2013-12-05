@@ -15,29 +15,33 @@ namespace MainServer
         int p = -1;
         static bool sf = false;//czy w tym momencie szukamy fulla
 
-        public string co_mamy(List<Karta> stol, List<Karta> hand, List<Karta> najlepszyUklad)
+        public string co_mamy(List<Karta> stol, Gracz a)//List<Karta> hand, List<Karta> najlepszyUklad)
         {
-            generujKarty(stol, hand);
-            if (czyPokerKrolewski(najlepszyUklad) == 1)
+            //generujKarty(stol, hand);   
+            List<Karta> cards ;
+            cards= new List<Karta>(a.zwroc_hand());
+
+            generujKarty(stol,a.zwroc_hand());
+            if (czyPokerKrolewski(a.zwroc_najUklad()) == 1)
                 return "Poker krolewski!";
-            else if (czyPoker(najlepszyUklad) == 1)
+            else if (czyPoker(a.zwroc_najUklad()) == 1)
                 return "Poker!";
-            else if (czyKareta(najlepszyUklad) == 1)
+            else if (czyKareta(a.zwroc_najUklad()) == 1)
                 return "Kareta!";
-            else if (czyFull(najlepszyUklad) == 1)
+            else if (czyFull(a.zwroc_najUklad()) == 1)
                 return "Full!";
-            else if (czyKolor(najlepszyUklad) == 1)
+            else if (czyKolor(a.zwroc_najUklad()) == 1)
                 return "Kolor!";
-            else if (czyStrit(najlepszyUklad) == 1)
+            else if (czyStrit(a.zwroc_najUklad()) == 1)
                 return "Strit!";
-            else if (czyTrojka(najlepszyUklad) == 1)
+            else if (czyTrojka(a.zwroc_najUklad()) == 1)
                 return "Trojka!";
-            else if (czyDwiePary(najlepszyUklad) == 1)
+            else if (czyDwiePary(a.zwroc_najUklad()) == 1)
                 return "Dwie pary!";
-            else if (czyPara(najlepszyUklad) == 1)
+            else if (czyPara(a.zwroc_najUklad()) == 1)
                 return "Para!";
 
-            return czyWysokaKarta(najlepszyUklad);
+            return czyWysokaKarta(a.zwroc_najUklad());
         }
 
         public List<Karta> reka(List<Karta> najlepszyUklad)

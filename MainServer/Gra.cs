@@ -121,7 +121,7 @@ namespace MainServer
         //ok
         public bool KoniecLicytacji() // gdy wszyscy Call do jednej stawki lub Fold 
         {
-            if (ktoStawia == KtoNastepny(aktywni,czyjRuch))
+            if ((ktoStawia == KtoNastepny(aktywni,czyjRuch)) || (aktywni.Count==1) )
             {
                 return true;
             }
@@ -276,6 +276,7 @@ namespace MainServer
             {
                 c.zwroc_hand().Clear();
             }
+            stol.Clear();
             Random rnd1 = new Random();
             for (int i = 0; i < 2; i++)
             {
@@ -369,7 +370,8 @@ namespace MainServer
             List<Gracz> wygrani = new List<Gracz>();
             for (int i = 0; i < aktywni.Count; i++)
             {
-                aktywni[i].nazwaUkladu = ukl.co_mamy(stol, aktywni[i].zwroc_hand(), aktywni[i].zwroc_najUklad());
+                Gracz g = aktywni[i];
+                aktywni[i].nazwaUkladu = ukl.co_mamy(stol, g);//aktywni[i]);//ukl.co_mamy(stol, aktywni[i].zwroc_hand(), aktywni[i].zwroc_najUklad());
                 if (aktywni[i].fold == false)
                 {
                     aktywni[i].wart = wartosci(aktywni[i].nazwaUkladu);
@@ -1085,6 +1087,7 @@ namespace MainServer
         public Int64 KtoNastepny(List<Gracz> lista, Int64 numer)
         {
             int i = lista.FindIndex(delegate(Gracz a) { return numer == a.identyfikatorUzytkownika; });
+            //if(lista[i].)
             if (i == lista.Count - 1)
                 return lista[0].identyfikatorUzytkownika;
             else
@@ -1099,6 +1102,22 @@ namespace MainServer
             else
                 return lista[i - 1].identyfikatorUzytkownika;
         }
+
+
+        public string NazwaMojegoUkladu2(Int64 id)
+        {
+            for (int i = 0; i < aktywni.Count; i++)
+            {
+                if (aktywni[i].identyfikatorUzytkownika == id)
+                {
+                    Gracz g = aktywni[i];
+                    //List<Karta> cc = aktywni[i].zwroc_hand();
+                    return ukl.co_mamy(stol,g);//ukl.co_mamy(stol, aktywni[i].zwroc_hand(), aktywni[i].zwroc_najUklad());
+                }
+            }
+                return "";
+        }
+
 
         //================================================================================================================================
 

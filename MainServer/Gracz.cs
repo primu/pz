@@ -7,8 +7,8 @@ namespace MainServer
 {
     public class Gracz : Uzytkownik
     {
-        private List<Karta> hand = new List<Karta>();
-        private List<Karta> najUklad = new List<Karta>();
+        private List<Karta> hand = new List<Karta>();//było private, zmienione w celach testowych
+        private List<Karta> najUklad = new List<Karta>();//było private, zmienione w celach testowych
         public int kicker;
         //dodajemy w przypadku kiedy user wygrał
         public List<Karta> handWin = new List<Karta>();

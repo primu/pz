@@ -17,6 +17,7 @@ namespace MainServer
         public int wart;//wartość układu kart
         public string nazwaUkladu;
 
+
         //Nowe
         public Int64 kasa;  //ile pieniędzy pozostało w obecnej grze
         public Int64 stawia;    //ile pieniędzi stawia w obecnym rozdaniu

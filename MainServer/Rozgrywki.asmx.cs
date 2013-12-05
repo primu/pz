@@ -161,9 +161,9 @@ namespace MainServer
                     {
                         Gracz s = p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; });
                         s.czyPobralKarty = true;
-                        //List<Karta> t = p.zwrocGre().aktywni.Find(delegate(Gracz c){return c.identyfikatorUzytkownika==id;}).hand;
-                        if (p.zwrocGre().czyWszyscyPobraliKarty() == true)                           
-                            p.zwrocGre().NastepnyStan();
+                      
+                       // if (p.zwrocGre().czyWszyscyPobraliKarty() == true)                                                                            
+                        //    p.zwrocGre().NastepnyStan();
                         return s.zwroc_hand();
                        
                     }
@@ -189,9 +189,12 @@ namespace MainServer
             {
                 int id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj pokoj = pokoje.Find(delegate(Pokoj c) { return c.jestWpokoju(id) == true; });
-                if (pokoj.user.Count == pokoj.iloscGraczyMax)
+                Glowny.PobierzUzytkownika(id).start = true;
+                int zm = pokoj.user.Count<Uzytkownik>(delegate(Uzytkownik v) { return v.start == true; });
+                if (zm== pokoj.iloscGraczyMax)
                 {
-                    pokoj.utworz();
+                    if(pokoj.zwrocGre()==null)
+                        pokoj.utworz();
                 }
 
                 temp.kodKomunikatu = 200;

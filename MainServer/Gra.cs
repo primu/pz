@@ -55,8 +55,8 @@ namespace MainServer
         public void StartujGre() // inicjalizuje rozgrywkę, jeśli się ona jeszcze nie rozpoczęła 
         {
             ktoBigBlind = user.ElementAt(0).identyfikatorUzytkownika;
-            ktoStawia = ktoBigBlind;
-            czyjRuch = KtoNastepny(user, ktoBigBlind);
+           // ktoStawia = ktoBigBlind;
+            //czyjRuch = KtoNastepny(user, ktoBigBlind);
         }
         //ok
         public void NoweRozdanie() // 
@@ -129,7 +129,7 @@ namespace MainServer
         //ok
         public bool KoniecLicytacji() // gdy wszyscy Call do jednej stawki lub Fold 
         {
-            if (ktoStawia == KtoNastepny(aktywni, czyjRuch))
+            if (ktoStawia == KtoNastepny(aktywni, KtoNastepny(aktywni,czyjRuch)))
             {
                 return true;
             }
@@ -234,20 +234,23 @@ namespace MainServer
                     aktywni.RemoveAt(i);
                 }
             }
-            List<Gracz> listaWin = new List<Gracz>(ktoWygral());
-            foreach (Gracz a in aktywni)
+            if (stol != null)
             {
-                if (listaWin.FindIndex(delegate(Gracz c) { return c.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }) >= 0)
+                List<Gracz> listaWin = new List<Gracz>(ktoWygral());
+                foreach (Gracz a in aktywni)
                 {
-                    a.handWin = a.zwroc_hand();
-                    a.najUkladWin = a.zwroc_najUklad();
-                    a.kasa += pula / listaWin.Count;
-                    a.stan = Gracz.StanGracza.Winner;
-                }
-                else
-                {
-                    if (a.kasa == 0)
-                        aktywni.Remove(a);
+                    if (listaWin.FindIndex(delegate(Gracz c) { return c.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }) >= 0)
+                    {
+                        a.handWin = a.zwroc_hand();
+                        a.najUkladWin = a.zwroc_najUklad();
+                        a.kasa += pula / listaWin.Count;
+                        a.stan = Gracz.StanGracza.Winner;
+                    }
+                    else
+                    {
+                        if (a.kasa == 0)
+                            aktywni.Remove(a);
+                    }
                 }
             }
             stan = Stan.SHOWDOWN;

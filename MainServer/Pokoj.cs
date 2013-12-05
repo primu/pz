@@ -26,6 +26,19 @@ namespace MainServer
             else
                 return false;
         }
+        public int IleStart(Int64 id)
+        {
+            int ile=0;
+            for (int i = 0; i < user.Count; i++)
+            {
+                if (user[i].identyfikatorUzytkownika == id)
+                    user[i].start = true;
+                if (user[i].start == true)
+                    ile++;
+                
+            }
+                return ile;
+        }
         public Gra zwrocGre()
         {
             return gra;

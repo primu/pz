@@ -55,7 +55,7 @@ namespace MainServer
         public void StartujGre() // inicjalizuje rozgrywkę, jeśli się ona jeszcze nie rozpoczęła 
         {
             ktoBigBlind = user.ElementAt(0).identyfikatorUzytkownika;
-           // ktoStawia = ktoBigBlind;
+            //ktoStawia = ktoBigBlind;
             //czyjRuch = KtoNastepny(user, ktoBigBlind);
         }
         //ok
@@ -77,14 +77,10 @@ namespace MainServer
             Gracz x = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == ktoBigBlind; });
             if (x.kasa > najwyzszaStawka / 2)
             {
-                //x.stan = Gracz.StanGracza.SmallBlind;
-                //x.kasa -= najwyzszaStawka / 2;
-                //x.stawia = najwyzszaStawka / 2;
-                //pula += najwyzszaStawka / 2;
-                x.stan = Gracz.StanGracza.BigBlind;
-                x.kasa -= najwyzszaStawka;
-                x.stawia = najwyzszaStawka;
-                pula += najwyzszaStawka;
+                x.stan = Gracz.StanGracza.SmallBlind;
+                x.kasa -= najwyzszaStawka/2;
+                x.stawia = najwyzszaStawka/2;
+                pula += najwyzszaStawka/2;
             }
             else
             {
@@ -97,14 +93,10 @@ namespace MainServer
             Gracz b = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoNastepny(aktywni, ktoBigBlind); });
             if (b.kasa > najwyzszaStawka)
             {
-                //b.stan = Gracz.StanGracza.BigBlind;
-                //b.kasa -= najwyzszaStawka;
-                //b.stawia = najwyzszaStawka;
-                //pula += najwyzszaStawka;
-                b.stan = Gracz.StanGracza.SmallBlind;
-                b.kasa -= najwyzszaStawka / 2;
-                b.stawia = najwyzszaStawka / 2;
-                pula += najwyzszaStawka / 2;
+                b.stan = Gracz.StanGracza.BigBlind;
+                b.kasa -= najwyzszaStawka;
+                b.stawia = najwyzszaStawka;
+                pula += najwyzszaStawka;
             }
             else
             {
@@ -116,7 +108,7 @@ namespace MainServer
 
             //ustawienia poczatkowe
             ktoBigBlind = b.identyfikatorUzytkownika;//KtoNastepny(ktoBigBlind);          
-            ktoStawia = ktoBigBlind;//KtoNastepny(aktywni, ktoBigBlind);
+            ktoStawia = KtoNastepny(aktywni, ktoBigBlind);
             czyjRuch = KtoNastepny(aktywni, ktoBigBlind);//ktoStawia;
             
         }
@@ -129,7 +121,7 @@ namespace MainServer
         //ok
         public bool KoniecLicytacji() // gdy wszyscy Call do jednej stawki lub Fold 
         {
-            if (ktoStawia == KtoNastepny(aktywni, KtoNastepny(aktywni,czyjRuch)))
+            if (ktoStawia == KtoNastepny(aktywni,czyjRuch))
             {
                 return true;
             }
@@ -234,23 +226,24 @@ namespace MainServer
                     aktywni.RemoveAt(i);
                 }
             }
-            if (stol != null)
+            List<Gracz> listaWin;
+            if (aktywni.Count == 1)
+                listaWin = new List<Gracz>(aktywni);
+            else
+                listaWin = new List<Gracz>(ktoWygral());
+            foreach (Gracz a in aktywni)
             {
-                List<Gracz> listaWin = new List<Gracz>(ktoWygral());
-                foreach (Gracz a in aktywni)
+                if (listaWin.FindIndex(delegate(Gracz c) { return c.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }) >= 0)
                 {
-                    if (listaWin.FindIndex(delegate(Gracz c) { return c.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }) >= 0)
-                    {
-                        a.handWin = a.zwroc_hand();
-                        a.najUkladWin = a.zwroc_najUklad();
-                        a.kasa += pula / listaWin.Count;
-                        a.stan = Gracz.StanGracza.Winner;
-                    }
-                    else
-                    {
-                        if (a.kasa == 0)
-                            aktywni.Remove(a);
-                    }
+                    a.handWin = a.zwroc_hand();
+                    a.najUkladWin = a.zwroc_najUklad();
+                    a.kasa += pula / listaWin.Count;
+                    a.stan = Gracz.StanGracza.Winner;
+                }
+                else
+                {
+                    if (a.kasa == 0)
+                        aktywni.Remove(a);
                 }
             }
             stan = Stan.SHOWDOWN;

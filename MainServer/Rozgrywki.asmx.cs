@@ -160,9 +160,9 @@ namespace MainServer
                     if (p.jestWpokoju(id))
                     {
                         Gracz s = p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; });
-                        s.czyPobralKarty = true;
-                      
-                       // if (p.zwrocGre().czyWszyscyPobraliKarty() == true)                                                                            
+                        //s.czyPobralKarty = true;
+                        ////List<Karta> t = p.zwrocGre().aktywni.Find(delegate(Gracz c){return c.identyfikatorUzytkownika==id;}).hand;
+                        //if (p.zwrocGre().czyWszyscyPobraliKarty() == true)                           
                         //    p.zwrocGre().NastepnyStan();
                         return s.zwroc_hand();
                        
@@ -188,10 +188,12 @@ namespace MainServer
             if (Baza.CzyPoprawny(token))
             {
                 int id = Baza.ZwrocIdUzytkownika(token);
+                //Uzytkownik u = Glowny.PobierzUzytkownika(id);
+                //u.start = true;
                 Pokoj pokoj = pokoje.Find(delegate(Pokoj c) { return c.jestWpokoju(id) == true; });
-                Glowny.PobierzUzytkownika(id).start = true;
-                int zm = pokoj.user.Count<Uzytkownik>(delegate(Uzytkownik v) { return v.start == true; });
-                if (zm== pokoj.iloscGraczyMax)
+                //int zm = pokoj.user.Count<Uzytkownik>(delegate(Uzytkownik v) { return v.start == true; });
+                int zm = pokoj.IleStart(id);
+                if (zm == pokoj.iloscGraczyMax)
                 {
                     if(pokoj.zwrocGre()==null)
                         pokoj.utworz();
@@ -335,7 +337,7 @@ namespace MainServer
                         return null;
                     }
                 }
-
+               
             }
             else
             {
@@ -344,5 +346,20 @@ namespace MainServer
 
             return null;
         }
+
+
+        [WebMethod]
+        public void CzyscStoly()
+        {
+            foreach (Pokoj p in pokoje)
+            {
+                p.user.Clear();
+                
+
+            }
+
+        }
+
+
     }
 }

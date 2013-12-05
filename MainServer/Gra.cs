@@ -22,6 +22,8 @@ namespace MainServer
         //public List<Akcja> akcje = new List<Akcja>();
         public List<Karta> stol = new List<Karta>();
 
+        public Int64 ktoDealer;
+
 
         private static Karta.figuraKarty[] figury = { Karta.figuraKarty.K2, Karta.figuraKarty.K3, Karta.figuraKarty.K4, Karta.figuraKarty.K5, Karta.figuraKarty.K6, Karta.figuraKarty.K7, Karta.figuraKarty.K8, Karta.figuraKarty.K9, Karta.figuraKarty.K10, Karta.figuraKarty.KJ, Karta.figuraKarty.KD, Karta.figuraKarty.KK, Karta.figuraKarty.KA, };
         private static Karta.kolorKarty[] kolory = { Karta.kolorKarty.pik, Karta.kolorKarty.kier, Karta.kolorKarty.karo, Karta.kolorKarty.trefl };
@@ -71,8 +73,10 @@ namespace MainServer
             stan = Stan.PREFLOP;
             //generujKarty(); 
             
-            //dealer
-            aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoPoprzedni(aktywni, ktoBigBlind); }).stan = Gracz.StanGracza.Dealer;
+            //dealer - zmienione!!!
+            Gracz z = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoPoprzedni(aktywni, ktoBigBlind); });
+            z.stan = Gracz.StanGracza.Dealer;
+            ktoDealer = z.identyfikatorUzytkownika;
             //smallBlind
             Gracz x = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == ktoBigBlind; });
             if (x.kasa > najwyzszaStawka / 2)
@@ -160,9 +164,12 @@ namespace MainServer
                 case Stan.RIVER:
                     losujNaStol(1);
                     break;
-            }
-            ktoStawia = KtoPoprzedni(aktywni, KtoPoprzedni(aktywni, ktoBigBlind));
+            }           
+            ktoStawia = KtoNastepny(aktywni, ktoDealer); // zmienione!!!
+            do
+            {
             czyjRuch = ktoStawia;
+            } while (aktywni.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == czyjRuch && v.stan == Gracz.StanGracza.Fold; }) != null);
         }
         //ok
         public bool KoniecGry() // czy w grze został tylko jeden gracz 
@@ -207,7 +214,10 @@ namespace MainServer
                     NastepnyStan();
             }
             else
-                czyjRuch = KtoNastepny(aktywni, czyjRuch);
+                do
+                {
+                    czyjRuch = KtoNastepny(aktywni, czyjRuch);
+                } while (aktywni.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == czyjRuch && v.stan == Gracz.StanGracza.Fold; })!=null);
         }
         //chyba ok
         public void ZakonczenieRozdania() // akcja na zakończenie rozdania, przydzielenie zwyciestwa w rozdaniu 
@@ -1083,6 +1093,36 @@ namespace MainServer
         //    }
 
         //}
+/*
+        public Int64 KtoNastepny(List<Gracz> lista, Int64 numer)
+        {
+            int i = lista.FindIndex(delegate(Gracz a) { return numer == a.identyfikatorUzytkownika; });
+            if (i == lista.Count - 1)
+                if (lista[0].stan == Gracz.StanGracza.Fold)
+                    return KtoNastepny(lista, lista[0].identyfikatorUzytkownika);
+                else
+                    return lista[0].identyfikatorUzytkownika;
+            else
+                if (lista[0].stan == Gracz.StanGracza.Fold)
+                    return KtoNastepny(lista, lista[i + 1].identyfikatorUzytkownika);
+                else
+                    return lista[i + 1].identyfikatorUzytkownika;
+        }
+
+        public Int64 KtoPoprzedni(List<Gracz> lista, Int64 numer)
+        {
+            int i = lista.FindIndex(delegate(Gracz a) { return numer == a.identyfikatorUzytkownika; });
+            if (i == 0)
+                if (lista[lista.Count - 1].stan == Gracz.StanGracza.Fold)
+                    return KtoPoprzedni(lista, lista[lista.Count - 1].identyfikatorUzytkownika);
+                else
+                    return lista[lista.Count - 1].identyfikatorUzytkownika;
+            else
+                if (lista[lista.Count - 1].stan == Gracz.StanGracza.Fold)
+                    return KtoPoprzedni(lista, lista[i - 1].identyfikatorUzytkownika);
+                else
+                    return lista[i - 1].identyfikatorUzytkownika;
+        }*/
 
         public Int64 KtoNastepny(List<Gracz> lista, Int64 numer)
         {
@@ -1102,7 +1142,6 @@ namespace MainServer
             else
                 return lista[i - 1].identyfikatorUzytkownika;
         }
-
 
         public string NazwaMojegoUkladu2(Int64 id)
         {

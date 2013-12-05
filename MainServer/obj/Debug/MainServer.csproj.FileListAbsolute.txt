@@ -12,3 +12,7 @@ F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\PROJEKT\pz-499\p
 F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\PROJEKT\pz-499\pz-4997c714831ce506e31785f505c7d37385295a15\MainServer\obj\Debug\MainServer.csprojResolveAssemblyReference.cache
 F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\PROJEKT\pz-499\pz-4997c714831ce506e31785f505c7d37385295a15\MainServer\obj\Debug\MainServer.dll
 F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\PROJEKT\pz-499\pz-4997c714831ce506e31785f505c7d37385295a15\MainServer\obj\Debug\MainServer.pdb
+C:\Users\HP\Documents\GitHub\pz\MainServer\bin\MainServer.dll
+C:\Users\HP\Documents\GitHub\pz\MainServer\bin\MainServer.pdb
+C:\Users\HP\Documents\GitHub\pz\MainServer\obj\Debug\MainServer.dll
+C:\Users\HP\Documents\GitHub\pz\MainServer\obj\Debug\MainServer.pdb

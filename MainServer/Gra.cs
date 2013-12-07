@@ -21,12 +21,14 @@ namespace MainServer
         public Int64 duzyBlind;
         //public List<Akcja> akcje = new List<Akcja>();
         public List<Karta> stol = new List<Karta>();
-
+        //double start, stop;
+        private int licznik = 0;
 
         private static Karta.figuraKarty[] figury = { Karta.figuraKarty.K2, Karta.figuraKarty.K3, Karta.figuraKarty.K4, Karta.figuraKarty.K5, Karta.figuraKarty.K6, Karta.figuraKarty.K7, Karta.figuraKarty.K8, Karta.figuraKarty.K9, Karta.figuraKarty.K10, Karta.figuraKarty.KJ, Karta.figuraKarty.KD, Karta.figuraKarty.KK, Karta.figuraKarty.KA, };
         private static Karta.kolorKarty[] kolory = { Karta.kolorKarty.pik, Karta.kolorKarty.kier, Karta.kolorKarty.karo, Karta.kolorKarty.trefl };
         private List<Karta> talia = new List<Karta>();
-        private UkladyKart ukl = new UkladyKart();
+//        private UkladyKart ukl = new UkladyKart();
+        public List<Gracz> listaWin;
 
         public Gra() { }
         public Gra(Int64 duzyBlind, List<Uzytkownik> u, Int64 stawkaWejsciowa)
@@ -38,8 +40,6 @@ namespace MainServer
                // q.kasiora -= stawkaWejsciowa;
                 user.Add(new Gracz(q,stawkaWejsciowa));
             }
-
-
         }
       
 
@@ -61,14 +61,17 @@ namespace MainServer
         //ok
         public void NoweRozdanie() // 
         {
+            stan = Stan.PREFLOP;
             pula = 0;
-
+            stol.Clear();
             rozdanie();
+            licznik++;
+            najwyzszaStawka = duzyBlind * licznik;
             foreach (Gracz a in aktywni)
             {
                 a.stawia = 0;
             }
-            stan = Stan.PREFLOP;
+            
             //generujKarty(); 
             
             //dealer
@@ -194,8 +197,9 @@ namespace MainServer
             if (KoniecLicytacji() == true)
             {
                 if (KoniecRozdania() == true)
-                {
-                    ZakonczenieRozdania();
+                {                 
+                    ZakonczenieRozdania();                 
+                    System.Threading.Thread.Sleep(7000);
                     if (KoniecGry() == true)
                         ZakonczGre();
                     else
@@ -219,35 +223,35 @@ namespace MainServer
             //        aktywni.Remove(g);
             //    }
             //}
-            for (int i = 0; i < aktywni.Count; i++)
-            {
-                if (aktywni[i].stan == Gracz.StanGracza.Fold)
+            
+                for (int i = 0; i < aktywni.Count; i++)
                 {
-                    aktywni.RemoveAt(i);
+                    if (aktywni[i].stan == Gracz.StanGracza.Fold)
+                    {
+                        aktywni.RemoveAt(i);
+                    }
                 }
-            }
-            List<Gracz> listaWin;
-            if (aktywni.Count == 1)
-                listaWin = new List<Gracz>(aktywni);
-            else
-                listaWin = new List<Gracz>(ktoWygral());
-            foreach (Gracz a in aktywni)
-            {
-                if (listaWin.FindIndex(delegate(Gracz c) { return c.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }) >= 0)
-                {
-                    a.handWin = a.zwroc_hand();
-                    a.najUkladWin = a.zwroc_najUklad();
-                    a.kasa += pula / listaWin.Count;
-                    a.stan = Gracz.StanGracza.Winner;
-                }
-                else
-                {
-                    if (a.kasa == 0)
-                        aktywni.Remove(a);
-                }
-            }
-            stan = Stan.SHOWDOWN;
 
+                if (aktywni.Count == 1)
+                    listaWin = new List<Gracz>(aktywni);
+                else
+                    listaWin = new List<Gracz>(ktoWygral());
+                foreach (Gracz a in aktywni)
+                {
+                    if (listaWin.FindIndex(delegate(Gracz c) { return c.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }) >= 0)
+                    {
+                        a.handWin = a.zwroc_hand();
+                        a.najUkladWin = a.zwroc_najUklad();
+                        a.kasa += pula / listaWin.Count;
+                        a.stan = Gracz.StanGracza.Winner;
+                    }
+                    else
+                    {
+                        if (a.kasa == 0)
+                            aktywni.Remove(a);
+                    }
+                }
+                stan = Stan.SHOWDOWN;
         }
 
         public bool czyWszyscyPobraliKarty()
@@ -275,6 +279,7 @@ namespace MainServer
             foreach (Gracz c in aktywni)
             {
                 c.zwroc_hand().Clear();
+                c.zwroc_najUklad().Clear();
             }
             stol.Clear();
             Random rnd1 = new Random();
@@ -371,7 +376,7 @@ namespace MainServer
             for (int i = 0; i < aktywni.Count; i++)
             {
                 Gracz g = aktywni[i];
-                aktywni[i].nazwaUkladu = ukl.co_mamy(stol, g);//aktywni[i]);//ukl.co_mamy(stol, aktywni[i].zwroc_hand(), aktywni[i].zwroc_najUklad());
+                aktywni[i].nazwaUkladu = g.ukl.co_mamy(stol, g);//aktywni[i]);//ukl.co_mamy(stol, aktywni[i].zwroc_hand(), aktywni[i].zwroc_najUklad());
                 if (aktywni[i].fold == false)
                 {
                     aktywni[i].wart = wartosci(aktywni[i].nazwaUkladu);
@@ -1112,12 +1117,23 @@ namespace MainServer
                 {
                     Gracz g = aktywni[i];
                     //List<Karta> cc = aktywni[i].zwroc_hand();
-                    return ukl.co_mamy(stol,g);//ukl.co_mamy(stol, aktywni[i].zwroc_hand(), aktywni[i].zwroc_najUklad());
+                    return g.ukl.co_mamy(stol,g);//ukl.co_mamy(stol, aktywni[i].zwroc_hand(), aktywni[i].zwroc_najUklad());
                 }
             }
                 return "";
         }
-
+        public List<Karta> MojNajUkl2(Int64 id)
+        {
+            for (int i = 0; i < aktywni.Count; i++)
+            {
+                if (aktywni[i].identyfikatorUzytkownika == id)
+                {
+                    Gracz g = aktywni[i];
+                    return g.zwroc_najUklad();
+                }
+            }
+            return null;
+        }
 
         //================================================================================================================================
 

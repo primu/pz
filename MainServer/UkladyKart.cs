@@ -10,8 +10,8 @@ namespace MainServer
         static Karta.figuraKarty[] figury = { Karta.figuraKarty.K2, Karta.figuraKarty.K3, Karta.figuraKarty.K4, Karta.figuraKarty.K5, Karta.figuraKarty.K6, Karta.figuraKarty.K7, Karta.figuraKarty.K8, Karta.figuraKarty.K9, Karta.figuraKarty.K10, Karta.figuraKarty.KJ, Karta.figuraKarty.KD, Karta.figuraKarty.KK, Karta.figuraKarty.KA, };
         static Karta.kolorKarty[] kolory = { Karta.kolorKarty.pik, Karta.kolorKarty.kier, Karta.kolorKarty.karo, Karta.kolorKarty.trefl };
         // public List<Karta> najlepszyUklad = new List<Karta>();
-        List<Karta> temp = new List<Karta>();
-        List<Karta> rekaIstol = new List<Karta>();
+        private  List<Karta> temp = new List<Karta>();
+        private   List<Karta> rekaIstol = new List<Karta>();
         int p = -1;
         static bool sf = false;//czy w tym momencie szukamy fulla
 

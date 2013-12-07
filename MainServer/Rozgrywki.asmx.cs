@@ -44,8 +44,40 @@ namespace MainServer
                     }
                 }
             }
-            return "";
-            //return g.NazwaMojegoUkladu2(id);
+            return "";          
+        }
+        [WebMethod]
+        public List<Karta> MojNajUkl(byte[] token)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                foreach (Pokoj p in pokoje)
+                {
+                    if (p.jestWpokoju(id))
+                    {
+                        return p.zwrocGre().MojNajUkl2(id);
+                    }
+                }
+            }
+            return null;
+        }
+
+        [WebMethod]
+        public List<Uzytkownik> ZwrocUserowStart(byte[] token)//zwraca uzytkownikow którzy wcisneli start w danym pokoju
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                foreach (Pokoj p in pokoje)
+                {
+                    if (p.jestWpokoju(id))
+                    {
+                        return p.user;
+                    }
+                }
+            }
+            return null;
         }
 
         [WebMethod]

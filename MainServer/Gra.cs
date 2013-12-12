@@ -23,6 +23,7 @@ namespace MainServer
         public List<Karta> stol = new List<Karta>();
         //double start, stop;
         private int licznik = 0;
+        public Int64 ktoDealer;
 
         private static Karta.figuraKarty[] figury = { Karta.figuraKarty.K2, Karta.figuraKarty.K3, Karta.figuraKarty.K4, Karta.figuraKarty.K5, Karta.figuraKarty.K6, Karta.figuraKarty.K7, Karta.figuraKarty.K8, Karta.figuraKarty.K9, Karta.figuraKarty.K10, Karta.figuraKarty.KJ, Karta.figuraKarty.KD, Karta.figuraKarty.KK, Karta.figuraKarty.KA, };
         private static Karta.kolorKarty[] kolory = { Karta.kolorKarty.pik, Karta.kolorKarty.kier, Karta.kolorKarty.karo, Karta.kolorKarty.trefl };
@@ -75,7 +76,9 @@ namespace MainServer
             //generujKarty(); 
             
             //dealer
-            aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoPoprzedni(aktywni, ktoBigBlind); }).stan = Gracz.StanGracza.Dealer;
+            Gracz v = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoPoprzedni(aktywni, ktoBigBlind); });
+            v.stan = Gracz.StanGracza.Dealer;
+            ktoDealer = v.identyfikatorUzytkownika;
             //smallBlind
             Gracz x = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == ktoBigBlind; });
             if (x.kasa > najwyzszaStawka / 2)
@@ -164,8 +167,11 @@ namespace MainServer
                     losujNaStol(1);
                     break;
             }
-            ktoStawia = KtoPoprzedni(aktywni, KtoPoprzedni(aktywni, ktoBigBlind));
+            ktoStawia = KtoNastepny(aktywni, ktoDealer); // zmienione!!!
+            do
+            {
             czyjRuch = ktoStawia;
+            } while (aktywni.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == czyjRuch && v.stan == Gracz.StanGracza.Fold; }) != null);
         }
         //ok
         public bool KoniecGry() // czy w grze został tylko jeden gracz 
@@ -211,7 +217,10 @@ namespace MainServer
                     NastepnyStan();
             }
             else
-                czyjRuch = KtoNastepny(aktywni, czyjRuch);
+                do
+                {
+                    czyjRuch = KtoNastepny(aktywni, czyjRuch);
+                } while (aktywni.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == czyjRuch && v.stan == Gracz.StanGracza.Fold; })!=null);
         }
         //chyba ok
         public void ZakonczenieRozdania() // akcja na zakończenie rozdania, przydzielenie zwyciestwa w rozdaniu 

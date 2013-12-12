@@ -199,7 +199,7 @@ namespace MainServer
                 if (KoniecRozdania() == true)
                 {                 
                     ZakonczenieRozdania();                 
-                    System.Threading.Thread.Sleep(7000);
+                    System.Threading.Thread.Sleep(9000);
                     if (KoniecGry() == true)
                         ZakonczGre();
                     else

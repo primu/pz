@@ -64,7 +64,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public List<Uzytkownik> ZwrocUserowStart(byte[] token)//zwraca uzytkownikow którzy wcisneli start w danym pokoju
+        public List<Uzytkownik> ZwrocUserowStart(byte[] token)//zwraca uzytkownikow którzy dolaczyli do danego pokoju
         {
             if (Baza.CzyPoprawny(token))
             {
@@ -79,7 +79,39 @@ namespace MainServer
             }
             return null;
         }
-
+        [WebMethod]
+        public List<Gracz> ZwrocGraczy(byte[] token)//zwraca uzytkownikow którzy wcisneli start w danym pokoju
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                foreach (Pokoj p in pokoje)
+                {
+                    if (p.jestWpokoju(id))
+                    {
+                        return p.zwrocGre().aktywni;
+                    }
+                }
+            }
+            return null;
+        }
+        [WebMethod]
+        public List<Karta> ZwrocNajUklGraczy(byte[] token, int i)//zwraca najuklad userow
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                foreach (Pokoj p in pokoje)
+                {
+                    if (p.jestWpokoju(id))
+                    {
+                        return p.zwrocGre().aktywni[i].zwroc_najUklad();
+                    }
+                }
+            }
+            return null;
+        }
+        //=========
         [WebMethod]
         public Gracz PobierzGracza(byte[] token,Int64 mojID)
         {

@@ -44,8 +44,40 @@ namespace MainServer
                     }
                 }
             }
-            return "";
-            //return g.NazwaMojegoUkladu2(id);
+            return "";          
+        }
+        [WebMethod]
+        public List<Karta> MojNajUkl(byte[] token)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                foreach (Pokoj p in pokoje)
+                {
+                    if (p.jestWpokoju(id))
+                    {
+                        return p.zwrocGre().MojNajUkl2(id);
+                    }
+                }
+            }
+            return null;
+        }
+
+        [WebMethod]
+        public List<Uzytkownik> ZwrocUserowStart(byte[] token)//zwraca uzytkownikow którzy wcisneli start w danym pokoju
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                foreach (Pokoj p in pokoje)
+                {
+                    if (p.jestWpokoju(id))
+                    {
+                        return p.user;
+                    }
+                }
+            }
+            return null;
         }
 
         [WebMethod]
@@ -345,25 +377,28 @@ namespace MainServer
             if (Baza.CzyPoprawny(token))
             {
                 int id = Baza.ZwrocIdUzytkownika(token);
-                foreach (Pokoj p in pokoje)
-                {
-                    if (p.jestWpokoju(id))
-                    {
-                        return p.zwrocGre();
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-               
+                Pokoj pok = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+
+                if (pok != null)
+                    return pok.zwrocGre();
+                else
+                    return null;
+                //foreach (Pokoj p in pokoje)
+                //{
+                //    if (p.jestWpokoju(id))
+                //    {
+                //        return p.zwrocGre();
+                //    }
+                //    else
+                //    {
+                //        return null;
+                //    }
+                //}               
             }
             else
             {
                 return null;
             }
-
-            return null;
         }
 
 
@@ -373,12 +408,27 @@ namespace MainServer
             foreach (Pokoj p in pokoje)
             {
                 p.user.Clear();
-                
-
+                p.czyscGre();
             }
 
         }
 
+        [WebMethod]
+        public Pokoj DajPokoj(string nazwa)
+        {
+            return pokoje.Find(delegate(Pokoj v) { return v.nazwaPokoju == nazwa; });
+        }
+
+        [WebMethod]
+        public Gra DajGre(string nazwa)
+        {
+            Pokoj pok = pokoje.Find(delegate(Pokoj v) { return v.nazwaPokoju == nazwa; });
+
+            if (pok != null)
+                return pok.zwrocGre();
+            else
+                return null;
+        }
 
     }
 }

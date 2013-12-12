@@ -93,6 +93,10 @@ namespace MainServer
 
              }*/
 
+        public void czyscGre()
+        {
+            gra = null;
+        }
 
     }
 }

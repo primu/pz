@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="IIS Web Application Name" description="" value="wstest" tags="IisApp">
+    <parameterEntry kind="ProviderPath" scope="IisApp" match="^C:\\Users\\HP\\Desktop\\2013-12-08_Projekt_od_Pawła\\pz-pawel2\\MainServer\\obj\\Release\\Package\\PackageTmp$" />
+    <parameterEntry kind="ProviderPath" scope="setAcl" match="^C:\\Users\\HP\\Desktop\\2013-12-08_Projekt_od_Pawła\\pz-pawel2\\MainServer\\obj\\Release\\Package\\PackageTmp$" />
+  </parameter>
+</parameters>

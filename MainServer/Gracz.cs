@@ -26,6 +26,9 @@ namespace MainServer
         public Int64 stawia;    //ile pieniędzi stawia w obecnym rozdaniu
         //public bool start = false;
 
+
+        public UkladyKart ukl = new UkladyKart();
+
         public Gracz() { }
          public Gracz(Uzytkownik u, Int64 stawka)
          {

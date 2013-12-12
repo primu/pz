@@ -203,7 +203,15 @@ namespace MainServer
         public void KoniecRuchu() // działania na końcu akcji gracza (Fold, Rise, Call, AllIn 
         {
             //nowe
-            aktywni.Remove(aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == czyjRuch && c.stan == Gracz.StanGracza.Fold; }));//usuwanie gracza ktory folduje
+            Gracz x = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == czyjRuch && c.stan == Gracz.StanGracza.Fold; });
+            if (x != null)
+            {
+                if (ktoStawia == x.identyfikatorUzytkownika)
+                    ktoStawia = KtoPoprzedni(aktywni, x.identyfikatorUzytkownika);
+                czyjRuch = KtoPoprzedni(aktywni, x.identyfikatorUzytkownika);
+                aktywni.Remove(x);//usuwanie gracza ktory folduje
+
+            }
             
             if (KoniecLicytacji() == true)
             {

@@ -21,7 +21,9 @@ namespace MainServer
 
         public bool jestWpokoju(Int64 idUsera)//sprawdza czy uzytkownik znajduje sie wpokoju, zwraca nr pokoju
         {
-            if (user.FindIndex(delegate(Uzytkownik c) { return c.identyfikatorUzytkownika == idUsera; }) >= 0)
+            //if (user.FindIndex(delegate(Uzytkownik c) { return c.identyfikatorUzytkownika == idUsera; }) >= 0)
+            Uzytkownik u=user.Find(delegate(Uzytkownik c) { return c.identyfikatorUzytkownika == idUsera; });
+            if (u !=null)
                 return true;
             else
                 return false;

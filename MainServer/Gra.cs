@@ -23,13 +23,14 @@ namespace MainServer
         public List<Karta> stol = new List<Karta>();
         //double start, stop;
         private int licznik = 0;
-        public Int64 ktoDealer;
 
         private static Karta.figuraKarty[] figury = { Karta.figuraKarty.K2, Karta.figuraKarty.K3, Karta.figuraKarty.K4, Karta.figuraKarty.K5, Karta.figuraKarty.K6, Karta.figuraKarty.K7, Karta.figuraKarty.K8, Karta.figuraKarty.K9, Karta.figuraKarty.K10, Karta.figuraKarty.KJ, Karta.figuraKarty.KD, Karta.figuraKarty.KK, Karta.figuraKarty.KA, };
         private static Karta.kolorKarty[] kolory = { Karta.kolorKarty.pik, Karta.kolorKarty.kier, Karta.kolorKarty.karo, Karta.kolorKarty.trefl };
         private List<Karta> talia = new List<Karta>();
 //        private UkladyKart ukl = new UkladyKart();
         public List<Gracz> listaWin;
+        Int64 ktoDealer;
+
 
         public Gra() { }
         public Gra(Int64 duzyBlind, List<Uzytkownik> u, Int64 stawkaWejsciowa)
@@ -71,11 +72,13 @@ namespace MainServer
             foreach (Gracz a in aktywni)
             {
                 a.stawia = 0;
+                a.stan = Gracz.StanGracza.Ready;//====dodane 
             }
             
             //generujKarty(); 
             
             //dealer
+            //aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoPoprzedni(aktywni, ktoBigBlind); }).stan = Gracz.StanGracza.Dealer;
             Gracz v = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoPoprzedni(aktywni, ktoBigBlind); });
             v.stan = Gracz.StanGracza.Dealer;
             ktoDealer = v.identyfikatorUzytkownika;
@@ -167,10 +170,14 @@ namespace MainServer
                     losujNaStol(1);
                     break;
             }
-            ktoStawia = KtoNastepny(aktywni, ktoDealer); // zmienione!!!
+            //ktoStawia = KtoPoprzedni(aktywni, KtoPoprzedni(aktywni, ktoBigBlind));
+            //czyjRuch = ktoStawia;
+            ktoStawia = KtoNastepny(aktywni, ktoDealer);
+            //nowe
+            czyjRuch = ktoDealer;
             do
             {
-            czyjRuch = ktoStawia;
+                czyjRuch = KtoNastepny(aktywni, czyjRuch);
             } while (aktywni.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == czyjRuch && v.stan == Gracz.StanGracza.Fold; }) != null);
         }
         //ok
@@ -200,6 +207,16 @@ namespace MainServer
         //ok
         public void KoniecRuchu() // działania na końcu akcji gracza (Fold, Rise, Call, AllIn 
         {
+            //nowe
+            Gracz x = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == czyjRuch && c.stan == Gracz.StanGracza.Fold; });
+            if (x != null)
+            {
+                if (ktoStawia == x.identyfikatorUzytkownika)
+                    ktoStawia = KtoPoprzedni(aktywni, x.identyfikatorUzytkownika);
+                czyjRuch = KtoPoprzedni(aktywni, x.identyfikatorUzytkownika);
+                aktywni.Remove(x);//usuwanie gracza ktory folduje
+
+            }
             if (KoniecLicytacji() == true)
             {
                 if (KoniecRozdania() == true)
@@ -217,10 +234,11 @@ namespace MainServer
                     NastepnyStan();
             }
             else
+                //czyjRuch = KtoNastepny(aktywni, czyjRuch);
                 do
                 {
                     czyjRuch = KtoNastepny(aktywni, czyjRuch);
-                } while (aktywni.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == czyjRuch && v.stan == Gracz.StanGracza.Fold; })!=null);
+                } while (aktywni.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == czyjRuch && v.stan == Gracz.StanGracza.Fold; }) != null);
         }
         //chyba ok
         public void ZakonczenieRozdania() // akcja na zakończenie rozdania, przydzielenie zwyciestwa w rozdaniu 

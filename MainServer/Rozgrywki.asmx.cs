@@ -36,29 +36,49 @@ namespace MainServer
             if (Baza.CzyPoprawny(token))
             {
                 int id = Baza.ZwrocIdUzytkownika(token);
-                foreach (Pokoj p in pokoje)
-                {
-                    if (p.jestWpokoju(id))
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                //foreach (Pokoj p in pokoje)
+                //{
+                    if (p!=null)//.jestWpokoju(id))
                     {
                         return p.zwrocGre().NazwaMojegoUkladu2(id);
                     }
-                }
+                //}
             }
             return "";          
         }
+        [WebMethod]
+        public bool CzyJestWaktywnych(byte[] token,Int64 idGracza)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int idMoje = Baza.ZwrocIdUzytkownika(token);
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(idMoje); });                
+                if (p != null)
+                {
+                    if (p.zwrocGre().aktywni.Find(delegate(Gracz a) { return a.identyfikatorUzytkownika == idGracza; }) != null)
+                        return true;
+                    else
+                        return false;   
+                }
+            }
+            return false;
+        }
+
         [WebMethod]
         public List<Karta> MojNajUkl(byte[] token)
         {
             if (Baza.CzyPoprawny(token))
             {
                 int id = Baza.ZwrocIdUzytkownika(token);
-                foreach (Pokoj p in pokoje)
-                {
-                    if (p.jestWpokoju(id))
+                //foreach (Pokoj p in pokoje)
+                //{
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                    if (p!=null)//.jestWpokoju(id))
                     {
                         return p.zwrocGre().MojNajUkl2(id);
                     }
-                }
+                //}
             }
             return null;
         }
@@ -69,13 +89,14 @@ namespace MainServer
             if (Baza.CzyPoprawny(token))
             {
                 int id = Baza.ZwrocIdUzytkownika(token);
-                foreach (Pokoj p in pokoje)
-                {
-                    if (p.jestWpokoju(id))
+                //foreach (Pokoj p in pokoje)
+                //{
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                    if (p!=null)//.jestWpokoju(id))
                     {
                         return p.user;
                     }
-                }
+                //}
             }
             return null;
         }
@@ -85,29 +106,31 @@ namespace MainServer
             if (Baza.CzyPoprawny(token))
             {
                 int id = Baza.ZwrocIdUzytkownika(token);
-                foreach (Pokoj p in pokoje)
-                {
-                    if (p.jestWpokoju(id))
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                //foreach (Pokoj p in pokoje)
+                //{
+                    if (p!=null)//.jestWpokoju(id))
                     {
-                        return p.zwrocGre().aktywni;
+                        return p.zwrocGre().user;//.aktywni;
                     }
-                }
+                //}
             }
             return null;
         }
         [WebMethod]
-        public List<Karta> ZwrocNajUklGraczy(byte[] token, int i)//zwraca najuklad userow
+        public List<Karta> ZwrocNajUklGraczy(byte[] token, Int64 idGracza)//zwraca najuklad userow
         {
             if (Baza.CzyPoprawny(token))
             {
                 int id = Baza.ZwrocIdUzytkownika(token);
-                foreach (Pokoj p in pokoje)
-                {
-                    if (p.jestWpokoju(id))
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                //foreach (Pokoj p in pokoje)
+                //{
+                    if (p!=null)//.jestWpokoju(id))
                     {
-                        return p.zwrocGre().aktywni[i].zwroc_najUklad();
+                        return p.zwrocGre().aktywni.Find(delegate(Gracz a) { return a.identyfikatorUzytkownika == idGracza; }).zwroc_najUklad();//[i].zwroc_najUklad();
                     }
-                }
+                //}
             }
             return null;
         }
@@ -118,19 +141,20 @@ namespace MainServer
             if (Baza.CzyPoprawny(token))
             {
                 int id = Baza.ZwrocIdUzytkownika(token);
-                foreach (Pokoj p in pokoje)
-                {
-                    if (p.jestWpokoju(id))
+               // foreach (Pokoj p in pokoje)
+               // {
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                    if (p!=null)//.jestWpokoju(id))
                     {
                         return p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == mojID; });
                     }
                     else
                         return null;
-                }
+                //}
             }
             else
                 return null;
-            return null;
+            //return null;
         }
 
 
@@ -140,9 +164,10 @@ namespace MainServer
             if (Baza.CzyPoprawny(token))
             {
                 int id = Baza.ZwrocIdUzytkownika(token);
-                foreach (Pokoj p in pokoje)
-                {
-                    if (p.jestWpokoju(id))
+                //foreach (Pokoj p in pokoje)
+                //{
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                    if (p!=null)//.jestWpokoju(id))
                     {
                         return p.zwrocGre().stol;//aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }).zwroc_hand();
 
@@ -151,7 +176,7 @@ namespace MainServer
                     {
                         return null;
                     }
-                }
+                //}
 
             }
             else
@@ -159,7 +184,7 @@ namespace MainServer
                 return null;
             }
 
-            return null;
+           // return null;
         }
         //Pokoje
         [WebMethod]
@@ -237,9 +262,10 @@ namespace MainServer
             if (Baza.CzyPoprawny(token))
             {
                 int id = Baza.ZwrocIdUzytkownika(token);
-                foreach (Pokoj p in pokoje)
-                {
-                    if (p.jestWpokoju(id))
+               // foreach (Pokoj p in pokoje)
+                //{
+                    Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                    if (p!=null)//.jestWpokoju(id))
                     {
                         Gracz s = p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; });
                         //s.czyPobralKarty = true;
@@ -253,7 +279,7 @@ namespace MainServer
                     {
                         return null;
                     }
-                }
+                //}
 
             }
             else
@@ -261,7 +287,7 @@ namespace MainServer
                 return null;
             }
 
-            return null;
+            //return null;
         }
 
         [WebMethod]
@@ -301,9 +327,10 @@ namespace MainServer
             if (Baza.CzyPoprawny(token) == true)
             {
                 int id = Baza.ZwrocIdUzytkownika(token);
-                foreach (Pokoj p in pokoje)
-                {
-                    if (p.jestWpokoju(id) == true)
+                //foreach (Pokoj p in pokoje)
+                //{
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                    if (p!=null)//.jestWpokoju(id) == true)
                     {
                         if (p.zwrocGre().czyjRuch == id)
                         {
@@ -324,7 +351,7 @@ namespace MainServer
                         }
 
                     }
-                }
+                //}
             }
             return temp;
         }
@@ -336,9 +363,11 @@ namespace MainServer
             if (Baza.CzyPoprawny(token) == true)
             {
                 int id = Baza.ZwrocIdUzytkownika(token);
-                foreach (Pokoj p in pokoje)
-                {
-                    if (p.jestWpokoju(id) == true)
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                //foreach (Pokoj p in pokoje)
+                //{
+                //    if (p.jestWpokoju(id) == true)
+                    if(p!=null)
                     {
                         if (p.zwrocGre().czyjRuch == id)
                         {
@@ -367,7 +396,7 @@ namespace MainServer
                                     else if (ile < R.kasa)
                                     {
                                         temp.kodKomunikatu = 404;
-                                        break;
+                                      //  break;
                                     }
                                 }
                                 if (pom == true)
@@ -377,28 +406,28 @@ namespace MainServer
                                     R.stawia += ile;
                                     temp.kodKomunikatu = 200;
                                     p.zwrocGre().KoniecRuchu();
-                                    break;
+                                   // break;
                                 }
                             }
                             else
                             {
                                 temp.kodKomunikatu = 404;
-                                break;
+                               // break;
                             }
 
                         }
                         else
                         {
                             temp.kodKomunikatu = 404;
-                            break;
+                            //break;
                         }
                     }
                     else
                     {
                         temp.kodKomunikatu = 404;
-                        break;
+                        //break;
                     }
-                }
+                //}
             }
             return temp;
         }
@@ -409,25 +438,42 @@ namespace MainServer
             if (Baza.CzyPoprawny(token))
             {
                 int id = Baza.ZwrocIdUzytkownika(token);
-                foreach (Pokoj p in pokoje)
-                {
-                    if (p.jestWpokoju(id))
-                    {
-                        return p.zwrocGre();
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-               
+                Pokoj pok = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+
+                if (pok != null)
+                    return pok.zwrocGre();
+                else
+                    return null;                             
             }
             else
             {
                 return null;
             }
 
-            return null;
+            //===========
+            //if (Baza.CzyPoprawny(token))
+            //{
+            //    int id = Baza.ZwrocIdUzytkownika(token);
+            //    //foreach (Pokoj p in pokoje)
+            //    for (int i = 0; i < pokoje.Count;i++ )
+            //    {
+            //        if (pokoje[i].jestWpokoju(id))
+            //        {
+            //            return pokoje[i].zwrocGre();
+            //        }
+            //        else
+            //        {
+            //            return null;
+            //        }
+            //    }
+               
+            //}
+            //else
+            //{
+            //    return null;
+            //}
+
+            //return null;
         }
 
 
@@ -438,7 +484,6 @@ namespace MainServer
             {
                 p.user.Clear();
                 
-
             }
 
         }

@@ -1,5 +1,0 @@
-C:\Users\HP\Desktop\2013-12-08_Projekt_od_Pawła\pz-pawel2\MainServer\bin\MainServer.dll
-C:\Users\HP\Desktop\2013-12-08_Projekt_od_Pawła\pz-pawel2\MainServer\bin\MainServer.pdb
-C:\Users\HP\Desktop\2013-12-08_Projekt_od_Pawła\pz-pawel2\MainServer\obj\Release\MainServer.dll
-C:\Users\HP\Desktop\2013-12-08_Projekt_od_Pawła\pz-pawel2\MainServer\obj\Release\MainServer.pdb
-C:\Users\HP\Desktop\2013-12-08_Projekt_od_Pawła\pz-pawel2\MainServer\obj\Release\MainServer.csprojResolveAssemblyReference.cache

@@ -30,7 +30,7 @@ namespace MainServer
 //        private UkladyKart ukl = new UkladyKart();
         public List<Gracz> listaWin;
         Int64 ktoDealer;
-
+        public bool wyniki = false;
 
         public Gra() { }
         public Gra(Int64 duzyBlind, List<Uzytkownik> u, Int64 stawkaWejsciowa)
@@ -63,6 +63,7 @@ namespace MainServer
         //ok
         public void NoweRozdanie() // 
         {
+            wyniki = false;
             stan = Stan.PREFLOP;
             pula = 0;
             stol.Clear();
@@ -71,9 +72,13 @@ namespace MainServer
             najwyzszaStawka = duzyBlind * licznik;
             foreach (Gracz a in aktywni)
             {
+                a.czyNoweRozdanie = false;
                 a.stawia = 0;
                 a.stan = Gracz.StanGracza.Ready;//====dodane 
             }
+            aktywni.RemoveAll(delegate(Gracz y) { return y.kasa == 0; });
+            user.RemoveAll(delegate(Gracz y) { return y.kasa == 0; });
+            
             
             //generujKarty(); 
             
@@ -178,7 +183,7 @@ namespace MainServer
             do
             {
                 czyjRuch = KtoNastepny(aktywni, czyjRuch);
-            } while (aktywni.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == czyjRuch && v.stan == Gracz.StanGracza.Fold; }) != null);
+            } while (aktywni.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == czyjRuch && (v.stan == Gracz.StanGracza.Fold || v.stan == Gracz.StanGracza.AllIn); }) != null);
         }
         //ok
         public bool KoniecGry() // czy w grze został tylko jeden gracz 
@@ -205,8 +210,9 @@ namespace MainServer
             }
         }
         //ok
-        public void KoniecRuchu() // działania na końcu akcji gracza (Fold, Rise, Call, AllIn 
+        public Komunikat KoniecRuchu() // działania na końcu akcji gracza (Fold, Rise, Call, AllIn 
         {
+            Komunikat k = new Komunikat();
             //nowe
             Gracz x = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == czyjRuch && c.stan == Gracz.StanGracza.Fold; });
             if (x != null)
@@ -222,13 +228,16 @@ namespace MainServer
                 if (KoniecRozdania() == true)
                 {                 
                     ZakonczenieRozdania();                 
-                    System.Threading.Thread.Sleep(9000);
-                    if (KoniecGry() == true)
-                        ZakonczGre();
-                    else
-                    {
-                        NoweRozdanie();
-                    }
+                    //System.Threading.Thread.Sleep(9000);
+                    wyniki = true;
+                    k.kodKomunikatu=213;
+                        return k;
+                    //if (KoniecGry() == true)
+                    //    ZakonczGre();
+                    //else
+                    //{
+                    //    NoweRozdanie();
+                    //}
                 }
                 else
                     NastepnyStan();
@@ -238,7 +247,9 @@ namespace MainServer
                 do
                 {
                     czyjRuch = KtoNastepny(aktywni, czyjRuch);
-                } while (aktywni.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == czyjRuch && v.stan == Gracz.StanGracza.Fold; }) != null);
+                } while (aktywni.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == czyjRuch && (v.stan == Gracz.StanGracza.Fold || v.stan == Gracz.StanGracza.AllIn); }) != null);
+            k.kodKomunikatu = 200;
+            return k;
         }
         //chyba ok
         public void ZakonczenieRozdania() // akcja na zakończenie rozdania, przydzielenie zwyciestwa w rozdaniu 

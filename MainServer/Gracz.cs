@@ -20,6 +20,7 @@ namespace MainServer
         public int wart;//wartość układu kart
         public string nazwaUkladu;
         public bool czyPobralKarty;
+        public bool czyNoweRozdanie = false;
 
         //Nowe
         public Int64 kasa;  //ile pieniędzy pozostało w obecnej grze

@@ -31,6 +31,58 @@ namespace MainServer
         //    return ukl.czyPara(); 
         //}
         [WebMethod]
+        public void ustawNoweRoz(byte[] token)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                if (p != null)
+                {
+                    p.zwrocGre().user.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }).czyNoweRozdanie = true;
+                    int e=p.zwrocGre().user.Count<Gracz>(delegate(Gracz a) { return a.czyNoweRozdanie == true; });
+                    if (e == p.zwrocGre().user.Count)
+                    {
+                        p.zwrocGre().NoweRozdanie();
+                    }
+                }
+            }
+        }
+        [WebMethod]
+        public bool czyWyniki(byte[] token)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                if (p != null)
+                {
+                    return p.zwrocGre().wyniki;
+                }
+            }
+            return false;
+        }
+
+        [WebMethod]
+        public void NoweRoz(byte[] token)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                if (p != null)
+                {
+                    if (p.zwrocGre().KoniecGry() == true)
+                       p.zwrocGre().ZakonczGre();
+                    else
+                    {
+                        p.zwrocGre().NoweRozdanie();
+                    }
+                }
+            }
+        }
+
+        [WebMethod]
         public string NazwaMojegoUkladu(byte[] token)
         {
             if (Baza.CzyPoprawny(token))
@@ -405,7 +457,7 @@ namespace MainServer
                                     p.zwrocGre().pula += ile;
                                     R.stawia += ile;
                                     temp.kodKomunikatu = 200;
-                                    p.zwrocGre().KoniecRuchu();
+                                    temp=p.zwrocGre().KoniecRuchu();
                                    // break;
                                 }
                             }

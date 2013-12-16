@@ -17,3 +17,17 @@ F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\PROJEKT\pz-499mo
 F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\PROJEKT\pz-499moja\pz-4997c714831ce506e31785f505c7d37385295a15\MainServer\obj\Debug\MainServer.csprojResolveAssemblyReference.cache
 F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\PROJEKT\pz-499moja\pz-4997c714831ce506e31785f505c7d37385295a15\MainServer\obj\Debug\MainServer.dll
 F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\PROJEKT\pz-499moja\pz-4997c714831ce506e31785f505c7d37385295a15\MainServer\obj\Debug\MainServer.pdb
+C:\Users\HP\Desktop\2013-12-13\pz-pawel2\MainServer\bin\MainServer.dll
+C:\Users\HP\Desktop\2013-12-13\pz-pawel2\MainServer\bin\MainServer.pdb
+C:\Users\HP\Desktop\2013-12-13\pz-pawel2\MainServer\obj\Debug\MainServer.csprojResolveAssemblyReference.cache
+C:\Users\HP\Desktop\2013-12-13\pz-pawel2\MainServer\obj\Debug\MainServer.dll
+C:\Users\HP\Desktop\2013-12-13\pz-pawel2\MainServer\obj\Debug\MainServer.pdb
+C:\Users\HP\Desktop\PROJEKT\2013-12-13_Projekt\pz-pawel2\MainServer\bin\MainServer.dll
+C:\Users\HP\Desktop\PROJEKT\2013-12-13_Projekt\pz-pawel2\MainServer\bin\MainServer.pdb
+C:\Users\HP\Desktop\PROJEKT\2013-12-13_Projekt\pz-pawel2\MainServer\obj\Debug\MainServer.dll
+C:\Users\HP\Desktop\PROJEKT\2013-12-13_Projekt\pz-pawel2\MainServer\obj\Debug\MainServer.pdb
+F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\PROJEKT\pz-73a1Allin1\pz-73a1b6caafe1f0ee9ff1661839b38c44324cd8d4\MainServer\obj\Debug\MainServer.csprojResolveAssemblyReference.cache
+F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\PROJEKT\pz-73a1Allin1\pz-73a1b6caafe1f0ee9ff1661839b38c44324cd8d4\MainServer\obj\Debug\MainServer.dll
+F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\PROJEKT\pz-73a1Allin1\pz-73a1b6caafe1f0ee9ff1661839b38c44324cd8d4\MainServer\bin\MainServer.dll
+F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\PROJEKT\pz-73a1Allin1\pz-73a1b6caafe1f0ee9ff1661839b38c44324cd8d4\MainServer\bin\MainServer.pdb
+F:\Documents\Politechnika Poznańska\V semestr\Praca Zespołowa\PROJEKT\pz-73a1Allin1\pz-73a1b6caafe1f0ee9ff1661839b38c44324cd8d4\MainServer\obj\Debug\MainServer.pdb

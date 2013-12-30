@@ -31,6 +31,58 @@ namespace MainServer
         //    return ukl.czyPara(); 
         //}
         [WebMethod]
+        public void ustawNoweRoz(byte[] token)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                if (p != null)
+                {
+                    p.zwrocGre().user.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }).czyNoweRozdanie = true;
+                    int e=p.zwrocGre().user.Count<Gracz>(delegate(Gracz a) { return a.czyNoweRozdanie == true; });
+                    if (e == p.zwrocGre().user.Count)
+                    {
+                        p.zwrocGre().NoweRozdanie();
+                    }
+                }
+            }
+        }
+        [WebMethod]
+        public bool czyWyniki(byte[] token)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                if (p != null)
+                {
+                    return p.zwrocGre().wyniki;
+                }
+            }
+            return false;
+        }
+
+        [WebMethod]
+        public void NoweRoz(byte[] token)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                int id = Baza.ZwrocIdUzytkownika(token);
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                if (p != null)
+                {
+                    if (p.zwrocGre().KoniecGry() == true)
+                       p.zwrocGre().ZakonczGre();
+                    else
+                    {
+                        p.zwrocGre().NoweRozdanie();
+                    }
+                }
+            }
+        }
+
+        [WebMethod]
         public string NazwaMojegoUkladu(byte[] token)
         {
             if (Baza.CzyPoprawny(token))
@@ -47,6 +99,7 @@ namespace MainServer
             }
             return "";          
         }
+
         [WebMethod]
         public bool CzyJestWaktywnych(byte[] token,Int64 idGracza)
         {
@@ -100,6 +153,7 @@ namespace MainServer
             }
             return null;
         }
+
         [WebMethod]
         public List<Gracz> ZwrocGraczy(byte[] token)//zwraca uzytkownikow którzy wcisneli start w danym pokoju
         {
@@ -117,6 +171,7 @@ namespace MainServer
             }
             return null;
         }
+
         [WebMethod]
         public List<Karta> ZwrocNajUklGraczy(byte[] token, Int64 idGracza)//zwraca najuklad userow
         {
@@ -134,6 +189,7 @@ namespace MainServer
             }
             return null;
         }
+
         //=========
         [WebMethod]
         public Gracz PobierzGracza(byte[] token,Int64 mojID)
@@ -156,7 +212,6 @@ namespace MainServer
                 return null;
             //return null;
         }
-
 
         [WebMethod]
         public List<Karta> zwrocStol(byte[] token)
@@ -291,7 +346,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat Start(byte[] token)//do skończenia? 
+        public Komunikat Start(byte[] token) 
         {
             if (Baza.CzyPoprawny(token))
             {
@@ -319,7 +374,6 @@ namespace MainServer
             return temp;
             
         }
-
 
         [WebMethod]
         public Komunikat Fold(byte[] token)
@@ -402,10 +456,12 @@ namespace MainServer
                                 if (pom == true)
                                 {
                                     R.kasa = R.kasa - ile;
+                                    if (R.kasa == 0)
+                                        R.stan = Gracz.StanGracza.AllIn;
                                     p.zwrocGre().pula += ile;
                                     R.stawia += ile;
                                     temp.kodKomunikatu = 200;
-                                    p.zwrocGre().KoniecRuchu();
+                                    temp=p.zwrocGre().KoniecRuchu();
                                    // break;
                                 }
                             }
@@ -476,7 +532,6 @@ namespace MainServer
             //return null;
         }
 
-
         [WebMethod]
         public void CzyscStoly()
         {
@@ -488,6 +543,27 @@ namespace MainServer
 
         }
 
+
+
+
+//=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======
+
+        [WebMethod]
+        public Pokoj DajPokoj(string nazwa)
+        {
+            return pokoje.Find(delegate(Pokoj v) { return v.nazwaPokoju == nazwa; });
+        }
+
+        [WebMethod]
+        public Gra DajGre(string nazwa)
+        {
+            Pokoj pok = pokoje.Find(delegate(Pokoj v) { return v.nazwaPokoju == nazwa; });
+
+            if (pok != null)
+                return pok.zwrocGre();
+            else
+                return null;
+        }
 
     }
 }

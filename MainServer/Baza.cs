@@ -344,7 +344,7 @@ namespace MainServer
                 id.ParameterName = "@IdPokoju";
                 tok.ParameterName = "@Token";
                 if (nowyPokoj == 0)
-                    id.Value = "NULL";
+                    id.SqlValue = DBNull.Value;
                 else
                     id.Value = nowyPokoj;
                 tok.Value = token;

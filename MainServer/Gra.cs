@@ -127,11 +127,10 @@ namespace MainServer
             
         }
 
-        public void ZakonczGre() // 
+/**/    public void ZakonczGre()
         {
-
+            
         }
-
         //ok
         public bool KoniecLicytacji() // gdy wszyscy Call do jednej stawki lub Fold 
         {
@@ -158,7 +157,7 @@ namespace MainServer
                 return true;
         }
         //powiedzmy ok
-        public void NastepnyStan() // przejście do następnego stanu gry 
+/**/    public void NastepnyStan() // przejście do następnego stanu gry 
         {
             stan++;
             switch (stan)
@@ -180,10 +179,28 @@ namespace MainServer
             ktoStawia = KtoNastepny(aktywni, ktoDealer);
             //nowe
             czyjRuch = ktoDealer;
+
+            Gracz x;
+            int controla = aktywni.Count;
             do
             {
                 czyjRuch = KtoNastepny(aktywni, czyjRuch);
-            } while (aktywni.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == czyjRuch && (v.stan == Gracz.StanGracza.Fold || v.stan == Gracz.StanGracza.AllIn); }) != null);
+                x = aktywni.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == czyjRuch && (v.stan == Gracz.StanGracza.Fold || v.stan == Gracz.StanGracza.AllIn); });
+                controla--;
+            } while (x != null && controla > 0);
+
+            if (controla == 0)//wszyscy w grze są All-In
+            {
+                czyjRuch = -1;
+                if (stan < Stan.RIVER)
+                    NastepnyStan();
+                else
+                {
+                    ZakonczenieRozdania();
+                    wyniki = true;
+                }
+
+            }
         }
         //ok
         public bool KoniecGry() // czy w grze został tylko jeden gracz 
@@ -210,7 +227,7 @@ namespace MainServer
             }
         }
         //ok
-        public Komunikat KoniecRuchu() // działania na końcu akcji gracza (Fold, Rise, Call, AllIn 
+        public Komunikat KoniecRuchu() // działania na końcu akcji gracza (Fold, Rise, Call, AllIn) 
         {
             Komunikat k = new Komunikat();
             //nowe
@@ -228,12 +245,15 @@ namespace MainServer
                 if (KoniecRozdania() == true)
                 {                 
                     ZakonczenieRozdania();                 
-                    //System.Threading.Thread.Sleep(9000);
                     wyniki = true;
-                    k.kodKomunikatu=213;
+
+                    if (KoniecGry() == true)
+                        ZakonczGre();
+                    else
+                    {
+                        k.kodKomunikatu = 213;
                         return k;
-                    //if (KoniecGry() == true)
-                    //    ZakonczGre();
+                    }
                     //else
                     //{
                     //    NoweRozdanie();
@@ -252,16 +272,8 @@ namespace MainServer
             return k;
         }
         //chyba ok
-        public void ZakonczenieRozdania() // akcja na zakończenie rozdania, przydzielenie zwyciestwa w rozdaniu 
+/**/    public void ZakonczenieRozdania() // akcja na zakończenie rozdania, przydzielenie zwyciestwa w rozdaniu 
         {
-            //foreach (Gracz g in aktywni)//usuniecie graczy foldujacych
-            //{
-            //    if (g.stan == Gracz.StanGracza.Fold)
-            //    {
-            //        aktywni.Remove(g);
-            //    }
-            //}
-            
                 for (int i = 0; i < aktywni.Count; i++)
                 {
                     if (aktywni[i].stan == Gracz.StanGracza.Fold)
@@ -274,8 +286,10 @@ namespace MainServer
                     listaWin = new List<Gracz>(aktywni);
                 else
                     listaWin = new List<Gracz>(ktoWygral());
-                foreach (Gracz a in aktywni)
+                //foreach (Gracz a in aktywni)
+                for (int i = 0; i < aktywni.Count; i++)//modyfikacja dla błędu folda przy all-in'ach
                 {
+                    Gracz a = aktywni[i];
                     if (listaWin.FindIndex(delegate(Gracz c) { return c.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }) >= 0)
                     {
                         a.handWin = a.zwroc_hand();
@@ -286,10 +300,23 @@ namespace MainServer
                     else
                     {
                         if (a.kasa == 0)
-                            aktywni.Remove(a);
+                        {
+                            if (ktoBigBlind == a.identyfikatorUzytkownika)
+                                ktoBigBlind = KtoNastepny(aktywni, ktoBigBlind);
+
+                            //i--;
+                        }
                     }
                 }
                 stan = Stan.SHOWDOWN;
+
+                aktualizujListeUser();
+                Rozgrywki.WyrzucGraczyKtorzyPrzegrali(this);
+
+                aktywni.RemoveAll(delegate(Gracz c) { return c.kasa == 0; });
+                user.RemoveAll(delegate(Gracz c) { return c.kasa == 0; });
+
+                czyjRuch = -1;
         }
 
         public bool czyWszyscyPobraliKarty()
@@ -372,7 +399,6 @@ namespace MainServer
             }
         }
       
-
         public string gen()
         {
             //pobierzUserow();
@@ -1066,66 +1092,6 @@ namespace MainServer
         }
 
         //=======================================================================================================================================
-        /* public Pokoj() { }
-
-         public Pokoj(string nazwa, int nr, int maxGraczy, Int64 stawkaWe, Int64 bigBlind, Uzytkownik u)
-         {
-             nazwaPokoju = nazwa;
-             numerPokoju = nr;
-             iloscGraczyMax = maxGraczy;
-             iloscGraczyObecna = 1;
-             graRozpoczeta = false;
-             stawkaWejsciowa = stawkaWe;
-             duzyBlind = bigBlind;
-             DodajUzytkownika(u);
-             ktoBlind = u.identyfikatorUzytkownika;
-             stan = Stan.STARTING;
-         } */
-
-        //public int DodajUzytkownika(Uzytkownik u)
-        //{
-        //    if (iloscGraczyObecna < iloscGraczyMax)
-        //    {
-        //        if (user.Exists(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }))
-        //        {
-        //            return 0;
-        //        }
-        //        else
-        //        {
-        //            user.Add(u);
-        //            if (iloscGraczyObecna == 1)
-        //                ktoBlind = u.identyfikatorUzytkownika;
-        //            return 1;
-        //        }
-        //    }
-        //    return -1;
-        //}
-
-        //public int UsunUzytkownika(Uzytkownik u)
-        //{
-        //    if (user.Exists(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }))
-        //    {
-        //        if (iloscGraczyObecna == 1)
-        //            ktoBlind = 0;
-        //        else
-        //        {
-        //            int i = user.FindIndex(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; });
-        //            if (i == user.Count - 1)
-        //                ktoBlind = user[1].identyfikatorUzytkownika;
-        //            else
-        //                ktoBlind = user[i + 1].identyfikatorUzytkownika;
-        //        }
-
-        //        user.Remove(u);
-
-        //        return 1;
-        //    }
-        //    else
-        //    {
-        //        return 0;
-        //    }
-
-        //}
 
         public Int64 KtoNastepny(List<Gracz> lista, Int64 numer)
         {
@@ -1146,7 +1112,6 @@ namespace MainServer
                 return lista[i - 1].identyfikatorUzytkownika;
         }
 
-
         public string NazwaMojegoUkladu2(Int64 id)
         {
             for (int i = 0; i < aktywni.Count; i++)
@@ -1160,6 +1125,7 @@ namespace MainServer
             }
                 return "";
         }
+
         public List<Karta> MojNajUkl2(Int64 id)
         {
             for (int i = 0; i < aktywni.Count; i++)
@@ -1174,16 +1140,5 @@ namespace MainServer
         }
 
         //================================================================================================================================
-
-
-
-
-
-
-
-
-
-
-
     }
 }

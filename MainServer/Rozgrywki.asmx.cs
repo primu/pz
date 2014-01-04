@@ -550,6 +550,21 @@ namespace MainServer
         }
 
 
+        static public void WyrzucGraczyKtorzyPrzegrali(Gra gra)
+        {
+            Pokoj pokoik = pokoje.Find(delegate(Pokoj v) { return v.zwrocGre() == gra; });
+            if (pokoik != null)
+            {
+                pokoik.user.RemoveAll(delegate(Uzytkownik c)
+                {
+                    return pokoik.zwrocGre().user.Find(delegate(Gracz v)
+                    {
+                        return v.identyfikatorUzytkownika == c.identyfikatorUzytkownika && v.kasiora == 0;
+                    }) != null;
+                });
+            }
+
+        }
 
 
 //=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======

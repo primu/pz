@@ -304,26 +304,18 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat OpuscStol(byte[] token)// trochę ZROBIONE  // do zabezpieczenia // chyba zabezpieczyłem ;p
+        public Komunikat OpuscStol(byte[] token)// trochę ZROBIONE  // do zabezpieczenia 
         {
-            if (Baza.CzyPoprawny(token))
+            try
             {
-                try
-                {
-                    Baza.ZmienPokoj(token, 0);
-                    temp.kodKomunikatu = 200;
-                    temp.trescKomunikatu = "Pomyślnie opuściłeś pokój!";
-                }
-                catch (Exception exc)
-                {
-                    temp.kodKomunikatu = 404;
-                    temp.trescKomunikatu = "Nastąpił nieoczekiwany błąd!";
-                }
+                Baza.ZmienPokoj(token, 0);
+                temp.kodKomunikatu = 200;
+                temp.trescKomunikatu = "Pomyślnie opuściłeś pokój!";
             }
-            else
+            catch (Exception exc)
             {
                 temp.kodKomunikatu = 404;
-                temp.trescKomunikatu = "Jesteś nie okej!";
+                temp.trescKomunikatu = "Nastąpił nieoczekiwany błąd!";
             }
             return temp;
         }

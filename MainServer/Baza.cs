@@ -133,26 +133,28 @@ namespace MainServer
         static public bool CzyPoprawny(byte[] token)
         {
             bool zalogowany = false;
-
-            using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
+            if (token != null)
             {
-                connection.Open();
-                var sqlQuery = "select DoKiedyWazny from Sesja where Token = @Token";
-
-                SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, connection);
-                DataSet dataSet = new DataSet();
-                dataAdapter.SelectCommand.Parameters.Add("@Token", SqlDbType.VarBinary).Value = token;
-                dataAdapter.Fill(dataSet,"Sesja");
-                if (dataSet.Tables["Sesja"].Rows.Count > 0)
+                using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
                 {
-                    int ok = (Int32)dataSet.Tables["Sesja"].Rows[0].ItemArray.GetValue(0);
-                    if (ok > (Int32)DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds)
+                    connection.Open();
+                    var sqlQuery = "select DoKiedyWazny from Sesja where Token = @Token";
+
+                    SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, connection);
+                    DataSet dataSet = new DataSet();
+                    dataAdapter.SelectCommand.Parameters.Add("@Token", SqlDbType.VarBinary).Value = token;
+                    dataAdapter.Fill(dataSet, "Sesja");
+                    if (dataSet.Tables["Sesja"].Rows.Count > 0)
                     {
-                        zalogowany = true;
-                    }
-                    else
-                    {
-                        zalogowany = false;
+                        int ok = (Int32)dataSet.Tables["Sesja"].Rows[0].ItemArray.GetValue(0);
+                        if (ok > (Int32)DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds)
+                        {
+                            zalogowany = true;
+                        }
+                        else
+                        {
+                            zalogowany = false;
+                        }
                     }
                 }
             }

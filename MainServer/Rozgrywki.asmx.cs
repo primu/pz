@@ -27,7 +27,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
                 if (p != null)
                 {
@@ -46,7 +46,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
                 if (p != null)
                 {
@@ -61,7 +61,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
                 if (p != null)
                 {
@@ -80,7 +80,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
                 //foreach (Pokoj p in pokoje)
                 //{
@@ -98,7 +98,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int idMoje = Baza.ZwrocIdUzytkownika(token);
+                Int64 idMoje = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(idMoje); });                
                 if (p != null)
                 {
@@ -116,7 +116,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 //foreach (Pokoj p in pokoje)
                 //{
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
@@ -134,7 +134,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 //foreach (Pokoj p in pokoje)
                 //{
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
@@ -152,7 +152,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
                 //foreach (Pokoj p in pokoje)
                 //{
@@ -170,7 +170,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
                 //foreach (Pokoj p in pokoje)
                 //{
@@ -189,7 +189,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                // foreach (Pokoj p in pokoje)
                // {
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
@@ -211,7 +211,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 //foreach (Pokoj p in pokoje)
                 //{
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
@@ -264,7 +264,7 @@ namespace MainServer
             {
                 Baza.ZmienPokoj(token, id);
                 pokoje.Find(delegate(Pokoj c) { return c.numerPokoju == id && c.iloscGraczyMax >= c.user.Count; }).DodajUzytkownika(Glowny.PobierzUzytkownika(Baza.ZwrocIdUzytkownika(token)));
-                //Baza.ZmienPokoj(Baza.CzyZalogowany(token), Baza.DodajPokoj("asd5", 1040, 233, 48));
+                Baza.AktualizujIloscUzytkownikowWPokoju(id, +1);
                 temp.kodKomunikatu = 200;
                 temp.trescKomunikatu = "ok";
             }
@@ -310,11 +310,15 @@ namespace MainServer
             {
                 try
                 {
+                    Int64 id = Baza.ZwrocIdUzytkownika(token);
+                    id = pokoje.Find(delegate(Pokoj p) { return p.jestWpokoju(id) == true; }).numerPokoju;
+                    Baza.AktualizujIloscUzytkownikowWPokoju(id, -1);
+
                     Baza.ZmienPokoj(token, 0);
                     temp.kodKomunikatu = 200;
                     temp.trescKomunikatu = "Pomyślnie opuściłeś pokój!";
                 }
-                catch (Exception exc)
+                catch (Exception)
                 {
                     temp.kodKomunikatu = 404;
                     temp.trescKomunikatu = "Nastąpił nieoczekiwany błąd!";
@@ -334,7 +338,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                // foreach (Pokoj p in pokoje)
                 //{
                     Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
@@ -368,7 +372,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 //Uzytkownik u = Glowny.PobierzUzytkownika(id);
                 //u.start = true;
                 Pokoj pokoj = pokoje.Find(delegate(Pokoj c) { return c.jestWpokoju(id) == true; });
@@ -398,7 +402,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token) == true)
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 //foreach (Pokoj p in pokoje)
                 //{
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
@@ -434,7 +438,7 @@ namespace MainServer
             bool pom = false;
             if (Baza.CzyPoprawny(token) == true)
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
                 //foreach (Pokoj p in pokoje)
                 //{
@@ -511,7 +515,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj pok = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
 
                 if (pok != null)
@@ -526,7 +530,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public void CzyscStoly()
+        public void CzyscStoly() // ostatecznie do usunięcia 
         {
             foreach (Pokoj p in pokoje)
             {

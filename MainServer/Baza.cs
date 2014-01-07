@@ -391,7 +391,7 @@ namespace MainServer
             }
             return listaPokoi;
         }
-        static public int ZwrocIdUzytkownika(byte[] token)
+        static public long ZwrocIdUzytkownika(byte[] token)
         {
             int id = 0;
             using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
@@ -582,6 +582,41 @@ namespace MainServer
                 
             }
         }
+
+        static public bool AktualizujIloscUzytkownikowWPokoju(Int64 idPokoju, Int64 ileDodac)
+        {
+            using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlCommand cmd = new SqlCommand("UPDATE Pokoj SET IloscGraczy = (IloscGraczy + @dodac) where IdPokoju = @id", connection);
+
+                    SqlParameter id = new SqlParameter();
+                    SqlParameter dodac = new SqlParameter();
+
+                    id.ParameterName = "@id";
+                    dodac.ParameterName = "@dodac";
+                    id.SqlValue = idPokoju;
+                    dodac.Value = ileDodac;
+
+                    cmd.Parameters.Add(id);
+                    cmd.Parameters.Add(dodac);
+
+                    cmd.ExecuteNonQuery();
+                    connection.Close();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    connection.Close();
+                    return false;
+                }
+
+            }
+        }
+
+
 
     }
 }

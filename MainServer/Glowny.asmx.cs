@@ -179,7 +179,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 temp.kodKomunikatu = 200;
                 temp.trescKomunikatu = id.ToString();
             }

@@ -78,16 +78,12 @@ namespace MainServer
             {
                 a.czyNoweRozdanie = false;
                 a.stawia = 0;
-                a.stan = Gracz.StanGracza.Ready;//====dodane 
+                a.stan = Gracz.StanGracza.Ready;
             }
             aktywni.RemoveAll(delegate(Gracz y) { return y.kasa == 0; });
             user.RemoveAll(delegate(Gracz y) { return y.kasa == 0; });
-            
-            
-            //generujKarty(); 
-            
-            //dealer
-            //aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoPoprzedni(aktywni, ktoBigBlind); }).stan = Gracz.StanGracza.Dealer;
+                                    
+            //dealer         
             Gracz v = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoPoprzedni(aktywni, ktoBigBlind); });
             v.stan = Gracz.StanGracza.Dealer;
             ktoDealer = v.identyfikatorUzytkownika;
@@ -251,8 +247,8 @@ namespace MainServer
             if (KoniecLicytacji() == true)
             {
                 if (KoniecRozdania() == true)
-                {                 
-                    ZakonczenieRozdania();                 
+                {
+                    ZakonczenieRozdania();
                     wyniki = true;
 
                     if (KoniecGry() == true)
@@ -271,11 +267,44 @@ namespace MainServer
                     NastepnyStan();
             }
             else
-                //czyjRuch = KtoNastepny(aktywni, czyjRuch);
+            //czyjRuch = KtoNastepny(aktywni, czyjRuch);
+            //do
+            //{
+            //    czyjRuch = KtoNastepny(aktywni, czyjRuch);
+            //} while (aktywni.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == czyjRuch && (v.stan == Gracz.StanGracza.Fold || v.stan == Gracz.StanGracza.AllIn); }) != null);
+            {
+                //ktoStawia = KtoNastepny(aktywni, ktoDealer);
+                //nowe
+                //czyjRuch = ktoDealer;
+
+                Gracz q;
+                int controla = aktywni.Count;
                 do
                 {
                     czyjRuch = KtoNastepny(aktywni, czyjRuch);
-                } while (aktywni.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == czyjRuch && (v.stan == Gracz.StanGracza.Fold || v.stan == Gracz.StanGracza.AllIn); }) != null);
+                    q = aktywni.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == czyjRuch && (v.stan == Gracz.StanGracza.Fold || v.stan == Gracz.StanGracza.AllIn); });
+                    controla--;
+                } while (q != null && controla > 0);
+
+                if (controla == 0)//wszyscy w grze są All-In
+                {
+                    czyjRuch = -1;
+                    if (stan < Stan.RIVER)
+                        NastepnyStan();
+                    else
+                    {
+                        ZakonczenieRozdania();
+                        wyniki = true;
+                        if (KoniecGry())
+                        {
+                            ZakonczGre();
+                        }
+                    }
+
+                }
+
+            }
+
             k.kodKomunikatu = 200;
             return k;
         }

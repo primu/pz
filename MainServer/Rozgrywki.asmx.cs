@@ -22,14 +22,6 @@ namespace MainServer
         static private List<Akcja> akcje = new List<Akcja>();
         static UkladyKart ukl = new UkladyKart();
       
-        //[WebMethod]
-        //public int gen()
-        //{         
-        //    ukl.generujKarty();
-
-
-        //    return ukl.czyPara(); 
-        //}
         [WebMethod]
         public void ustawNoweRoz(byte[] token)
         {
@@ -48,6 +40,7 @@ namespace MainServer
                 }
             }
         }
+
         [WebMethod]
         public bool czyWyniki(byte[] token)
         {
@@ -265,7 +258,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat DolaczDoStolu(byte[] token, Int64 id)
+        public Komunikat DolaczDoStolu(byte[] token, Int64 id) // do zabezpieczenia 
         {
             if (Baza.CzyPoprawny(token))
             {
@@ -284,7 +277,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat UtworzStol(byte[] token, string nazwa, int stawka, int blind, int ilosc)
+        public Komunikat UtworzStol(byte[] token, string nazwa, int stawka, int blind, int ilosc) // do zabezpieczenia 
         {
             if (Baza.CzyPoprawny(token))
             {
@@ -311,8 +304,19 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat OpuscStol(byte[] token)// NIE ZROBIONE 
+        public Komunikat OpuscStol(byte[] token)// trochę ZROBIONE  // do zabezpieczenia 
         {
+            try
+            {
+                Baza.ZmienPokoj(token, 0);
+                temp.kodKomunikatu = 200;
+                temp.trescKomunikatu = "Pomyślnie opuściłeś pokój!";
+            }
+            catch (Exception exc)
+            {
+                temp.kodKomunikatu = 404;
+                temp.trescKomunikatu = "Nastąpił nieoczekiwany błąd!";
+            }
             return temp;
         }
     
@@ -352,7 +356,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat Start(byte[] token) 
+        public Komunikat Start(byte[] token) // do zabezpieczenia  
         {
             if (Baza.CzyPoprawny(token))
             {
@@ -375,14 +379,14 @@ namespace MainServer
             else
             {
                 temp.kodKomunikatu = 404;
-                temp.trescKomunikatu = "ok";
+                temp.trescKomunikatu = "not_ok";
             }
             return temp;
             
         }
 
         [WebMethod]
-        public Komunikat Fold(byte[] token)
+        public Komunikat Fold(byte[] token) // do zabezpieczenia 
         {
             if (Baza.CzyPoprawny(token) == true)
             {
@@ -417,7 +421,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat CallRiseAllIn(byte[] token, Int64 ile)
+        public Komunikat CallRiseAllIn(byte[] token, Int64 ile) // do zabezpieczenia 
         {
             bool pom = false;
             if (Baza.CzyPoprawny(token) == true)
@@ -495,7 +499,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Gra ZwrocGre(byte[] token)
+        public Gra ZwrocGre(byte[] token) // do zabezpieczenia 
         {
             if (Baza.CzyPoprawny(token))
             {
@@ -511,31 +515,6 @@ namespace MainServer
             {
                 return null;
             }
-
-            //===========
-            //if (Baza.CzyPoprawny(token))
-            //{
-            //    int id = Baza.ZwrocIdUzytkownika(token);
-            //    //foreach (Pokoj p in pokoje)
-            //    for (int i = 0; i < pokoje.Count;i++ )
-            //    {
-            //        if (pokoje[i].jestWpokoju(id))
-            //        {
-            //            return pokoje[i].zwrocGre();
-            //        }
-            //        else
-            //        {
-            //            return null;
-            //        }
-            //    }
-               
-            //}
-            //else
-            //{
-            //    return null;
-            //}
-
-            //return null;
         }
 
         [WebMethod]
@@ -550,22 +529,22 @@ namespace MainServer
         }
 
 
-        static public void WyrzucGraczyKtorzyPrzegrali(Gra gra)
+        static public void WyrzucUzytkownikowKtorzyPrzegrali(Gra gra)
         {
             Pokoj pokoik = pokoje.Find(delegate(Pokoj v) { return v.zwrocGre() == gra; });
             if (pokoik != null)
             {
+
                 pokoik.user.RemoveAll(delegate(Uzytkownik c)
                 {
                     return pokoik.zwrocGre().user.Find(delegate(Gracz v)
                     {
-                        return v.identyfikatorUzytkownika == c.identyfikatorUzytkownika && v.kasiora == 0;
-                    }) != null;
+                        return v.identyfikatorUzytkownika == c.identyfikatorUzytkownika;
+                    }) == null;
                 });
             }
 
         }
-
 
 //=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======
 

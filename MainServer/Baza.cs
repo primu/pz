@@ -547,5 +547,39 @@ namespace MainServer
         {
             return Regex.IsMatch(token, @"[A-Za-z0-9;:=?@\[\\\]^_`]{256}");
         }
+
+        static public bool AktualizujKaseUzytkownika(Int64 identyfikator, Int64 ileDodac)
+        {
+            using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlCommand cmd = new SqlCommand("UPDATE Uzytkownik SET Kasa = (Kasa + @dodac) where IdUzytkownika = @id", connection);
+
+                    SqlParameter id = new SqlParameter();
+                    SqlParameter dodac = new SqlParameter();
+
+                    id.ParameterName = "@id";
+                    dodac.ParameterName = "@dodac";
+                    id.SqlValue = identyfikator;
+                    dodac.Value = ileDodac;
+
+                    cmd.Parameters.Add(id);
+                    cmd.Parameters.Add(dodac);
+                
+                    cmd.ExecuteNonQuery();
+                    connection.Close();
+                    return true;
+                }
+                catch (Exception)
+                {                    
+                    connection.Close();
+                    return false;
+                }
+                
+            }
+        }
+
     }
 }

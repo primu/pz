@@ -49,20 +49,20 @@ namespace MainServer
             if (Baza.CzyIstniejeUzytkownik(nazwa))
             {
                 kom.kodKomunikatu = 111;
-                kom.trescKomunikatu = "ISTNIEJE";
+                kom.trescKomunikatu = "NAZWA ZAJĘTA!";
             }
             else
             {
                 if(!Baza.CzyPoprawnyEmail(email))
                 {
-                    kom.trescKomunikatu="NIEPOPRAWNY FORMAT";
+                    kom.trescKomunikatu="NIEPOPRAWNY FORMAT ADRESU EMAIL!";
                     return kom;
                 }
 
                 if (Baza.CzyIstniejEmail(email))
                 {
                     kom.kodKomunikatu = 111;
-                    kom.trescKomunikatu = "ISTNIEJE";
+                    kom.trescKomunikatu = "EMAIL ZAJĘTY!";
                 }
                 else
                 {

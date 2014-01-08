@@ -66,34 +66,29 @@ namespace MainServer
         {
             gra = new Gra(duzyBlind, user, stawkaWejsciowa);
             gra.StartujGre();
+            graRozpoczeta = true;
             gra.NoweRozdanie();
         }
 
-        /*     public int UsunUzytkownika(Uzytkownik u)
+        public void UsunUzytkownika(Int64 u)
              {
-                 if (user.Exists(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }))
+                 if (user.Exists(delegate(Uzytkownik a) { return u == a.identyfikatorUzytkownika; }))
                  {
-                     if (iloscGraczyObecna == 1)
-                         ktoBlind = 0;
-                     else
+                     if (graRozpoczeta)
                      {
-                         int i = user.FindIndex(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; });
-                         if (i == user.Count - 1)
-                             ktoBlind = user[1].identyfikatorUzytkownika;
-                         else
-                             ktoBlind = user[i + 1].identyfikatorUzytkownika;
+                         if (gra.ktoBigBlind == u)
+                             gra.ktoBigBlind = gra.KtoNastepny(gra.user, u);
+                         if (gra.ktoDealer == u)
+                             gra.ktoDealer = gra.KtoPoprzedni(gra.user, u);
+                         if (gra.czyjRuch == u)
+                             gra.KoniecRuchu();
+                         gra.pula += gra.user.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == u; }).kasa;
+                         gra.user.RemoveAll(delegate(Gracz v) { return v.identyfikatorUzytkownika == u; });
+                         gra.aktywni.RemoveAll(delegate(Gracz v) { return v.identyfikatorUzytkownika == u; });
                      }
-
-                     user.Remove(u);
-
-                     return 1;
+                     user.RemoveAll(delegate(Uzytkownik v) { return v.identyfikatorUzytkownika == u; });
                  }
-                 else
-                 {
-                     return 0;
-                 }
-
-             }*/
+             }
 
 
     }

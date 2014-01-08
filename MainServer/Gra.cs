@@ -29,7 +29,7 @@ namespace MainServer
         private List<Karta> talia = new List<Karta>();
 //        private UkladyKart ukl = new UkladyKart();
         public List<Gracz> listaWin;
-        Int64 ktoDealer;
+        public Int64 ktoDealer;
         public bool wyniki = false;
 
         public Gra() { }
@@ -130,6 +130,9 @@ namespace MainServer
 /**/    public void ZakonczGre()
         {
             Baza.AktualizujKaseUzytkownika(listaWin[0].identyfikatorUzytkownika, listaWin[0].kasa);
+
+
+
         }
         //ok
         public bool KoniecLicytacji() // gdy wszyscy Call do jednej stawki lub Fold 

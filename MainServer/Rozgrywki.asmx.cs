@@ -18,7 +18,7 @@ namespace MainServer
     {
         //Tymczasowe deklaracje
         private Komunikat temp = new Komunikat();
-        static private List<Pokoj> pokoje =  new List<Pokoj>();
+        static private List<Pokoj> pokoje =  new List<Pokoj>(Baza.ZwrocPokoje());
         static private List<Akcja> akcje = new List<Akcja>();
         static UkladyKart ukl = new UkladyKart();
       
@@ -311,10 +311,12 @@ namespace MainServer
                 try
                 {
                     Int64 id = Baza.ZwrocIdUzytkownika(token);
-                    id = pokoje.Find(delegate(Pokoj p) { return p.jestWpokoju(id) == true; }).numerPokoju;
-                    Baza.AktualizujIloscUzytkownikowWPokoju(id, -1);
+                    Int64 temp2 = pokoje.Find(delegate(Pokoj p) { return p.jestWpokoju(id) == true; }).numerPokoju;
+                    Baza.AktualizujIloscUzytkownikowWPokoju(temp2, -1);
 
                     Baza.ZmienPokoj(token, 0);
+                    pokoje.Find(delegate(Pokoj p) { return p.jestWpokoju(id) == true; }).UsunUzytkownika(id);
+
                     temp.kodKomunikatu = 200;
                     temp.trescKomunikatu = "Pomyślnie opuściłeś pokój!";
                 }

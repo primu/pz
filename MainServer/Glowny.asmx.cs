@@ -337,7 +337,7 @@ namespace MainServer
             wiad.Clear();
             for (int i = 0; i < wiadomosci.Count; i++)
             {
-                if (wiad[i].numerPokoju == pokoj)
+                if (wiadomosci[i].numerPokoju == pokoj)
                 {
                     if (timT < wiadomosci.ElementAt(i).stempelCzasowy)
                     {

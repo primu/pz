@@ -46,20 +46,22 @@ namespace MainServer
             return gra;
         }
 
-        public int DodajUzytkownika(Uzytkownik u)
+        public bool DodajUzytkownika(Uzytkownik u)
         {
-            if (iloscGraczyObecna < iloscGraczyMax)
+            if (user.Count < iloscGraczyMax)
             {
                 if (user.Exists(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }))
                 {
-                    return 0;
+                    return false;
                 }
                 else
                 {
-                    user.Add(u);                    
+                    user.Add(u);
+                    iloscGraczyObecna = user.Count;
+                    return true;
                 }
             }
-            return -1;
+            return false;
         }
 
         public void utworz()
@@ -70,7 +72,7 @@ namespace MainServer
             gra.NoweRozdanie();
         }
 
-        public void UsunUzytkownika(Int64 u)
+        public bool UsunUzytkownika(Int64 u)
              {
                  if (user.Exists(delegate(Uzytkownik a) { return u == a.identyfikatorUzytkownika; }))
                  {
@@ -87,7 +89,10 @@ namespace MainServer
                          gra.aktywni.RemoveAll(delegate(Gracz v) { return v.identyfikatorUzytkownika == u; });
                      }
                      user.RemoveAll(delegate(Uzytkownik v) { return v.identyfikatorUzytkownika == u; });
+                     iloscGraczyObecna = user.Count;
+                     return true;
                  }
+                 return false;
              }
 
 

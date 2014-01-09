@@ -582,7 +582,7 @@ namespace MainServer
                 
             }
         }
-
+/*
         static public bool AktualizujIloscUzytkownikowWPokoju(Int64 idPokoju, Int64 ileDodac)
         {
             using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
@@ -615,7 +615,27 @@ namespace MainServer
 
             }
         }
+        */
+        static public Uzytkownik ZwrocUzytkownika(Int64 id)
+        {
+            Uzytkownik user = null;
+            using (SqlConnection Polaczenie = new SqlConnection(CiagPolaczenia))
+            {
+                var sqlQuery = "select * from Uzytkownik u join Sesja s on s.IdUzytkownika=u.IdUzytkownika where s.DoKiedyWazny > @Wazny and s.IdUzytkownika = @id";
 
+                SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, Polaczenie);
+                DataSet dataSet = new DataSet();
+                dataAdapter.SelectCommand.Parameters.Add("@Wazny", SqlDbType.Int).Value = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+                dataAdapter.SelectCommand.Parameters.Add("@id", SqlDbType.Int).Value = id;
+                dataAdapter.Fill(dataSet, "Uzytkownik");
+                if (dataSet.Tables["Uzytkownik"].Rows.Count > 0)
+                {
+                    DataRow wiersz = dataSet.Tables["Uzytkownik"].Rows[0];
+                    user = new Uzytkownik() { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["IdUzytkownika"], numerPokoju = (int)wiersz["IdPokoju"] };
+                }
+            }
+            return user;
+        }
 
 
     }

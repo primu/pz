@@ -479,7 +479,7 @@ namespace MainServer
             {
                 Gracz g = aktywni[i];
                 aktywni[i].nazwaUkladu = g.ukl.co_mamy(stol, g);//aktywni[i]);//ukl.co_mamy(stol, aktywni[i].zwroc_hand(), aktywni[i].zwroc_najUklad());
-                if (aktywni[i].fold == false)
+                if (aktywni[i].stan != Gracz.StanGracza.Fold)//zmienione MB
                 {
                     aktywni[i].wart = wartosci(aktywni[i].nazwaUkladu);
                 }
@@ -489,7 +489,7 @@ namespace MainServer
             int ile = 0; // ile osob ma najwyzszy uklad
             for (int j = 0; j < aktywni.Count; j++)
             {
-                if (aktywni[j].fold == false)
+                if (aktywni[j].stan != Gracz.StanGracza.Fold)//zmienione MB
                 {
                     if (aktywni[j].wart == max)
                     {

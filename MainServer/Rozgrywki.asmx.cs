@@ -18,10 +18,10 @@ namespace MainServer
     {
         //Tymczasowe deklaracje
         private Komunikat temp = new Komunikat();
-        static private List<Pokoj> pokoje =  new List<Pokoj>(Baza.ZwrocPokoje());
+        static private List<Pokoj> pokoje =  new List<Pokoj>();//Baza.ZwrocPokoje());
         static private List<Akcja> akcje = new List<Akcja>();
         static UkladyKart ukl = new UkladyKart();
-      
+
         [WebMethod]
         public void ustawNoweRoz(byte[] token)
         {
@@ -263,15 +263,23 @@ namespace MainServer
             if (Baza.CzyPoprawny(token))
             {
                 Baza.ZmienPokoj(token, id);
-                pokoje.Find(delegate(Pokoj c) { return c.numerPokoju == id && c.iloscGraczyMax >= c.user.Count; }).DodajUzytkownika(Glowny.PobierzUzytkownika(Baza.ZwrocIdUzytkownika(token)));
-                Baza.AktualizujIloscUzytkownikowWPokoju(id, +1);
-                temp.kodKomunikatu = 200;
-                temp.trescKomunikatu = "ok";
+                Pokoj pok = pokoje.Find(delegate(Pokoj c) { return c.numerPokoju == id && c.iloscGraczyMax >= c.user.Count; });
+                Uzytkownik uzyt = Baza.ZwrocUzytkownika(Baza.ZwrocIdUzytkownika(token));   
+                if (pok.DodajUzytkownika(uzyt))
+                {
+                    temp.kodKomunikatu = 200;
+                    temp.trescKomunikatu = "ok";
+                }
+                else
+                {
+                    temp.kodKomunikatu = 404;
+                    temp.trescKomunikatu = "Błąd!!! Pokój jest pełny lub już się w nim znajdujesz!";
+                }
             }
             else
             {
                 temp.kodKomunikatu = 404;
-                temp.trescKomunikatu = "not_ok";
+                temp.trescKomunikatu = "Jesteś nie okej!";
             }
             return temp;
         }
@@ -311,14 +319,19 @@ namespace MainServer
                 try
                 {
                     Int64 id = Baza.ZwrocIdUzytkownika(token);
-                    Int64 temp2 = pokoje.Find(delegate(Pokoj p) { return p.jestWpokoju(id) == true; }).numerPokoju;
-                    Baza.AktualizujIloscUzytkownikowWPokoju(temp2, -1);
+                    Pokoj temp2 = pokoje.Find(delegate(Pokoj p) { return p.jestWpokoju(id) == true; });
 
                     Baza.ZmienPokoj(token, 0);
-                    pokoje.Find(delegate(Pokoj p) { return p.jestWpokoju(id) == true; }).UsunUzytkownika(id);
-
-                    temp.kodKomunikatu = 200;
-                    temp.trescKomunikatu = "Pomyślnie opuściłeś pokój!";
+                    if (pokoje.Find(delegate(Pokoj p) { return p.jestWpokoju(id) == true; }).UsunUzytkownika(id))
+                    {
+                        temp.kodKomunikatu = 200;
+                        temp.trescKomunikatu = "Pomyślnie opuściłeś pokój!";
+                    }
+                    else
+                    {
+                        temp.kodKomunikatu = 404;
+                        temp.trescKomunikatu = "Błąd!!! Nie znajdujesz się w tym pokoju!";
+                    }
                 }
                 catch (Exception)
                 {

@@ -95,7 +95,7 @@ namespace MainServer
                 {
                     foreach (DataRow wiersz in dataSet.Tables["Uzytkownik"].Rows)
                     {
-                        listaUzytkownikow.Add(new Uzytkownik{kasiora=(int)wiersz["Kasa"], nazwaUzytkownika=wiersz["Nazwa"].ToString(),identyfikatorUzytkownika=(int)wiersz["IdUzytkownika"]});
+                        listaUzytkownikow.Add(new Uzytkownik { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["IdUzytkownika"], numerPokoju = (int)wiersz["IdPokoju"] });
                     }
                 }
             }
@@ -631,7 +631,7 @@ namespace MainServer
                 if (dataSet.Tables["Uzytkownik"].Rows.Count > 0)
                 {
                     DataRow wiersz = dataSet.Tables["Uzytkownik"].Rows[0];
-                    user = new Uzytkownik() { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["IdUzytkownika"], numerPokoju = (int)wiersz["IdPokoju"] };
+                    user = new Uzytkownik { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["IdUzytkownika"], numerPokoju = (int)wiersz["IdPokoju"] };
                 }
             }
             return user;

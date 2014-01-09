@@ -78,12 +78,21 @@ namespace MainServer
                  {
                      if (graRozpoczeta)
                      {
-                         if (gra.ktoBigBlind == u)
-                             gra.ktoBigBlind = gra.KtoNastepny(gra.user, u);
-                         if (gra.ktoDealer == u)
-                             gra.ktoDealer = gra.KtoPoprzedni(gra.user, u);
-                         if (gra.czyjRuch == u)
-                             gra.KoniecRuchu();
+                         if (gra.user.Find(delegate(Gracz g) { return g.identyfikatorUzytkownika == u && g.stan == Gracz.StanGracza.Fold; }) == null)
+                         {
+                             if (gra.ktoBigBlind == u)
+                                 gra.ktoBigBlind = gra.KtoNastepny(gra.user, u);
+                             if (gra.ktoDealer == u)
+                                 gra.ktoDealer = gra.KtoPoprzedni(gra.user, u);
+                             if (gra.ktoStawia == u)
+                             {
+                                 Gracz usuwany = gra.user.Find(delegate(Gracz g) { return g.identyfikatorUzytkownika == u; });
+                                 Gracz temp = gra.user.Find(delegate(Gracz g) { return g.identyfikatorUzytkownika == gra.KtoNastepny(gra.aktywni, u); });
+                                // if (
+                             }
+                             if (gra.czyjRuch == u)
+                                 gra.KoniecRuchu();
+                         }
                          gra.pula += gra.user.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == u; }).kasa;
                          gra.user.RemoveAll(delegate(Gracz v) { return v.identyfikatorUzytkownika == u; });
                          gra.aktywni.RemoveAll(delegate(Gracz v) { return v.identyfikatorUzytkownika == u; });

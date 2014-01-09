@@ -261,12 +261,13 @@ namespace MainServer
         public Komunikat DolaczDoStolu(byte[] token, Int64 id) // do zabezpieczenia 
         {
             if (Baza.CzyPoprawny(token))
-            {
-                Baza.ZmienPokoj(token, id);
+            {                
                 Pokoj pok = pokoje.Find(delegate(Pokoj c) { return c.numerPokoju == id && c.iloscGraczyMax >= c.user.Count; });
-                Uzytkownik uzyt = Baza.ZwrocUzytkownika(Baza.ZwrocIdUzytkownika(token));   
+                Uzytkownik uzyt = Glowny.PobierzUzytkownika(Baza.ZwrocIdUzytkownika(token));   
                 if (pok.DodajUzytkownika(uzyt))
                 {
+                    Baza.ZmienPokoj(token, id);
+                    Glowny.ZmienPokoj(uzyt.identyfikatorUzytkownika, id);
                     temp.kodKomunikatu = 200;
                     temp.trescKomunikatu = "ok";
                 }
@@ -320,10 +321,11 @@ namespace MainServer
                 {
                     Int64 id = Baza.ZwrocIdUzytkownika(token);
                     Pokoj temp2 = pokoje.Find(delegate(Pokoj p) { return p.jestWpokoju(id) == true; });
-
-                    Baza.ZmienPokoj(token, 0);
+                    
                     if (pokoje.Find(delegate(Pokoj p) { return p.jestWpokoju(id) == true; }).UsunUzytkownika(id))
                     {
+                        Baza.ZmienPokoj(token, 0);
+                        Glowny.ZmienPokoj(id, 0);
                         temp.kodKomunikatu = 200;
                         temp.trescKomunikatu = "Pomyślnie opuściłeś pokój!";
                     }

@@ -367,6 +367,14 @@ namespace MainServer
         {
             return uzytkownicy.Find(delegate(Uzytkownik c) { return c.identyfikatorUzytkownika == id; });
         }
+
+        static public void ZmienPokoj(Int64 idUzytkownika, Int64 idPokoju)
+        {
+            Uzytkownik k = uzytkownicy.Find(delegate(Uzytkownik u){return u.identyfikatorUzytkownika == idUzytkownika;});
+            k.numerPokoju = idPokoju;
+            k.start = false;
+
+        }
         //co dalej?
 
     }

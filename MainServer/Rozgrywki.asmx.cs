@@ -22,6 +22,30 @@ namespace MainServer
         static private List<Akcja> akcje = new List<Akcja>();
         static UkladyKart ukl = new UkladyKart();
 
+
+        [WebMethod]
+        public Komunikat PotwierdzZakonczenie(byte[] token)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                if (p != null)
+                {
+                    if (p.zwrocGre().stan == Gra.Stan.END)
+                    {
+                        OpuscStol(token);
+                        p.WyczyscPokoj();
+                        temp.kodKomunikatu = 200;
+                        temp.trescKomunikatu = "Gra została zakończona, pokój jest już wolny";
+                    }
+                }
+            }
+
+            return temp;
+        }
+
+
         [WebMethod]
         public void ustawNoweRoz(byte[] token)
         {
@@ -31,11 +55,14 @@ namespace MainServer
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
                 if (p != null)
                 {
-                    p.zwrocGre().user.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }).czyNoweRozdanie = true;
-                    int e=p.zwrocGre().user.Count<Gracz>(delegate(Gracz a) { return a.czyNoweRozdanie == true; });
-                    if (e == p.zwrocGre().user.Count)
+                    if (p.zwrocGre().stan != Gra.Stan.END)
                     {
-                        p.zwrocGre().NoweRozdanie();
+                        p.zwrocGre().user.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }).czyNoweRozdanie = true;
+                        int e = p.zwrocGre().user.Count<Gracz>(delegate(Gracz a) { return a.czyNoweRozdanie == true; });
+                        if (e == p.zwrocGre().user.Count)
+                        {
+                            p.zwrocGre().NoweRozdanie();
+                        }
                     }
                 }
             }
@@ -56,7 +83,7 @@ namespace MainServer
             return false;
         }
 
-        [WebMethod]
+/*        [WebMethod] // jakieś stare??
         public void NoweRoz(byte[] token)
         {
             if (Baza.CzyPoprawny(token))
@@ -74,6 +101,7 @@ namespace MainServer
                 }
             }
         }
+*/
 
         [WebMethod]
         public string NazwaMojegoUkladu(byte[] token)

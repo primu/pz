@@ -25,5 +25,12 @@ namespace MainServer
             numerPokoju = numer;
         }
 
+        public Uzytkownik(Int64 id, string nazwa, Int64 numer, Int64 kasa)
+        {
+            identyfikatorUzytkownika = id;
+            nazwaUzytkownika = nazwa;
+            numerPokoju = numer;
+            kasiora = kasa;
+        }
     }
 }

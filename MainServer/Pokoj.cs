@@ -12,7 +12,7 @@ namespace MainServer
         public Int64 numerPokoju;
         public int iloscGraczyMax;
         public int iloscGraczyObecna;
-        public bool graRozpoczeta;
+        public bool graRozpoczeta = false;
         public Int64 stawkaWejsciowa;
         public Int64 duzyBlind; // około 1/100 stawki wejściowej
         public List<Uzytkownik> user = new List<Uzytkownik>();
@@ -108,6 +108,13 @@ namespace MainServer
                  return false;
              }
 
+        public void WyczyscPokoj() // akcja po zakończeniu gry 
+        {
+            iloscGraczyObecna = 0;
+            graRozpoczeta = false;
+            //user.Clear(); // sprawa dyskusyjna..
+            gra = null;
+        }
 
     }
 }

@@ -7,7 +7,7 @@ namespace MainServer
 {
     public class Gra
     {
-        public enum Stan : int { PREFLOP, FLOP, TURN, RIVER, SHOWDOWN, STARTING,  };
+        public enum Stan : int { PREFLOP, FLOP, TURN, RIVER, SHOWDOWN, STARTING, END};
         public List<Gracz> user= new List<Gracz>();
         public List<Gracz> aktywni = new List<Gracz>();
 
@@ -19,7 +19,6 @@ namespace MainServer
         public Int64 najwyzszaStawka;  //ile wynosi najwyższa stawka
         public Int64 pula;  //wartość stołu       
         public Int64 duzyBlind;
-        //public List<Akcja> akcje = new List<Akcja>();
         public List<Karta> stol = new List<Karta>();
         //double start, stop;
         private int licznik = 0;
@@ -127,13 +126,14 @@ namespace MainServer
             
         }
 
-/**/    public void ZakonczGre()
+        public void ZakonczGre() // under construction 
         {
             Baza.AktualizujKaseUzytkownika(listaWin[0].identyfikatorUzytkownika, listaWin[0].kasa);
-
-
-
+            stan = Stan.END;
+            czyjRuch = 0;
+            pula = 0;
         }
+
         //ok
         public bool KoniecLicytacji() // gdy wszyscy Call do jednej stawki lub Fold 
         {

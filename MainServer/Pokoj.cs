@@ -103,6 +103,8 @@ namespace MainServer
                      }
                      user.RemoveAll(delegate(Uzytkownik v) { return v.identyfikatorUzytkownika == u; });
                      iloscGraczyObecna = user.Count;
+                     if (graRozpoczeta && iloscGraczyObecna == 0)
+                         gra = null;
                      return true;
                  }
                  return false;

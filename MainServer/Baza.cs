@@ -95,7 +95,7 @@ namespace MainServer
                 {
                     foreach (DataRow wiersz in dataSet.Tables["Uzytkownik"].Rows)
                     {
-                        listaUzytkownikow.Add(new Uzytkownik { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["IdUzytkownika"] });
+                        listaUzytkownikow.Add(new Uzytkownik { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["IdUzytkownika"], numerPokoju = wiersz["IdPokoju"] == DBNull.Value ? 0 : (long)wiersz["IdPokoju"] });
                     }
                 }
             }

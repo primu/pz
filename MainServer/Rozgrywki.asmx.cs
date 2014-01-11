@@ -478,7 +478,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat CallRiseAllIn(byte[] token, Int64 ile) // do zabezpieczenia 
+        public Komunikat CallRiseAllIn(byte[] token, Int32 ile) // do zabezpieczenia 
         {
             bool pom = false;
             if (Baza.CzyPoprawny(token) == true)

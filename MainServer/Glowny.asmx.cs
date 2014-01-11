@@ -49,20 +49,20 @@ namespace MainServer
             if (Baza.CzyIstniejeUzytkownik(nazwa))
             {
                 kom.kodKomunikatu = 111;
-                kom.trescKomunikatu = "ISTNIEJE";
+                kom.trescKomunikatu = "NAZWA ZAJĘTA!";
             }
             else
             {
                 if(!Baza.CzyPoprawnyEmail(email))
                 {
-                    kom.trescKomunikatu="NIEPOPRAWNY FORMAT";
+                    kom.trescKomunikatu="NIEPOPRAWNY FORMAT ADRESU EMAIL!";
                     return kom;
                 }
 
                 if (Baza.CzyIstniejEmail(email))
                 {
                     kom.kodKomunikatu = 111;
-                    kom.trescKomunikatu = "ISTNIEJE";
+                    kom.trescKomunikatu = "EMAIL ZAJĘTY!";
                 }
                 else
                 {
@@ -179,7 +179,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 temp.kodKomunikatu = 200;
                 temp.trescKomunikatu = id.ToString();
             }
@@ -337,9 +337,12 @@ namespace MainServer
             wiad.Clear();
             for (int i = 0; i < wiadomosci.Count; i++)
             {
-                if (timT < wiadomosci.ElementAt(i).stempelCzasowy)
+                if (wiadomosci[i].numerPokoju == pokoj)
                 {
-                    wiad.Add(wiadomosci.ElementAt(i));                   
+                    if (timT < wiadomosci.ElementAt(i).stempelCzasowy)
+                    {
+                        wiad.Add(wiadomosci.ElementAt(i));
+                    }
                 }
             }
             return wiad;
@@ -363,6 +366,14 @@ namespace MainServer
         static public Uzytkownik PobierzUzytkownika(Int64 id)
         {
             return uzytkownicy.Find(delegate(Uzytkownik c) { return c.identyfikatorUzytkownika == id; });
+        }
+
+        static public void ZmienPokoj(Int64 idUzytkownika, Int64 idPokoju)
+        {
+            Uzytkownik k = uzytkownicy.Find(delegate(Uzytkownik u){return u.identyfikatorUzytkownika == idUzytkownika;});
+            k.numerPokoju = idPokoju;
+            k.start = false;
+
         }
         //co dalej?
 

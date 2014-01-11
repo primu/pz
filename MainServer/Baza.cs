@@ -95,7 +95,7 @@ namespace MainServer
                 {
                     foreach (DataRow wiersz in dataSet.Tables["Uzytkownik"].Rows)
                     {
-                        listaUzytkownikow.Add(new Uzytkownik{kasiora=(int)wiersz["Kasa"], nazwaUzytkownika=wiersz["Nazwa"].ToString(),identyfikatorUzytkownika=(int)wiersz["IdUzytkownika"]});
+                        listaUzytkownikow.Add(new Uzytkownik { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["IdUzytkownika"], numerPokoju = wiersz["IdPokoju"] == DBNull.Value ? 0 :(int)wiersz["IdPokoju"]  });
                     }
                 }
             }
@@ -133,26 +133,28 @@ namespace MainServer
         static public bool CzyPoprawny(byte[] token)
         {
             bool zalogowany = false;
-
-            using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
+            if (token != null)
             {
-                connection.Open();
-                var sqlQuery = "select DoKiedyWazny from Sesja where Token = @Token";
-
-                SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, connection);
-                DataSet dataSet = new DataSet();
-                dataAdapter.SelectCommand.Parameters.Add("@Token", SqlDbType.VarBinary).Value = token;
-                dataAdapter.Fill(dataSet,"Sesja");
-                if (dataSet.Tables["Sesja"].Rows.Count > 0)
+                using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
                 {
-                    int ok = (Int32)dataSet.Tables["Sesja"].Rows[0].ItemArray.GetValue(0);
-                    if (ok > (Int32)DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds)
+                    connection.Open();
+                    var sqlQuery = "select DoKiedyWazny from Sesja where Token = @Token";
+
+                    SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, connection);
+                    DataSet dataSet = new DataSet();
+                    dataAdapter.SelectCommand.Parameters.Add("@Token", SqlDbType.VarBinary).Value = token;
+                    dataAdapter.Fill(dataSet, "Sesja");
+                    if (dataSet.Tables["Sesja"].Rows.Count > 0)
                     {
-                        zalogowany = true;
-                    }
-                    else
-                    {
-                        zalogowany = false;
+                        int ok = (Int32)dataSet.Tables["Sesja"].Rows[0].ItemArray.GetValue(0);
+                        if (ok > (Int32)DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds)
+                        {
+                            zalogowany = true;
+                        }
+                        else
+                        {
+                            zalogowany = false;
+                        }
                     }
                 }
             }
@@ -340,9 +342,13 @@ namespace MainServer
 
                 SqlParameter id = new SqlParameter();
                 SqlParameter tok = new SqlParameter();
+                
                 id.ParameterName = "@IdPokoju";
                 tok.ParameterName = "@Token";
-                id.Value = nowyPokoj;
+                if (nowyPokoj == 0)
+                    id.SqlValue = DBNull.Value;
+                else
+                    id.Value = nowyPokoj;
                 tok.Value = token;
 
                 cmd.Parameters.Add(id);
@@ -385,7 +391,7 @@ namespace MainServer
             }
             return listaPokoi;
         }
-        static public int ZwrocIdUzytkownika(byte[] token)
+        static public long ZwrocIdUzytkownika(byte[] token)
         {
             int id = 0;
             using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
@@ -528,6 +534,7 @@ namespace MainServer
                     kom.kodKomunikatu = 200;
 
             }
+            Baza.ZmienPokoj(token, 0);
             return kom;
         }
 
@@ -542,5 +549,94 @@ namespace MainServer
         {
             return Regex.IsMatch(token, @"[A-Za-z0-9;:=?@\[\\\]^_`]{256}");
         }
+
+        static public bool AktualizujKaseUzytkownika(Int64 identyfikator, Int64 ileDodac)
+        {
+            using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlCommand cmd = new SqlCommand("UPDATE Uzytkownik SET Kasa = (Kasa + @dodac) where IdUzytkownika = @id", connection);
+
+                    SqlParameter id = new SqlParameter();
+                    SqlParameter dodac = new SqlParameter();
+
+                    id.ParameterName = "@id";
+                    dodac.ParameterName = "@dodac";
+                    id.SqlValue = identyfikator;
+                    dodac.Value = ileDodac;
+
+                    cmd.Parameters.Add(id);
+                    cmd.Parameters.Add(dodac);
+                
+                    cmd.ExecuteNonQuery();
+                    connection.Close();
+                    return true;
+                }
+                catch (Exception)
+                {                    
+                    connection.Close();
+                    return false;
+                }
+                
+            }
+        }
+/*
+        static public bool AktualizujIloscUzytkownikowWPokoju(Int64 idPokoju, Int64 ileDodac)
+        {
+            using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlCommand cmd = new SqlCommand("UPDATE Pokoj SET IloscGraczy = (IloscGraczy + @dodac) where IdPokoju = @id", connection);
+
+                    SqlParameter id = new SqlParameter();
+                    SqlParameter dodac = new SqlParameter();
+
+                    id.ParameterName = "@id";
+                    dodac.ParameterName = "@dodac";
+                    id.SqlValue = idPokoju;
+                    dodac.Value = ileDodac;
+
+                    cmd.Parameters.Add(id);
+                    cmd.Parameters.Add(dodac);
+
+                    cmd.ExecuteNonQuery();
+                    connection.Close();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    connection.Close();
+                    return false;
+                }
+
+            }
+        }
+        */
+        static public Uzytkownik ZwrocUzytkownika(Int64 id)
+        {
+            Uzytkownik user = null;
+            using (SqlConnection Polaczenie = new SqlConnection(CiagPolaczenia))
+            {
+                var sqlQuery = "select * from Uzytkownik u join Sesja s on s.IdUzytkownika=u.IdUzytkownika where s.DoKiedyWazny > @Wazny and s.IdUzytkownika = @id";
+
+                SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, Polaczenie);
+                DataSet dataSet = new DataSet();
+                dataAdapter.SelectCommand.Parameters.Add("@Wazny", SqlDbType.Int).Value = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+                dataAdapter.SelectCommand.Parameters.Add("@id", SqlDbType.Int).Value = id;
+                dataAdapter.Fill(dataSet, "Uzytkownik");
+                if (dataSet.Tables["Uzytkownik"].Rows.Count > 0)
+                {
+                    DataRow wiersz = dataSet.Tables["Uzytkownik"].Rows[0];
+                    user = new Uzytkownik { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["IdUzytkownika"], numerPokoju = (int)wiersz["IdPokoju"] };
+                }
+            }
+            return user;
+        }
+
+
     }
 }

@@ -18,42 +18,62 @@ namespace MainServer
     {
         //Tymczasowe deklaracje
         private Komunikat temp = new Komunikat();
-        static private List<Pokoj> pokoje =  new List<Pokoj>();
+        static private List<Pokoj> pokoje =  new List<Pokoj>();//Baza.ZwrocPokoje());
         static private List<Akcja> akcje = new List<Akcja>();
         static UkladyKart ukl = new UkladyKart();
-      
-        //[WebMethod]
-        //public int gen()
-        //{         
-        //    ukl.generujKarty();
 
 
-        //    return ukl.czyPara(); 
-        //}
+        [WebMethod]
+        public Komunikat PotwierdzZakonczenie(byte[] token)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                if (p != null)
+                {
+                    if (p.zwrocGre().stan == Gra.Stan.END)
+                    {
+                        OpuscStol(token);
+                        p.WyczyscPokoj();
+                        temp.kodKomunikatu = 200;
+                        temp.trescKomunikatu = "Gra została zakończona, pokój jest już wolny";
+                    }
+                }
+            }
+
+            return temp;
+        }
+
+
         [WebMethod]
         public void ustawNoweRoz(byte[] token)
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
                 if (p != null)
                 {
-                    p.zwrocGre().user.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }).czyNoweRozdanie = true;
-                    int e=p.zwrocGre().user.Count<Gracz>(delegate(Gracz a) { return a.czyNoweRozdanie == true; });
-                    if (e == p.zwrocGre().user.Count)
+                    if (p.zwrocGre().stan != Gra.Stan.END)
                     {
-                        p.zwrocGre().NoweRozdanie();
+                        p.zwrocGre().user.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }).czyNoweRozdanie = true;
+                        int e = p.zwrocGre().user.Count<Gracz>(delegate(Gracz a) { return a.czyNoweRozdanie == true; });
+                        if (e == p.zwrocGre().user.Count)
+                        {
+                            p.zwrocGre().NoweRozdanie();
+                        }
                     }
                 }
             }
         }
+
         [WebMethod]
         public bool czyWyniki(byte[] token)
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
                 if (p != null)
                 {
@@ -63,12 +83,12 @@ namespace MainServer
             return false;
         }
 
-        [WebMethod]
+/*        [WebMethod] // jakieś stare??
         public void NoweRoz(byte[] token)
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
                 if (p != null)
                 {
@@ -81,13 +101,14 @@ namespace MainServer
                 }
             }
         }
+*/
 
         [WebMethod]
         public string NazwaMojegoUkladu(byte[] token)
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
                 //foreach (Pokoj p in pokoje)
                 //{
@@ -99,12 +120,13 @@ namespace MainServer
             }
             return "";          
         }
+
         [WebMethod]
         public bool CzyJestWaktywnych(byte[] token,Int64 idGracza)
         {
             if (Baza.CzyPoprawny(token))
             {
-                int idMoje = Baza.ZwrocIdUzytkownika(token);
+                Int64 idMoje = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(idMoje); });                
                 if (p != null)
                 {
@@ -122,7 +144,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 //foreach (Pokoj p in pokoje)
                 //{
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
@@ -140,7 +162,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 //foreach (Pokoj p in pokoje)
                 //{
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
@@ -152,12 +174,13 @@ namespace MainServer
             }
             return null;
         }
+
         [WebMethod]
         public List<Gracz> ZwrocGraczy(byte[] token)//zwraca uzytkownikow którzy wcisneli start w danym pokoju
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
                 //foreach (Pokoj p in pokoje)
                 //{
@@ -169,12 +192,13 @@ namespace MainServer
             }
             return null;
         }
+
         [WebMethod]
         public List<Karta> ZwrocNajUklGraczy(byte[] token, Int64 idGracza)//zwraca najuklad userow
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
                 //foreach (Pokoj p in pokoje)
                 //{
@@ -186,13 +210,14 @@ namespace MainServer
             }
             return null;
         }
+
         //=========
         [WebMethod]
         public Gracz PobierzGracza(byte[] token,Int64 mojID)
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                // foreach (Pokoj p in pokoje)
                // {
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
@@ -209,13 +234,12 @@ namespace MainServer
             //return null;
         }
 
-
         [WebMethod]
         public List<Karta> zwrocStol(byte[] token)
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 //foreach (Pokoj p in pokoje)
                 //{
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
@@ -262,48 +286,94 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat DolaczDoStolu(byte[] token, Int64 id)
+        public Komunikat DolaczDoStolu(byte[] token, Int64 id) // do zabezpieczenia 
         {
             if (Baza.CzyPoprawny(token))
-            {
-                Baza.ZmienPokoj(token, id);
-                pokoje.Find(delegate(Pokoj c) { return c.numerPokoju == id && c.iloscGraczyMax >= c.user.Count; }).DodajUzytkownika(Glowny.PobierzUzytkownika(Baza.ZwrocIdUzytkownika(token)));
-                //Baza.ZmienPokoj(Baza.CzyZalogowany(token), Baza.DodajPokoj("asd5", 1040, 233, 48));
-                temp.kodKomunikatu = 200;
-                temp.trescKomunikatu = "ok";
+            {                
+                Pokoj pok = pokoje.Find(delegate(Pokoj c) { return c.numerPokoju == id && c.iloscGraczyMax >= c.user.Count; });
+                Uzytkownik uzyt = Glowny.PobierzUzytkownika(Baza.ZwrocIdUzytkownika(token));   
+                if (pok.DodajUzytkownika(uzyt))
+                {
+                    Baza.ZmienPokoj(token, id);
+                    Glowny.ZmienPokoj(uzyt.identyfikatorUzytkownika, id);
+                    temp.kodKomunikatu = 200;
+                    temp.trescKomunikatu = "ok";
+                }
+                else
+                {
+                    temp.kodKomunikatu = 404;
+                    temp.trescKomunikatu = "Błąd!!! Pokój jest pełny lub już się w nim znajdujesz!";
+                }
             }
             else
             {
                 temp.kodKomunikatu = 404;
-                temp.trescKomunikatu = "not_ok";
+                temp.trescKomunikatu = "Jesteś nie okej!";
             }
             return temp;
         }
 
         [WebMethod]
-        public Komunikat UtworzStol(byte[] token, string nazwa, int stawka, int blind, int ilosc)
+        public Komunikat UtworzStol(byte[] token, string nazwa, int stawka, int blind, int ilosc) // do zabezpieczenia 
         {
             if (Baza.CzyPoprawny(token))
             {
-                Baza.DodajPokoj(nazwa, stawka, blind, ilosc);
-
-                pokoje.Add(Baza.ZwrocPokoj(nazwa));
-
-                temp.kodKomunikatu = 200;
-                temp.trescKomunikatu = "ok";
+                Int64 czy = Baza.DodajPokoj(nazwa, stawka, blind, ilosc);
+                if (czy > -1)
+                {
+                    pokoje.Add(Baza.ZwrocPokoj(nazwa));
+                    temp.kodKomunikatu = 200;
+                    temp.trescKomunikatu = "Pokój został utworzony pomyślnie!";
+                }
+                else
+                {
+                    temp.kodKomunikatu = 404;
+                    temp.trescKomunikatu = "Pokój o takiej nazwie już istnieje!";
+                }
             }
             else
             {
                 temp.kodKomunikatu = 404;
-                temp.trescKomunikatu = "not_ok";
+                temp.trescKomunikatu = "Jesteś nie okej!";
             }
 
             return temp;
         }
 
         [WebMethod]
-        public Komunikat OpuscStol(byte[] token)// NIE ZROBIONE 
+        public Komunikat OpuscStol(byte[] token)// trochę ZROBIONE  // do zabezpieczenia 
         {
+            if (Baza.CzyPoprawny(token))
+            {
+                try
+                {
+                    Int64 id = Baza.ZwrocIdUzytkownika(token);
+                    Pokoj temp2 = pokoje.Find(delegate(Pokoj p) { return p.jestWpokoju(id) == true; });
+                    
+                    if (pokoje.Find(delegate(Pokoj p) { return p.jestWpokoju(id) == true; }).UsunUzytkownika(id))
+                    {
+                        Baza.ZmienPokoj(token, 0);
+                        Glowny.ZmienPokoj(id, 0);
+                        temp.kodKomunikatu = 200;
+                        temp.trescKomunikatu = "Pomyślnie opuściłeś pokój!";
+                    }
+                    else
+                    {
+                        temp.kodKomunikatu = 404;
+                        temp.trescKomunikatu = "Błąd!!! Nie znajdujesz się w tym pokoju!";
+                    }
+                }
+                catch (Exception)
+                {
+                    temp.kodKomunikatu = 404;
+                    temp.trescKomunikatu = "Nastąpił nieoczekiwany błąd!";
+                }
+            }
+            else
+            {
+                temp.kodKomunikatu = 404;
+                temp.trescKomunikatu = "Jesteś nie okej!";
+            }
             return temp;
         }
     
@@ -313,7 +383,7 @@ namespace MainServer
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                // foreach (Pokoj p in pokoje)
                 //{
                     Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
@@ -343,11 +413,11 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat Start(byte[] token)//do skończenia? 
+        public Komunikat Start(byte[] token) // do zabezpieczenia  
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 //Uzytkownik u = Glowny.PobierzUzytkownika(id);
                 //u.start = true;
                 Pokoj pokoj = pokoje.Find(delegate(Pokoj c) { return c.jestWpokoju(id) == true; });
@@ -366,19 +436,18 @@ namespace MainServer
             else
             {
                 temp.kodKomunikatu = 404;
-                temp.trescKomunikatu = "ok";
+                temp.trescKomunikatu = "not_ok";
             }
             return temp;
             
         }
 
-
         [WebMethod]
-        public Komunikat Fold(byte[] token)
+        public Komunikat Fold(byte[] token) // do zabezpieczenia 
         {
             if (Baza.CzyPoprawny(token) == true)
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 //foreach (Pokoj p in pokoje)
                 //{
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
@@ -409,12 +478,12 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat CallRiseAllIn(byte[] token, Int64 ile)
+        public Komunikat CallRiseAllIn(byte[] token, Int32 ile) // do zabezpieczenia 
         {
             bool pom = false;
             if (Baza.CzyPoprawny(token) == true)
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
                 //foreach (Pokoj p in pokoje)
                 //{
@@ -454,6 +523,8 @@ namespace MainServer
                                 if (pom == true)
                                 {
                                     R.kasa = R.kasa - ile;
+                                    if (R.kasa == 0)
+                                        R.stan = Gracz.StanGracza.AllIn;
                                     p.zwrocGre().pula += ile;
                                     R.stawia += ile;
                                     temp.kodKomunikatu = 200;
@@ -485,11 +556,11 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Gra ZwrocGre(byte[] token)
+        public Gra ZwrocGre(byte[] token) // do zabezpieczenia 
         {
             if (Baza.CzyPoprawny(token))
             {
-                int id = Baza.ZwrocIdUzytkownika(token);
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj pok = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
 
                 if (pok != null)
@@ -501,36 +572,10 @@ namespace MainServer
             {
                 return null;
             }
-
-            //===========
-            //if (Baza.CzyPoprawny(token))
-            //{
-            //    int id = Baza.ZwrocIdUzytkownika(token);
-            //    //foreach (Pokoj p in pokoje)
-            //    for (int i = 0; i < pokoje.Count;i++ )
-            //    {
-            //        if (pokoje[i].jestWpokoju(id))
-            //        {
-            //            return pokoje[i].zwrocGre();
-            //        }
-            //        else
-            //        {
-            //            return null;
-            //        }
-            //    }
-               
-            //}
-            //else
-            //{
-            //    return null;
-            //}
-
-            //return null;
         }
 
-
         [WebMethod]
-        public void CzyscStoly()
+        public void CzyscStoly() // ostatecznie do usunięcia 
         {
             foreach (Pokoj p in pokoje)
             {
@@ -540,6 +585,42 @@ namespace MainServer
 
         }
 
+
+        static public void WyrzucUzytkownikowKtorzyPrzegrali(Gra gra)
+        {
+            Pokoj pokoik = pokoje.Find(delegate(Pokoj v) { return v.zwrocGre() == gra; });
+            if (pokoik != null)
+            {
+
+                pokoik.user.RemoveAll(delegate(Uzytkownik c)
+                {
+                    return pokoik.zwrocGre().user.Find(delegate(Gracz v)
+                    {
+                        return v.identyfikatorUzytkownika == c.identyfikatorUzytkownika;
+                    }) == null;
+                });
+            }
+
+        }
+
+//=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======
+
+        [WebMethod]
+        public Pokoj DajPokoj(string nazwa)
+        {
+            return pokoje.Find(delegate(Pokoj v) { return v.nazwaPokoju == nazwa; });
+        }
+
+        [WebMethod]
+        public Gra DajGre(string nazwa)
+        {
+            Pokoj pok = pokoje.Find(delegate(Pokoj v) { return v.nazwaPokoju == nazwa; });
+
+            if (pok != null)
+                return pok.zwrocGre();
+            else
+                return null;
+        }
 
     }
 }

@@ -12,7 +12,7 @@ namespace MainServer
         public Int64 numerPokoju;
         public int iloscGraczyMax;
         public int iloscGraczyObecna;
-        public bool graRozpoczeta;
+        public bool graRozpoczeta = false;
         public Int64 stawkaWejsciowa;
         public Int64 duzyBlind; // około 1/100 stawki wejściowej
         public List<Uzytkownik> user = new List<Uzytkownik>();
@@ -28,6 +28,7 @@ namespace MainServer
             else
                 return false;
         }
+
         public int IleStart(Int64 id)
         {
             int ile=0;
@@ -41,60 +42,81 @@ namespace MainServer
             }
                 return ile;
         }
+
         public Gra zwrocGre()
         {
             return gra;
         }
 
-        public int DodajUzytkownika(Uzytkownik u)
+        public bool DodajUzytkownika(Uzytkownik u)
         {
-            if (iloscGraczyObecna < iloscGraczyMax)
+            if (user.Count < iloscGraczyMax)
             {
                 if (user.Exists(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }))
                 {
-                    return 0;
+                    return false;
                 }
                 else
                 {
-                    user.Add(u);                    
+                    user.Add(u);
+                    iloscGraczyObecna = user.Count;
+                    return true;
                 }
             }
-            return -1;
+            return false;
         }
 
         public void utworz()
         {
             gra = new Gra(duzyBlind, user, stawkaWejsciowa);
             gra.StartujGre();
+            graRozpoczeta = true;
             gra.NoweRozdanie();
         }
 
-        /*     public int UsunUzytkownika(Uzytkownik u)
+        public bool UsunUzytkownika(Int64 u)
              {
-                 if (user.Exists(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; }))
+                 if (user.Exists(delegate(Uzytkownik a) { return u == a.identyfikatorUzytkownika; }))
                  {
-                     if (iloscGraczyObecna == 1)
-                         ktoBlind = 0;
-                     else
+                     if (graRozpoczeta)
                      {
-                         int i = user.FindIndex(delegate(Uzytkownik a) { return u.identyfikatorUzytkownika == a.identyfikatorUzytkownika; });
-                         if (i == user.Count - 1)
-                             ktoBlind = user[1].identyfikatorUzytkownika;
-                         else
-                             ktoBlind = user[i + 1].identyfikatorUzytkownika;
+                         if (gra.user.Find(delegate(Gracz g) { return g.identyfikatorUzytkownika == u && g.stan == Gracz.StanGracza.Fold; }) == null)
+                         {
+                             if (gra.ktoBigBlind == u)
+                                 gra.ktoBigBlind = gra.KtoNastepny(gra.user, u);
+                             if (gra.ktoDealer == u)
+                                 gra.ktoDealer = gra.KtoPoprzedni(gra.user, u);
+                             if (gra.czyjRuch == u)
+                             {
+                                 gra.KoniecRuchu();
+                                 if (gra.ktoStawia == u)
+                                     gra.ktoStawia = gra.KtoNastepny(gra.user, u);                                    
+                             }
+                             else
+                                 if (gra.ktoStawia == u)
+                                     gra.ktoStawia = gra.KtoPoprzedni(gra.user, u); // słaby punkt..
+
+                         }
+                         gra.pula += gra.user.Find(delegate(Gracz v) { return v.identyfikatorUzytkownika == u; }).kasa;
+                         gra.user.RemoveAll(delegate(Gracz v) { return v.identyfikatorUzytkownika == u; });
+                         gra.aktywni.RemoveAll(delegate(Gracz v) { return v.identyfikatorUzytkownika == u; });
                      }
-
-                     user.Remove(u);
-
-                     return 1;
+                     user.RemoveAll(delegate(Uzytkownik v) { return v.identyfikatorUzytkownika == u; });
+                     iloscGraczyObecna = user.Count;
+                     if (graRozpoczeta && iloscGraczyObecna == 0)
+                         gra = null;
+                     return true;
                  }
-                 else
-                 {
-                     return 0;
-                 }
+                 return false;
+             }
 
-             }*/
-
+        public void WyczyscPokoj() // akcja po zakończeniu gry 
+        {
+            iloscGraczyObecna = 0;
+            graRozpoczeta = false;
+            //user.Clear(); // sprawa dyskusyjna..
+            gra = null;
+        }
 
     }
 }

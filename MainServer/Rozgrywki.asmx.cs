@@ -212,6 +212,24 @@ namespace MainServer
             return null;
         }
 
+        [WebMethod]
+        public List<Karta> ZwrocHandGraczy(byte[] token, Int64 idGracza)//zwraca najuklad userow
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                Int64 id = Baza.ZwrocIdUzytkownika(token);
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                //foreach (Pokoj p in pokoje)
+                //{
+                if (p != null)//.jestWpokoju(id))
+                {
+                    return p.zwrocGre().aktywni.Find(delegate(Gracz a) { return a.identyfikatorUzytkownika == idGracza; }).zwroc_hand();//[i].zwroc_najUklad();
+                }
+                //}
+            }
+            return null;
+        }
+
         //=========
         [WebMethod]
         public Gracz PobierzGracza(byte[] token,Int64 mojID)
@@ -479,7 +497,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat CallRiseAllIn(byte[] token, Int64 ile) // do zabezpieczenia 
+        public Komunikat CallRiseAllIn(byte[] token, Int32 ile) // do zabezpieczenia 
         {
             bool pom = false;
             if (Baza.CzyPoprawny(token) == true)

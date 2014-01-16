@@ -34,6 +34,7 @@ namespace MainServer
                 {
                     if (p.zwrocGre().stan == Gra.Stan.END)
                     {
+                        Baza.DodajZwyciezce(Baza.ZwrocUzytkownika(id).nazwaUzytkownika, p.numerPokoju, (int)(p.stawkaWejsciowa * p.iloscGraczyMax));
                         OpuscStol(token);
                         p.WyczyscPokoj();
                         temp.kodKomunikatu = 200;

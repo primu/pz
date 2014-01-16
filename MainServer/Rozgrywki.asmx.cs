@@ -58,11 +58,15 @@ namespace MainServer
                 {
                     if (p.zwrocGre().stan != Gra.Stan.END)
                     {
-                        p.zwrocGre().user.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }).czyNoweRozdanie = true;
-                        int e = p.zwrocGre().user.Count<Gracz>(delegate(Gracz a) { return a.czyNoweRozdanie == true; });
-                        if (e == p.zwrocGre().user.Count)
+                        Gracz gr = p.zwrocGre().user.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; });
+                        if (gr != null)
                         {
-                            p.zwrocGre().NoweRozdanie();
+                            gr.czyNoweRozdanie = true;
+                            int e = p.zwrocGre().user.Count<Gracz>(delegate(Gracz a) { return a.czyNoweRozdanie == true; });
+                            if (e == p.zwrocGre().user.Count)
+                            {
+                                p.zwrocGre().NoweRozdanie();
+                            }
                         }
                     }
                 }

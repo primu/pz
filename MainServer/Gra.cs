@@ -66,8 +66,9 @@ namespace MainServer
         //ok
         public void NoweRozdanie() // 
         {
+            
             wyniki = false;
-            stan = Stan.PREFLOP;
+            
             pula = 0;
             stol.Clear();
             rozdanie();
@@ -81,49 +82,63 @@ namespace MainServer
             }
             aktywni.RemoveAll(delegate(Gracz y) { return y.kasa == 0; });
             user.RemoveAll(delegate(Gracz y) { return y.kasa == 0; });
-                                    
-            //dealer         
-            Gracz v = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoPoprzedni(aktywni, ktoBigBlind); });
-            v.stan = Gracz.StanGracza.Dealer;
-            ktoDealer = v.identyfikatorUzytkownika;
-            //smallBlind
-            Gracz x = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == ktoBigBlind; });
-            if (x.kasa > najwyzszaStawka / 2)
-            {
-                x.stan = Gracz.StanGracza.SmallBlind;
-                x.kasa -= najwyzszaStawka/2;
-                x.stawia = najwyzszaStawka/2;
-                pula += najwyzszaStawka/2;
-            }
-            else
-            {
-                x.stan = Gracz.StanGracza.AllIn;
-                pula += x.kasa;
-                x.stawia = x.kasa;
-                x.kasa = 0;
-            }
-            //BigBlind
-            Gracz b = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoNastepny(aktywni, ktoBigBlind); });
-            if (b.kasa > najwyzszaStawka)
-            {
-                b.stan = Gracz.StanGracza.BigBlind;
-                b.kasa -= najwyzszaStawka;
-                b.stawia = najwyzszaStawka;
-                pula += najwyzszaStawka;
-            }
-            else
-            {
-                b.stan = Gracz.StanGracza.AllIn;
-                pula += b.kasa;
-                b.stawia = b.kasa;
-                b.kasa = 0;
-            }
-
-            //ustawienia poczatkowe
-            ktoBigBlind = b.identyfikatorUzytkownika;//KtoNastepny(ktoBigBlind);          
-            ktoStawia = KtoNastepny(aktywni, ktoBigBlind);
-            czyjRuch = KtoNastepny(aktywni, ktoBigBlind);//ktoStawia;
             
+            if (stan == Stan.SHOWDOWN)
+                Rozgrywki.WyrzucUzytkownikowKtorzyPrzegrali(this);
+
+            if (KoniecGry())
+            {
+                ZakonczGre();
+            }
+            else
+            {//czyli nie jest to koniec gry
+
+                //=========================================================================================================================
+
+                stan = Stan.PREFLOP;
+
+                //dealer         
+                Gracz v = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoPoprzedni(aktywni, ktoBigBlind); });
+                v.stan = Gracz.StanGracza.Dealer;
+                ktoDealer = v.identyfikatorUzytkownika;
+                //smallBlind
+                Gracz x = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == ktoBigBlind; });
+                if (x.kasa > najwyzszaStawka / 2)
+                {
+                    x.stan = Gracz.StanGracza.SmallBlind;
+                    x.kasa -= najwyzszaStawka / 2;
+                    x.stawia = najwyzszaStawka / 2;
+                    pula += najwyzszaStawka / 2;
+                }
+                else
+                {
+                    x.stan = Gracz.StanGracza.AllIn;
+                    pula += x.kasa;
+                    x.stawia = x.kasa;
+                    x.kasa = 0;
+                }
+                //BigBlind
+                Gracz b = aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == KtoNastepny(aktywni, ktoBigBlind); });
+                if (b.kasa > najwyzszaStawka)
+                {
+                    b.stan = Gracz.StanGracza.BigBlind;
+                    b.kasa -= najwyzszaStawka;
+                    b.stawia = najwyzszaStawka;
+                    pula += najwyzszaStawka;
+                }
+                else
+                {
+                    b.stan = Gracz.StanGracza.AllIn;
+                    pula += b.kasa;
+                    b.stawia = b.kasa;
+                    b.kasa = 0;
+                }
+
+                //ustawienia poczatkowe
+                ktoBigBlind = b.identyfikatorUzytkownika;//KtoNastepny(ktoBigBlind);          
+                ktoStawia = KtoNastepny(aktywni, ktoBigBlind);
+                czyjRuch = KtoNastepny(aktywni, ktoBigBlind);//ktoStawia;
+            }//else - czyli nie jest to koniec gry
         }
 
         public void ZakonczGre() // under construction 
@@ -201,10 +216,10 @@ namespace MainServer
                 {
                     ZakonczenieRozdania();
                     wyniki = true;
-                    if (KoniecGry())
-                    {
-                        ZakonczGre();
-                    }
+                    //if (KoniecGry())
+                    //{
+                    //    ZakonczGre();
+                    //}
                 }
 
             }
@@ -254,13 +269,16 @@ namespace MainServer
                     ZakonczenieRozdania();
                     wyniki = true;
 
-                    if (KoniecGry() == true)
-                        ZakonczGre();
-                    else
-                    {
-                        k.kodKomunikatu = 213;
-                        return k;
-                    }
+                    //if (KoniecGry() == true)
+                    //    ZakonczGre();
+                    //else
+                    //{
+                    //    k.kodKomunikatu = 213;
+                    //    return k;
+                    //}
+
+
+                    //stare
                     //else
                     //{
                     //    NoweRozdanie();
@@ -298,10 +316,10 @@ namespace MainServer
                     {
                         ZakonczenieRozdania();
                         wyniki = true;
-                        if (KoniecGry())
-                        {
-                            ZakonczGre();
-                        }
+                        //if (KoniecGry())
+                        //{
+                        //    ZakonczGre();
+                        //}
                     }
 
                 }
@@ -352,7 +370,7 @@ namespace MainServer
 
             aktywni.RemoveAll(delegate(Gracz c) { return c.kasa == 0; });
             user.RemoveAll(delegate(Gracz c) { return c.kasa == 0; });
-            Rozgrywki.WyrzucUzytkownikowKtorzyPrzegrali(this);
+            //Rozgrywki.WyrzucUzytkownikowKtorzyPrzegrali(this);
                             
             czyjRuch = -1;
         }

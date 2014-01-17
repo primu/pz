@@ -74,7 +74,7 @@ namespace MainServer
             rozdanie();
             licznik++;
             najwyzszaStawka = duzyBlind * licznik;
-            foreach (Gracz a in aktywni)
+            foreach (Gracz a in user)
             {
                 a.czyNoweRozdanie = false;
                 a.stawia = 0;

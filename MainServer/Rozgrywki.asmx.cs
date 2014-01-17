@@ -61,6 +61,7 @@ namespace MainServer
                         Gracz gr = p.zwrocGre().user.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; });
                         if (gr != null)
                         {
+
                             gr.czyNoweRozdanie = true;
                             int e = p.zwrocGre().user.Count<Gracz>(delegate(Gracz a) { return a.czyNoweRozdanie == true; });
                             if (e == p.zwrocGre().user.Count)

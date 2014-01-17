@@ -327,37 +327,52 @@ namespace MainServer
         [WebMethod]
         public List<Uzytkownik> PobierzUzytkownikow(byte[] token)
         {
-            return uzytkownicy;
+            if (Baza.CzyPoprawny(token))
+            {
+                return uzytkownicy;
+            }
+            else
+                return null;
         }
 
         [WebMethod]
         public List<Wiadomosc> PobierzWiadomosci(byte[] token, Int32 timT, Int64 pokoj)
         {
-            List<Wiadomosc> wiad = new List<Wiadomosc>();
-            wiad.Clear();
-            for (int i = 0; i < wiadomosci.Count; i++)
+            if (Baza.CzyPoprawny(token))
             {
-                if (wiadomosci[i].numerPokoju == pokoj)
+                List<Wiadomosc> wiad = new List<Wiadomosc>();
+                wiad.Clear();
+                for (int i = 0; i < wiadomosci.Count; i++)
                 {
-                    if (timT < wiadomosci.ElementAt(i).stempelCzasowy)
+                    if (wiadomosci[i].numerPokoju == pokoj)
                     {
-                        wiad.Add(wiadomosci.ElementAt(i));
+                        if (timT < wiadomosci.ElementAt(i).stempelCzasowy)
+                        {
+                            wiad.Add(wiadomosci.ElementAt(i));
+                        }
                     }
                 }
+                return wiad;
             }
-            return wiad;
+            else
+                return null;
         }
 
         [WebMethod]
         public Komunikat WyslijWiadomosc(byte[] token, Wiadomosc wiadomosc)
         {
-            Int32 timer;
-            timer = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-            wiadomosc.stempelCzasowy = timer;
-            wiadomosci.Add(wiadomosc);
-            //Baza.DodajWiadomosc(wiadomosc);
-            temp.trescKomunikatu = "wyslano";
-            temp.kodKomunikatu = 200;
+            temp.kodKomunikatu = 404;
+            temp.trescKomunikatu = "Błąd uwierzytelniania!";
+            if (Baza.CzyPoprawny(token))
+            {
+                Int32 timer;
+                timer = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+                wiadomosc.stempelCzasowy = timer;
+                wiadomosci.Add(wiadomosc);
+                //Baza.DodajWiadomosc(wiadomosc);
+                temp.trescKomunikatu = "wyslano";
+                temp.kodKomunikatu = 200;
+            }
             return temp;
         }
 
@@ -376,6 +391,27 @@ namespace MainServer
 
         }
         //co dalej?
+
+        [WebMethod]
+        static public List<Uzytkownik> PobierzListeNajlepszych(byte[] token)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                return Baza.ZwrocNajlepszych();
+            }
+            else
+                return null;
+        }
+        [WebMethod]
+        static public List<Uzytkownik> PobierzListeNajbogatszych(byte[] token)
+        {
+            if (Baza.CzyPoprawny(token))
+            {
+                return Baza.ZwrocNajbogatszych();
+            }
+            else
+                return null;
+        }
 
     }
 }

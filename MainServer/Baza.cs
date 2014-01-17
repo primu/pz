@@ -637,6 +637,55 @@ namespace MainServer
             return user;
         }
 
+        static public List<Uzytkownik> ZwrocNajlepszych()
+        {
+            List<Uzytkownik> listaUzytkownikow = null;
+
+            using (SqlConnection Polaczenie = new SqlConnection(CiagPolaczenia))
+            {
+                var sqlQuery = "select top(10) u.Nazwa, u.Kasa, Count(g.idZwyciezcy) as Wygrane from Gra g join Uzytkownik u on u.idUzytkownika = g.idZwyciezcy group by u.Nazwa,u.Kasa order by Wygrane desc";
+
+                SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, Polaczenie);
+                DataSet dataSet = new DataSet();
+                dataAdapter.Fill(dataSet, "Uzytkownik");
+                if (dataSet.Tables["Uzytkownik"].Rows.Count > 0)
+                {
+                    foreach (DataRow wiersz in dataSet.Tables["Uzytkownik"].Rows)
+                    {
+                        listaUzytkownikow.Add(new Uzytkownik { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["Wygrane"] });
+                    }
+                    //DataRow wiersz = dataSet.Tables["Uzytkownik"].Rows[0];
+                    //user = new Uzytkownik { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["IdUzytkownika"], numerPokoju = (int)wiersz["IdPokoju"] };
+                }
+            }
+
+            return listaUzytkownikow;
+        }
+
+        static public List<Uzytkownik> ZwrocNajbogatszych()
+        {
+            List<Uzytkownik> listaUzytkownikow = null;
+
+            using (SqlConnection Polaczenie = new SqlConnection(CiagPolaczenia))
+            {
+                var sqlQuery = "select top(10) u.Nazwa, u.Kasa, Count(g.idZwyciezcy) as Wygrane from Gra g join Uzytkownik u on u.idUzytkownika = g.idZwyciezcy group by u.Nazwa,u.Kasa order by u.Kasa desc";
+
+                SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, Polaczenie);
+                DataSet dataSet = new DataSet();
+                dataAdapter.Fill(dataSet, "Uzytkownik");
+                if (dataSet.Tables["Uzytkownik"].Rows.Count > 0)
+                {
+                    foreach (DataRow wiersz in dataSet.Tables["Uzytkownik"].Rows)
+                    {
+                        listaUzytkownikow.Add(new Uzytkownik { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["Wygrane"] });
+                    }
+                    //DataRow wiersz = dataSet.Tables["Uzytkownik"].Rows[0];
+                    //user = new Uzytkownik { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["IdUzytkownika"], numerPokoju = (int)wiersz["IdPokoju"] };
+                }
+            }
+
+            return listaUzytkownikow;
+        }
 
     }
 }

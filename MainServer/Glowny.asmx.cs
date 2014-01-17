@@ -393,7 +393,7 @@ namespace MainServer
         //co dalej?
 
         [WebMethod]
-        static public List<Uzytkownik> PobierzListeNajlepszych(byte[] token)
+        public List<Uzytkownik> PobierzListeNajlepszych(byte[] token)
         {
             if (Baza.CzyPoprawny(token))
             {
@@ -403,7 +403,7 @@ namespace MainServer
                 return null;
         }
         [WebMethod]
-        static public List<Uzytkownik> PobierzListeNajbogatszych(byte[] token)
+        public List<Uzytkownik> PobierzListeNajbogatszych(byte[] token)
         {
             if (Baza.CzyPoprawny(token))
             {

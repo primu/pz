@@ -80,11 +80,15 @@ namespace MainServer
                 a.stawia = 0;
                 a.stan = Gracz.StanGracza.Ready;
             }
-            aktywni.RemoveAll(delegate(Gracz y) { return y.kasa == 0; });
-            user.RemoveAll(delegate(Gracz y) { return y.kasa == 0; });
-            
+
+
             if (stan == Stan.SHOWDOWN)
+            {
                 Rozgrywki.WyrzucUzytkownikowKtorzyPrzegrali(this);
+                aktywni.RemoveAll(delegate(Gracz y) { return y.kasa == 0; });
+                user.RemoveAll(delegate(Gracz y) { return y.kasa == 0; });
+            }
+
 
             if (KoniecGry())
             {
@@ -361,6 +365,7 @@ namespace MainServer
                     {
                         if (ktoBigBlind == a.identyfikatorUzytkownika)
                             ktoBigBlind = KtoNastepny(aktywni, ktoBigBlind);
+                        a.czyGra = false;
                     }
                 }
             }
@@ -368,8 +373,8 @@ namespace MainServer
 
             aktualizujListeUser();                
 
-            aktywni.RemoveAll(delegate(Gracz c) { return c.kasa == 0; });
-            user.RemoveAll(delegate(Gracz c) { return c.kasa == 0; });
+            //aktywni.RemoveAll(delegate(Gracz c) { return c.kasa == 0; });
+            //user.RemoveAll(delegate(Gracz c) { return c.kasa == 0; });
             //Rozgrywki.WyrzucUzytkownikowKtorzyPrzegrali(this);
                             
             czyjRuch = -1;

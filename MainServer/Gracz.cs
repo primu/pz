@@ -21,6 +21,7 @@ namespace MainServer
         public string nazwaUkladu;
         public bool czyPobralKarty;
         public bool czyNoweRozdanie = false;
+        public bool czyGra = true;
 
         //Nowe
         public Int64 kasa;  //ile pieniędzy pozostało w obecnej grze

@@ -48,7 +48,7 @@ namespace MainServer
 
 
         [WebMethod]
-        public void ustawNoweRoz(byte[] token)
+        public bool ustawNoweRoz(byte[] token)
         {
             if (Baza.CzyPoprawny(token))
             {
@@ -67,10 +67,14 @@ namespace MainServer
                             {
                                 p.zwrocGre().NoweRozdanie();
                             }
+                            return gr.czyGra;
                         }
                     }
+                    else
+                        return true;
                 }
             }
+            return false;
         }
 
         [WebMethod]

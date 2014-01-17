@@ -650,6 +650,7 @@ namespace MainServer
                 dataAdapter.Fill(dataSet, "Uzytkownik");
                 if (dataSet.Tables["Uzytkownik"].Rows.Count > 0)
                 {
+                    listaUzytkownikow =new List<Uzytkownik>();
                     foreach (DataRow wiersz in dataSet.Tables["Uzytkownik"].Rows)
                     {
                         listaUzytkownikow.Add(new Uzytkownik { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["Wygrane"] });
@@ -675,6 +676,7 @@ namespace MainServer
                 dataAdapter.Fill(dataSet, "Uzytkownik");
                 if (dataSet.Tables["Uzytkownik"].Rows.Count > 0)
                 {
+                    listaUzytkownikow = new List<Uzytkownik>();
                     foreach (DataRow wiersz in dataSet.Tables["Uzytkownik"].Rows)
                     {
                         listaUzytkownikow.Add(new Uzytkownik { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["Wygrane"] });

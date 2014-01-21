@@ -12,16 +12,13 @@ namespace MainServer
     [WebService(Namespace = "http://tempuri.org/")]
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
     [System.ComponentModel.ToolboxItem(false)]
-    // To allow this Web Service to be called from script, using ASP.NET AJAX, uncomment the following line. 
-    // [System.Web.Script.Services.ScriptService]
     public class Rozgrywki : System.Web.Services.WebService
     {
         //Tymczasowe deklaracje
         private Komunikat temp = new Komunikat();
-        static private List<Pokoj> pokoje =  new List<Pokoj>();//Baza.ZwrocPokoje());
+        static private List<Pokoj> pokoje =  new List<Pokoj>();
         static private List<Akcja> akcje = new List<Akcja>();
         static UkladyKart ukl = new UkladyKart();
-
 
         [WebMethod]
         public Komunikat PotwierdzZakonczenie(byte[] token)
@@ -45,7 +42,6 @@ namespace MainServer
 
             return temp;
         }
-
 
         [WebMethod]
         public bool ustawNoweRoz(byte[] token)
@@ -93,26 +89,6 @@ namespace MainServer
             return false;
         }
 
-/*        [WebMethod] // jakieś stare??
-        public void NoweRoz(byte[] token)
-        {
-            if (Baza.CzyPoprawny(token))
-            {
-                Int64 id = Baza.ZwrocIdUzytkownika(token);
-                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
-                if (p != null)
-                {
-                    if (p.zwrocGre().KoniecGry() == true)
-                       p.zwrocGre().ZakonczGre();
-                    else
-                    {
-                        p.zwrocGre().NoweRozdanie();
-                    }
-                }
-            }
-        }
-*/
-
         [WebMethod]
         public string NazwaMojegoUkladu(byte[] token)
         {
@@ -120,13 +96,10 @@ namespace MainServer
             {
                 Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
-                //foreach (Pokoj p in pokoje)
-                //{
-                    if (p!=null)//.jestWpokoju(id))
-                    {
-                        return p.zwrocGre().NazwaMojegoUkladu2(id);
-                    }
-                //}
+                if (p!=null)
+                {
+                    return p.zwrocGre().NazwaMojegoUkladu2(id);
+                }
             }
             return "";          
         }
@@ -155,14 +128,11 @@ namespace MainServer
             if (Baza.CzyPoprawny(token))
             {
                 Int64 id = Baza.ZwrocIdUzytkownika(token);
-                //foreach (Pokoj p in pokoje)
-                //{
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
-                    if (p!=null)//.jestWpokoju(id))
-                    {
-                        return p.zwrocGre().MojNajUkl2(id);
-                    }
-                //}
+                if (p!=null)
+                {
+                    return p.zwrocGre().MojNajUkl2(id);
+                }
             }
             return null;
         }
@@ -173,14 +143,11 @@ namespace MainServer
             if (Baza.CzyPoprawny(token))
             {
                 Int64 id = Baza.ZwrocIdUzytkownika(token);
-                //foreach (Pokoj p in pokoje)
-                //{
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
-                    if (p!=null)//.jestWpokoju(id))
-                    {
-                        return p.user;
-                    }
-                //}
+                if (p!=null)
+                {
+                    return p.user;
+                }
             }
             return null;
         }
@@ -192,13 +159,10 @@ namespace MainServer
             {
                 Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
-                //foreach (Pokoj p in pokoje)
-                //{
-                    if (p!=null)//.jestWpokoju(id))
-                    {
-                        return p.zwrocGre().user;//.aktywni;
-                    }
-                //}
+                if (p!=null)
+                {
+                    return p.zwrocGre().user;
+                }
             }
             return null;
         }
@@ -210,13 +174,10 @@ namespace MainServer
             {
                 Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
-                //foreach (Pokoj p in pokoje)
-                //{
-                    if (p!=null)//.jestWpokoju(id))
-                    {
-                        return p.zwrocGre().aktywni.Find(delegate(Gracz a) { return a.identyfikatorUzytkownika == idGracza; }).zwroc_najUklad();//[i].zwroc_najUklad();
-                    }
-                //}
+                if (p!=null)
+                {
+                    return p.zwrocGre().aktywni.Find(delegate(Gracz a) { return a.identyfikatorUzytkownika == idGracza; }).zwroc_najUklad();//[i].zwroc_najUklad();
+                }
             }
             return null;
         }
@@ -228,13 +189,14 @@ namespace MainServer
             {
                 Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
-                //foreach (Pokoj p in pokoje)
-                //{
-                if (p != null)//.jestWpokoju(id))
+                if (p != null)
                 {
-                    return p.zwrocGre().aktywni.Find(delegate(Gracz a) { return a.identyfikatorUzytkownika == idGracza; }).zwroc_hand();//[i].zwroc_najUklad();
+                    Gracz g = p.zwrocGre().aktywni.Find(delegate(Gracz a) { return a.identyfikatorUzytkownika == idGracza; });
+                    if (g != null)
+                        return g.zwroc_hand();
+                    else
+                        return new List<Karta>();
                 }
-                //}
             }
             return null;
         }
@@ -246,20 +208,16 @@ namespace MainServer
             if (Baza.CzyPoprawny(token))
             {
                 Int64 id = Baza.ZwrocIdUzytkownika(token);
-               // foreach (Pokoj p in pokoje)
-               // {
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
-                    if (p!=null)//.jestWpokoju(id))
-                    {
-                        return p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == mojID; });
-                    }
-                    else
-                        return null;
-                //}
+                if (p!=null)
+                {
+                    return p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == mojID; });
+                }
+                else
+                    return null;
             }
             else
                 return null;
-            //return null;
         }
 
         [WebMethod]
@@ -268,27 +226,21 @@ namespace MainServer
             if (Baza.CzyPoprawny(token))
             {
                 Int64 id = Baza.ZwrocIdUzytkownika(token);
-                //foreach (Pokoj p in pokoje)
-                //{
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
-                    if (p!=null)//.jestWpokoju(id))
-                    {
-                        return p.zwrocGre().stol;//aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }).zwroc_hand();
+                if (p!=null)
+                {
+                    return p.zwrocGre().stol;
 
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                //}
-
+                }
+                else
+                {
+                    return null;
+                }
             }
             else
             {
                 return null;
             }
-
-           // return null;
         }
         //Pokoje
         [WebMethod]
@@ -307,14 +259,10 @@ namespace MainServer
                 return pokoje;
             }
             return null;
-            //return pokoje;
-            //List<Pokoj> a = new List<Pokoj>();
-            //a.Add(Baza.ZwrocPokoj(token));
-            //return a; 
         }
 
         [WebMethod]
-        public Komunikat DolaczDoStolu(byte[] token, Int64 id) // do zabezpieczenia 
+        public Komunikat DolaczDoStolu(byte[] token, Int64 id)
         {
             if (Baza.CzyPoprawny(token))
             {                
@@ -342,7 +290,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat UtworzStol(byte[] token, string nazwa, int stawka, int blind, int ilosc) // do zabezpieczenia 
+        public Komunikat UtworzStol(byte[] token, string nazwa, int stawka, int blind, int ilosc)
         {
             if (Baza.CzyPoprawny(token))
             {
@@ -369,7 +317,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public Komunikat OpuscStol(byte[] token)// trochę ZROBIONE  // do zabezpieczenia 
+        public Komunikat OpuscStol(byte[] token)
         {
             if (Baza.CzyPoprawny(token))
             {
@@ -412,179 +360,148 @@ namespace MainServer
             if (Baza.CzyPoprawny(token))
             {
                 Int64 id = Baza.ZwrocIdUzytkownika(token);
-               // foreach (Pokoj p in pokoje)
-                //{
-                    Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
-                    if (p!=null)//.jestWpokoju(id))
-                    {
-                        Gracz s = p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; });
-                        //s.czyPobralKarty = true;
-                        ////List<Karta> t = p.zwrocGre().aktywni.Find(delegate(Gracz c){return c.identyfikatorUzytkownika==id;}).hand;
-                        //if (p.zwrocGre().czyWszyscyPobraliKarty() == true)                           
-                        //    p.zwrocGre().NastepnyStan();
-                        return s.zwroc_hand();
-                       
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                //}
-
+                Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
+                if (p!=null)
+                {
+                    Gracz s = p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; });
+                    return s.zwroc_hand();       
+                }
+                else
+                {
+                    return null;
+                }
             }
             else
             {
                 return null;
             }
-
-            //return null;
         }
 
         [WebMethod]
-        public Komunikat Start(byte[] token) // do zabezpieczenia  
+        public Komunikat Start(byte[] token)
         {
             if (Baza.CzyPoprawny(token))
             {
                 Int64 id = Baza.ZwrocIdUzytkownika(token);
-                //Uzytkownik u = Glowny.PobierzUzytkownika(id);
-                //u.start = true;
                 Pokoj pokoj = pokoje.Find(delegate(Pokoj c) { return c.jestWpokoju(id) == true; });
-                //int zm = pokoj.user.Count<Uzytkownik>(delegate(Uzytkownik v) { return v.start == true; });
                 int zm = pokoj.IleStart(id);
                 if (zm == pokoj.iloscGraczyMax)
                 {
                     if(pokoj.zwrocGre()==null)
                         pokoj.utworz();
                 }
-
                 temp.kodKomunikatu = 200;
                 temp.trescKomunikatu = "ok";
-
             }
             else
             {
                 temp.kodKomunikatu = 404;
                 temp.trescKomunikatu = "not_ok";
             }
-            return temp;
-            
+            return temp; 
         }
 
         [WebMethod]
-        public Komunikat Fold(byte[] token) // do zabezpieczenia 
+        public Komunikat Fold(byte[] token)
         {
             if (Baza.CzyPoprawny(token) == true)
             {
                 Int64 id = Baza.ZwrocIdUzytkownika(token);
-                //foreach (Pokoj p in pokoje)
-                //{
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
-                    if (p!=null)//.jestWpokoju(id) == true)
+                if (p!=null)
+                {
+                    if (p.zwrocGre().czyjRuch == id)
                     {
-                        if (p.zwrocGre().czyjRuch == id)
+                        if (p.zwrocGre().aktywni.FindIndex(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }) >= 0)
                         {
-                            if (p.zwrocGre().aktywni.FindIndex(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }) >= 0)
-                            {
-                                p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }).stan = Gracz.StanGracza.Fold;
-                               
-                                //p.zwrocGre().aktywni.Remove(p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }));//usuwanie gracza ktory folduje
-                                p.zwrocGre().aktualizujListeUser();// aktualizowanie na liscie userow stanu gracza    
-                                p.zwrocGre().KoniecRuchu();
-                                temp.kodKomunikatu = 200;
-                               
-                            }
+                            p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; }).stan = Gracz.StanGracza.Fold;
+                            p.zwrocGre().aktualizujListeUser();// aktualizowanie na liscie userow stanu gracza    
+                            p.zwrocGre().KoniecRuchu();
+                            temp.kodKomunikatu = 200;
                         }
-                        else
-                        {
-                            temp.kodKomunikatu = 404;
-                        }
-
                     }
-                //}
+                    else
+                    {
+                        temp.kodKomunikatu = 404;
+                    }
+
+                }
             }
             return temp;
         }
 
         [WebMethod]
-        public Komunikat CallRiseAllIn(byte[] token, Int32 ile) // do zabezpieczenia 
+        public Komunikat CallRiseAllIn(byte[] token, Int32 ile)
         {
             bool pom = false;
             if (Baza.CzyPoprawny(token) == true)
             {
                 Int64 id = Baza.ZwrocIdUzytkownika(token);
                 Pokoj p = pokoje.Find(delegate(Pokoj v) { return v.jestWpokoju(id); });
-                //foreach (Pokoj p in pokoje)
-                //{
-                //    if (p.jestWpokoju(id) == true)
-                    if(p!=null)
-                    {
-                        if (p.zwrocGre().czyjRuch == id)
-                        {
-                            Gracz R = p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; });//gracz ktory zostal zweryfikowany
-                            if (R.kasa >= ile)
-                            {
-                                if (R.stawia + ile > p.zwrocGre().najwyzszaStawka)
-                                {
-                                    p.zwrocGre().ktoStawia = R.identyfikatorUzytkownika;
-                                    R.stan = Gracz.StanGracza.Rise;
-                                    p.zwrocGre().najwyzszaStawka = R.stawia + ile;//dodane niedawno
-                                    pom = true;
-                                }
-                                else if (R.stawia + ile == p.zwrocGre().najwyzszaStawka)
-                                {
-                                    R.stan = Gracz.StanGracza.Call;
-                                    pom = true;
-                                }
-                                else if (R.stawia + ile < p.zwrocGre().najwyzszaStawka)
-                                {
-                                    if (ile == R.kasa)
-                                    {
-                                        R.stan = Gracz.StanGracza.AllIn;
-                                        pom = true;
-                                    }
-                                    else if (ile < R.kasa)
-                                    {
-                                        temp.kodKomunikatu = 404;
-                                      //  break;
-                                    }
-                                }
-                                if (pom == true)
-                                {
-                                    R.kasa = R.kasa - ile;
-                                    if (R.kasa == 0)
-                                        R.stan = Gracz.StanGracza.AllIn;
-                                    p.zwrocGre().pula += ile;
-                                    R.stawia += ile;
-                                    temp.kodKomunikatu = 200;
-                                    temp=p.zwrocGre().KoniecRuchu();
-                                   // break;
-                                }
-                            }
-                            else
-                            {
-                                temp.kodKomunikatu = 404;
-                               // break;
-                            }
 
+                if(p!=null)
+                {
+                    if (p.zwrocGre().czyjRuch == id)
+                    {
+                        Gracz R = p.zwrocGre().aktywni.Find(delegate(Gracz c) { return c.identyfikatorUzytkownika == id; });//gracz ktory zostal zweryfikowany
+                        if (R.kasa >= ile)
+                        {
+                            if (R.stawia + ile > p.zwrocGre().najwyzszaStawka)
+                            {
+                                p.zwrocGre().ktoStawia = R.identyfikatorUzytkownika;
+                                R.stan = Gracz.StanGracza.Rise;
+                                p.zwrocGre().najwyzszaStawka = R.stawia + ile;//dodane niedawno
+                                pom = true;
+                            }
+                            else if (R.stawia + ile == p.zwrocGre().najwyzszaStawka)
+                            {
+                                R.stan = Gracz.StanGracza.Call;
+                                pom = true;
+                            }
+                            else if (R.stawia + ile < p.zwrocGre().najwyzszaStawka)
+                            {
+                                if (ile == R.kasa)
+                                {
+                                    R.stan = Gracz.StanGracza.AllIn;
+                                    pom = true;
+                                }
+                                else if (ile < R.kasa)
+                                {
+                                    temp.kodKomunikatu = 404;
+                                }
+                            }
+                            if (pom == true)
+                            {
+                                R.kasa = R.kasa - ile;
+                                if (R.kasa == 0)
+                                    R.stan = Gracz.StanGracza.AllIn;
+                                p.zwrocGre().pula += ile;
+                                R.stawia += ile;
+                                temp.kodKomunikatu = 200;
+                                temp=p.zwrocGre().KoniecRuchu();
+                            }
                         }
                         else
                         {
                             temp.kodKomunikatu = 404;
-                            //break;
                         }
+
                     }
                     else
                     {
                         temp.kodKomunikatu = 404;
-                        //break;
                     }
-                //}
+                }
+                else
+                {
+                    temp.kodKomunikatu = 404;
+                }
             }
             return temp;
         }
 
         [WebMethod]
-        public Gra ZwrocGre(byte[] token) // do zabezpieczenia 
+        public Gra ZwrocGre(byte[] token)
         {
             if (Baza.CzyPoprawny(token))
             {
@@ -602,18 +519,6 @@ namespace MainServer
             }
         }
 
-        [WebMethod]
-        public void CzyscStoly() // ostatecznie do usunięcia 
-        {
-            foreach (Pokoj p in pokoje)
-            {
-                p.user.Clear();
-                
-            }
-
-        }
-
-
         static public void WyrzucUzytkownikowKtorzyPrzegrali(Gra gra)
         {
             Pokoj pokoik = pokoje.Find(delegate(Pokoj v) { return v.zwrocGre() == gra; });
@@ -629,25 +534,6 @@ namespace MainServer
                 });
             }
 
-        }
-
-//=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======MONITOR_DIAGNOSTYCZNY=======
-
-        [WebMethod]
-        public Pokoj DajPokoj(string nazwa)
-        {
-            return pokoje.Find(delegate(Pokoj v) { return v.nazwaPokoju == nazwa; });
-        }
-
-        [WebMethod]
-        public Gra DajGre(string nazwa)
-        {
-            Pokoj pok = pokoje.Find(delegate(Pokoj v) { return v.nazwaPokoju == nazwa; });
-
-            if (pok != null)
-                return pok.zwrocGre();
-            else
-                return null;
         }
 
     }

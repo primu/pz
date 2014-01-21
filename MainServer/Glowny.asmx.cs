@@ -13,8 +13,7 @@ namespace MainServer
     [WebService(Namespace = "http://tempuri.org/")]
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
     [System.ComponentModel.ToolboxItem(false)]
-    // To allow this Web Service to be called from script, using ASP.NET AJAX, uncomment the following line. 
-    // [System.Web.Script.Services.ScriptService]
+
     public class Glowny : System.Web.Services.WebService
     {
         //Tymczasowe deklaracje;
@@ -22,28 +21,15 @@ namespace MainServer
         static private List<Wiadomosc> wiadomosci = new List<Wiadomosc>();
         static private List<Uzytkownik> uzytkownicy = new List<Uzytkownik>(); //zalogowani użytkownicy
 
-        //static private List<Key> klucze = new List<Key>(); //klucze(id,token) zalogowanych użytkowników
-
-        static private StatycznaBaza baza = new StatycznaBaza();
-
         //Logowanie
         [WebMethod]
-        public List<Uzytkownik> ZwrocZalogowanych() //Funkcja testowa
+        public List<Uzytkownik> ZwrocZalogowanych()
         {
             return Baza.ZwrocUzytkownikowZalogowanych();
         }
 
         [WebMethod]
-        public bool dodajZw() //Funkcja testowa
-        {
-            string nazwa = "rafs";
-            int wyg = 2000;
-            int pok = 1;
-            return Baza.DodajZwyciezce(nazwa, pok, wyg);
-        }
-
-        [WebMethod]
-        public Komunikat Zarejestruj(string nazwa, string haslo, string email) //Funkcja działająca!!!
+        public Komunikat Zarejestruj(string nazwa, string haslo, string email)
         {//rejestracja uzytkownika
             Komunikat kom = new Komunikat();
             if (Baza.CzyIstniejeUzytkownik(nazwa))
@@ -82,7 +68,7 @@ namespace MainServer
         }
         
         [WebMethod]
-        public Komunikat SprawdzNazwe(string nazwa)//Funkcja działająca!!!
+        public Komunikat SprawdzNazwe(string nazwa)
         {
             Komunikat kom = new Komunikat();
             if (Baza.CzyIstniejeUzytkownik(nazwa))
@@ -99,7 +85,7 @@ namespace MainServer
         }
         
         [WebMethod]
-        public Komunikat SprawdzEmail(string email)//Funkcja działająca!!!
+        public Komunikat SprawdzEmail(string email)
         {
             Komunikat kom = new Komunikat();
             if (!Baza.CzyPoprawnyEmail(email))
@@ -122,7 +108,7 @@ namespace MainServer
         }
 
         [WebMethod]
-        public byte[] Zaloguj(string nazwa, string haslo)//Funkcja działająca!!!
+        public byte[] Zaloguj(string nazwa, string haslo)
         {
             byte[] token = null;
             Komunikat kom = new Komunikat();
@@ -146,7 +132,6 @@ namespace MainServer
                     else
                     {
                         Baza.Wyloguj(temp);
-                        //Baza.PrzedluzToken(temp);
                         token = Baza.Zaloguj(nazwa);
                     }
                     uzytkownicy = Baza.ZwrocUzytkownikowZalogowanych();
@@ -160,7 +145,6 @@ namespace MainServer
         public Komunikat Wyloguj(byte[] token)
         {
             Komunikat kom = new Komunikat();
-            //if(Baza.CzyPoprawnyToken(token))
             if (Baza.CzyPoprawny(token))
             {
                 kom = Baza.Wyloguj(token);
@@ -187,141 +171,9 @@ namespace MainServer
             {
                 temp.kodKomunikatu = 404;
                 temp.trescKomunikatu = "BLAD";
-            }
-                       
+            }    
             return temp;
         }
-
-
-        //[WebMethod]
-        //public Komunikat ZmienHaslo(string token, string haslo)
-        //{
-        //    try
-        //    {
-        //        Key klucz = klucze.Find(delegate(Key u) { return u.token == token; });
-        //        if (klucz == null)
-        //        {//nieprawidlowy token
-        //            temp.kodKomunikatu = 666;
-        //            temp.trescKomunikatu = "Nie powiodło się!!! Nieprawidłowy token!!!";
-        //        }
-        //        else
-        //        {//prawidlowy token -> user zalogowany                    
-        //            baza_user user = baza.zarejestrowani.Find(delegate(baza_user u)
-        //            {
-        //                return u.idUzytkownika == klucz.identyfikatorUzytkownika;
-        //            });
-
-        //            baza.zarejestrowani.Remove(user);
-        //            user.haslo = haslo;
-        //            baza.zarejestrowani.Add(user);
-
-        //            temp.kodKomunikatu = 200;
-        //            temp.trescKomunikatu = "Hasło zostało zmienione!";
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        temp.kodKomunikatu = 666;
-        //        temp.trescKomunikatu = "Fatal error!!!\n" + e.ToString();
-        //    }
-        //    return temp;
-        //}
-
-        //[WebMethod]
-        //public Komunikat ResetujHaslo(string email)
-        //{
-        //    try
-        //    {
-        //        baza_user user = baza.zarejestrowani.Find(delegate(baza_user u) { return u.email == email; });
-
-        //        if (user == null)
-        //        {//brak zarejestrowanego uzytkownika na podany email
-        //            temp.kodKomunikatu = 404;
-        //            temp.trescKomunikatu = "Wykryto konflikt!!! Brak adresu email " + email + " w bazie!!!";
-        //        }
-        //        else
-        //        {//email wystepuje w bazie                    
-        //            if (uzytkownicy.FindIndex(delegate(Uzytkownik u) { return u.identyfikatorUzytkownika == user.idUzytkownika; }) < 0)
-        //            {//błąd, użytkownik jest zalogowany
-        //                temp.kodKomunikatu = 404;
-        //                temp.trescKomunikatu = "Wykryto konflikt!!! Użytkownik jest zalogowany.";
-        //            }
-        //            else
-        //            {//użytkownik niezalogowany -> generacja nowego hasła
-        //                string noweHaslo = new Key(0).token;
-        //                baza.zarejestrowani.Remove(user);
-        //                user.haslo = noweHaslo;
-        //                baza.zarejestrowani.Add(user);
-
-        //                // WYSŁANIE EMAIL'a Z NOWYM HASŁEM
-
-        //                System.Net.Mail.MailMessage text = new System.Net.Mail.MailMessage(
-        //                    //nadawca
-        //                    "system@poker.pl",
-        //                    //odbiorca
-        //                    email,
-        //                    //temat
-        //                    "Odzyskiwanie hasla",
-        //                    //<treść>
-        //                    "[wiadomość wygenerowana automatycznie, nie odpowiadaj na nią]\n\n" +
-        //                    "Witaj " + user.nazwa + " !!!\n\n" +
-        //                    "Twoje nowe hasło wygenerowane automatycznie to:\n" +
-        //                    noweHaslo +
-        //                    "\n\nMożesz teraz się zalogować do gry Poker!!!"
-        //                    //</treść>
-        //                    );
-
-        //                System.Net.Mail.SmtpClient SMTPserwer = new System.Net.Mail.SmtpClient("smtp.gmail.com", 587);
-        //                SMTPserwer.Credentials = new System.Net.NetworkCredential("pokertxh@gmail.com", "bacillo52");
-        //                SMTPserwer.EnableSsl = true;
-
-        //                SMTPserwer.Send(text);
-
-        //                temp.kodKomunikatu = 201;
-        //                temp.trescKomunikatu = "Mail wysłany!!!";
-        //            }
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        temp.kodKomunikatu = 666;
-        //        temp.trescKomunikatu = "Fatal error!!!\n"+e.ToString();
-        //    }
-
-        //    return temp;
-        //}
-
-        //[WebMethod]
-        //public Komunikat UsunKonto(string token)
-        //{//trzeba byc zalogowanym, aby usunac konto
-        //    try
-        //    {
-        //        Key klucz = klucze.Find(delegate(Key u) { return u.token == token; });
-        //        if (klucz == null)
-        //        {//nieprawidlowy token
-        //            temp.kodKomunikatu = 666;
-        //            temp.trescKomunikatu = "Nie powiodło się!!! Nieprawidłowy token!!!";
-        //        }
-        //        else
-        //        {//prawidlowy token -> user zalogowany
-        //            baza_user user = baza.zarejestrowani.Find(delegate(baza_user u)
-        //            {
-        //                return u.idUzytkownika == klucz.identyfikatorUzytkownika;
-        //            });
-
-        //            baza.zarejestrowani.Remove(user);
-
-        //            temp.kodKomunikatu = 200;
-        //            temp.trescKomunikatu = "Konto zostało usuniętę!!!";
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        temp.kodKomunikatu = 666;
-        //        temp.trescKomunikatu = "Fatal error!!!\n" + e.ToString();
-        //    }
-        //    return temp;
-        //}
 
         //Chat
         [WebMethod]
@@ -369,7 +221,6 @@ namespace MainServer
                 timer = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
                 wiadomosc.stempelCzasowy = timer;
                 wiadomosci.Add(wiadomosc);
-                //Baza.DodajWiadomosc(wiadomosc);
                 temp.trescKomunikatu = "wyslano";
                 temp.kodKomunikatu = 200;
             }
@@ -390,7 +241,6 @@ namespace MainServer
             k.start = false;
 
         }
-        //co dalej?
 
         [WebMethod]
         public List<Uzytkownik> PobierzListeNajlepszych(byte[] token)
@@ -402,6 +252,7 @@ namespace MainServer
             else
                 return null;
         }
+
         [WebMethod]
         public List<Uzytkownik> PobierzListeNajbogatszych(byte[] token)
         {

@@ -27,7 +27,7 @@ namespace MainServer
             using (SqlConnection Polaczenie = new SqlConnection(CiagPolaczenia))
             {
                 var sqlQuery = "select * from Gra";
-                var sqlQuery2 = "select IdUzytkownika from Uzytkownik where Nazwa = @Nazwa";// +wiad.nazwaUzytkownika;
+                var sqlQuery2 = "select IdUzytkownika from Uzytkownik where Nazwa = @Nazwa";
                 SqlDataAdapter dataAdapter2 = new SqlDataAdapter(sqlQuery2, Polaczenie);
                 DataSet dataSet2 = new DataSet();
                 DataSet dataSet = new DataSet();
@@ -51,6 +51,7 @@ namespace MainServer
                 return true;
             }
         }
+
         static public bool CzyIstniejeUzytkownik(string nazwa)
         {
             bool istnieje = false;
@@ -75,11 +76,11 @@ namespace MainServer
                     istnieje = false;
                 }
                 connection.Close();
-
             }
             return istnieje;
         }
-        static public List<Uzytkownik> ZwrocUzytkownikowZalogowanych() //trzeba to przemyśleć, żeby z automatu nie można było tworzyć userów
+
+        static public List<Uzytkownik> ZwrocUzytkownikowZalogowanych()
         {
             List<Uzytkownik> listaUzytkownikow = new List<Uzytkownik>();
             using (SqlConnection Polaczenie = new SqlConnection(CiagPolaczenia))
@@ -160,12 +161,12 @@ namespace MainServer
             }
             return zalogowany;
         }
+
         static public byte[] CzyZalogowany(string nazwa)
         {
             byte[] token = null;
             using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
             {
-                
                 connection.Open();
                 var sqlQuery = "select s.DoKiedyWazny,s.Token from Sesja s join Uzytkownik u on s.IdUzytkownika=u.IdUzytkownika where u.Nazwa like @Nazwa order by s.DoKiedyWazny desc";
 
@@ -177,15 +178,15 @@ namespace MainServer
                 if (dataSet.Tables["Sesja"].Rows.Count > 0)
                 {
                     int ok = (int)dataSet.Tables["Sesja"].Rows[0].ItemArray.GetValue(0);
-                    //int nic = (int)DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
                     if (ok > (int)DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds)
                     {
-                        token = (byte[])dataSet.Tables["Sesja"].Rows[0]["Token"];//.ItemArray.GetValue(1);
+                        token = (byte[])dataSet.Tables["Sesja"].Rows[0]["Token"];
                     }
                 } 
             }
             return token;
         }
+
         static public bool CzyIstniejPokoj(string nazwa)
         {
             bool istnieje = false;
@@ -249,7 +250,6 @@ namespace MainServer
             {
                 return -1; // jeśli taki pokój istnieje!!!!
             }
-            //int id = 0;
             using (SqlConnection Polaczenie = new SqlConnection(CiagPolaczenia))
             {
                 var sqlQuery = "select * from Pokoj";
@@ -270,6 +270,7 @@ namespace MainServer
             }
             return ZwrocPokoj(nazwa).numerPokoju;
         }
+
         static public Pokoj ZwrocPokoj(string nazwa)
         {
             Pokoj pokoj = null;
@@ -301,6 +302,7 @@ namespace MainServer
             }
             return pokoj;
         }
+
         static public Pokoj ZwrocPokoj(int id)
         {
             Pokoj pokoj = null;
@@ -358,7 +360,7 @@ namespace MainServer
             }
         }
 
-        static public List<Pokoj> ZwrocPokoje() //trzeba to przemyśleć, żeby z automatu nie można było tworzyć userów
+        static public List<Pokoj> ZwrocPokoje()
         {
             List<Pokoj> listaPokoi = new List<Pokoj>();
             using (SqlConnection Polaczenie = new SqlConnection(CiagPolaczenia))
@@ -367,7 +369,6 @@ namespace MainServer
 
                 SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, Polaczenie);
                 DataSet dataSet = new DataSet();
-                //dataAdapter.SelectCommand.Parameters.Add("@Wazny", SqlDbType.Int).Value = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
 
                 dataAdapter.Fill(dataSet, "Pokoj");
                 if (dataSet.Tables["Pokoj"].Rows.Count > 0)
@@ -391,6 +392,7 @@ namespace MainServer
             }
             return listaPokoi;
         }
+
         static public long ZwrocIdUzytkownika(byte[] token)
         {
             int id = 0;
@@ -410,6 +412,7 @@ namespace MainServer
                 return id;
             }
         }
+
         static public bool DodajUzytkownika(string nazwa, string email, string haslo)
         {
             if (!CzyPoprawnyEmail(email))
@@ -444,6 +447,7 @@ namespace MainServer
                 return true;
             }
         }
+
         static public bool CzyPoprawneHaslo(string haslo, string nazwa)
         {
             byte[] salt, key;
@@ -459,7 +463,6 @@ namespace MainServer
                 key = (byte[])dataSet.Tables["Uzytkownik"].Rows[0]["Haslo"];
                 salt = (byte[])dataSet.Tables["Uzytkownik"].Rows[0]["Salt"];
             }
-
             using (var deriveBytes = new Rfc2898DeriveBytes(haslo, salt))
             {
                 byte[] newKey = deriveBytes.GetBytes(32);
@@ -470,6 +473,7 @@ namespace MainServer
                     return true;
             }
         }
+
         static public byte[] Zaloguj(string nazwa)
         {
             Komunikat kom = new Komunikat();
@@ -488,7 +492,6 @@ namespace MainServer
                 DataSet dataSet = new DataSet();
                 dataAdapter.Fill(dataSet, "Sesja");
 
-                //string token = Key.Generuj();
                 byte[] token = new byte[256] ;
                 Random rand = new Random();
                 rand.NextBytes(token);
@@ -545,6 +548,7 @@ namespace MainServer
             else
                 return true;
         }
+
         static public bool CzyPoprawnyToken(string token)
         {
             return Regex.IsMatch(token, @"[A-Za-z0-9;:=?@\[\\\]^_`]{256}");
@@ -582,40 +586,7 @@ namespace MainServer
                 
             }
         }
-/*
-        static public bool AktualizujIloscUzytkownikowWPokoju(Int64 idPokoju, Int64 ileDodac)
-        {
-            using (SqlConnection connection = new SqlConnection(CiagPolaczenia))
-            {
-                try
-                {
-                    connection.Open();
-                    SqlCommand cmd = new SqlCommand("UPDATE Pokoj SET IloscGraczy = (IloscGraczy + @dodac) where IdPokoju = @id", connection);
 
-                    SqlParameter id = new SqlParameter();
-                    SqlParameter dodac = new SqlParameter();
-
-                    id.ParameterName = "@id";
-                    dodac.ParameterName = "@dodac";
-                    id.SqlValue = idPokoju;
-                    dodac.Value = ileDodac;
-
-                    cmd.Parameters.Add(id);
-                    cmd.Parameters.Add(dodac);
-
-                    cmd.ExecuteNonQuery();
-                    connection.Close();
-                    return true;
-                }
-                catch (Exception)
-                {
-                    connection.Close();
-                    return false;
-                }
-
-            }
-        }
-        */
         static public Uzytkownik ZwrocUzytkownika(Int64 id)
         {
             Uzytkownik user = null;
@@ -655,8 +626,6 @@ namespace MainServer
                     {
                         listaUzytkownikow.Add(new Uzytkownik { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["Wygrane"] });
                     }
-                    //DataRow wiersz = dataSet.Tables["Uzytkownik"].Rows[0];
-                    //user = new Uzytkownik { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["IdUzytkownika"], numerPokoju = (int)wiersz["IdPokoju"] };
                 }
             }
 
@@ -681,8 +650,6 @@ namespace MainServer
                     {
                         listaUzytkownikow.Add(new Uzytkownik { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["Wygrane"] });
                     }
-                    //DataRow wiersz = dataSet.Tables["Uzytkownik"].Rows[0];
-                    //user = new Uzytkownik { kasiora = (int)wiersz["Kasa"], nazwaUzytkownika = wiersz["Nazwa"].ToString(), identyfikatorUzytkownika = (int)wiersz["IdUzytkownika"], numerPokoju = (int)wiersz["IdPokoju"] };
                 }
             }
 

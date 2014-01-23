@@ -1018,7 +1018,7 @@ namespace MainServer
 
 //======FUNKCJE=POMOCNICZE===================================================================================================================
 
-        public Int64 KtoNastepny(List<Gracz> lista, Int64 numer) //  
+        public Int64 KtoNastepny(List<Gracz> lista, Int64 numer) 
         {
             int i = lista.FindIndex(delegate(Gracz a) { return numer == a.identyfikatorUzytkownika; });
             if (i == lista.Count - 1)
